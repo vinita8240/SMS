@@ -1,0 +1,123 @@
+<div class="space-y-6">
+      
+      <!-- Top Header & Live Preview Button -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+            <span>🌐</span> Website CMS & Theme Engine
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Manage school website themes, dynamic homepage sections, pages, menus, and media from a single unified hub.
+          </p>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <a routerLink="/site" target="_blank" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-md transition">
+            <span>👁️</span> View Live Website ↗
+          </a>
+          <a routerLink="/cms/themes" class="px-4 py-2 rounded-xl bg-[#705ec8] hover:bg-[#5d4cb0] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-md transition">
+            <span>🎨</span> Switch Theme
+          </a>
+        </div>
+      </div>
+
+      <!-- Active Theme Highlight Banner -->
+      <div class="p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-indigo-500/30">
+        <div class="space-y-2">
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
+            <span class="text-xs font-bold uppercase tracking-widest text-amber-300">Currently Active Public Theme</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black text-white">
+            {{ stats()?.activeTheme?.theme_name || 'Modern Academic' }}
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-300 max-w-xl">
+            {{ stats()?.activeTheme?.description || 'Clean professional design with collegiate styling and high-impact academic metrics.' }}
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-3 shrink-0">
+          <a [routerLink]="['/site']" [queryParams]="{ preview_theme: stats()?.activeTheme?.theme_id }" target="_blank" class="px-5 py-2.5 rounded-xl bg-white text-slate-900 font-bold text-xs uppercase tracking-wider hover:bg-slate-100 transition shadow-md">
+            Live Preview
+          </a>
+          <a routerLink="/cms/themes" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider transition">
+            Configure Theme
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Statistic Metric Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        
+        <a routerLink="/cms/pages" class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition space-y-1 block group">
+          <div class="text-2xl">📄</div>
+          <div class="text-2xl font-black text-slate-800 dark:text-white group-hover:text-indigo-600 transition">{{ stats()?.pages?.total || 7 }}</div>
+          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">CMS Pages</div>
+        </a>
+
+        <a routerLink="/cms/builder" class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition space-y-1 block group">
+          <div class="text-2xl">🧱</div>
+          <div class="text-2xl font-black text-slate-800 dark:text-white group-hover:text-indigo-600 transition">13</div>
+          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Home Sections</div>
+        </a>
+
+        <a routerLink="/cms/menu" class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition space-y-1 block group">
+          <div class="text-2xl">🧭</div>
+          <div class="text-2xl font-black text-slate-800 dark:text-white group-hover:text-indigo-600 transition">{{ stats()?.menusCount || 8 }}</div>
+          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Menu Links</div>
+        </a>
+
+        <a routerLink="/cms/banners" class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition space-y-1 block group">
+          <div class="text-2xl">🖼️</div>
+          <div class="text-2xl font-black text-slate-800 dark:text-white group-hover:text-indigo-600 transition">{{ stats()?.bannersCount || 3 }}</div>
+          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Hero Banners</div>
+        </a>
+
+        <a routerLink="/cms/news-events" class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition space-y-1 block group">
+          <div class="text-2xl">📰</div>
+          <div class="text-2xl font-black text-slate-800 dark:text-white group-hover:text-indigo-600 transition">{{ stats()?.newsCount || 4 }}</div>
+          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Articles</div>
+        </a>
+
+        <a routerLink="/cms/gallery" class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition space-y-1 block group">
+          <div class="text-2xl">📸</div>
+          <div class="text-2xl font-black text-slate-800 dark:text-white group-hover:text-indigo-600 transition">{{ stats()?.galleryCount || 6 }}</div>
+          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Media Photos</div>
+        </a>
+
+      </div>
+
+      <!-- Quick Action Shortcuts Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 flex items-center justify-center text-xl">🎨</div>
+          <h3 class="font-bold text-slate-800 dark:text-white text-sm">Theme Switcher</h3>
+          <p class="text-xs text-slate-500 leading-relaxed">Choose between Modern Academic, Premium School, Colorful Education, Institutional, and Minimal Modern.</p>
+          <a routerLink="/cms/themes" class="inline-block text-xs font-bold text-indigo-600 hover:underline">Manage Themes →</a>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 flex items-center justify-center text-xl">🧱</div>
+          <h3 class="font-bold text-slate-800 dark:text-white text-sm">Homepage Builder</h3>
+          <p class="text-xs text-slate-500 leading-relaxed">Reorder homepage sections, toggle visibility, and customize section headlines & button links.</p>
+          <a routerLink="/cms/builder" class="inline-block text-xs font-bold text-indigo-600 hover:underline">Edit Homepage Layout →</a>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 flex items-center justify-center text-xl">📄</div>
+          <h3 class="font-bold text-slate-800 dark:text-white text-sm">Dynamic Pages</h3>
+          <p class="text-xs text-slate-500 leading-relaxed">Create and publish About Us, Principal Message, Vision & Mission, Facilities, and custom institutional pages.</p>
+          <a routerLink="/cms/pages" class="inline-block text-xs font-bold text-indigo-600 hover:underline">Manage Pages →</a>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 flex items-center justify-center text-xl">⚙️</div>
+          <h3 class="font-bold text-slate-800 dark:text-white text-sm">Website Settings</h3>
+          <p class="text-xs text-slate-500 leading-relaxed">Configure official school name, logo, contacts, Google Maps, social media links, and footer content.</p>
+          <a routerLink="/cms/settings" class="inline-block text-xs font-bold text-indigo-600 hover:underline">Configure Settings →</a>
+        </div>
+
+      </div>
+
+    </div>

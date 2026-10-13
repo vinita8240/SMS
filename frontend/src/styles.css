@@ -1,0 +1,176 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-main: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, 'Inter', Helvetica, Arial, sans-serif;
+  --ss-primary: #705ec8;
+  --ss-primary-hover: #5d4cb0;
+  --ss-secondary: #00bcd4;
+  --ss-success: #2dce89;
+  --ss-danger: #f5365c;
+  --ss-warning: #fb6340;
+  --ss-info: #11cdef;
+  --ss-border: #e9edf4;
+  --ss-bg: #f2f4f8;
+  --ss-sidebar: #ffffff;
+  --ss-text: #334155;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--ss-bg);
+  color: #334155;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dark body {
+  background-color: #0d1322;
+  color: #f1f5f9;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f4f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dedicated Sidebar Scrollbar */
+.custom-scrollbar {
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+  -webkit-overflow-scrolling: touch;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #705ec8;
+}
+
+/* Smart School UI Components */
+.ss-card {
+  background-color: #ffffff;
+  border: 1px solid #e9edf4;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+.dark .ss-card {
+  background-color: #151f32;
+  border-color: #1e293b;
+}
+
+.ss-btn-primary {
+  background-color: #705ec8;
+  color: #ffffff;
+  font-weight: 600;
+  border-radius: 0.375rem;
+  padding: 0.45rem 1rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  transition: all 0.2s ease;
+}
+.ss-btn-primary:hover {
+  background-color: #5d4cb0;
+}
+
+.ss-action-btn {
+  background-color: #705ec8;
+  color: #ffffff;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  transition: all 0.15s ease;
+}
+.ss-action-btn:hover {
+  background-color: #5d4cb0;
+  transform: translateY(-1px);
+}
+
+.ss-input {
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.75rem;
+  background-color: #ffffff;
+  color: #1e293b;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.ss-input:focus {
+  border-color: #705ec8;
+  box-shadow: 0 0 0 2px rgba(112, 94, 200, 0.15);
+}
+.dark .ss-input {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+/* Custom Table Styles */
+.ss-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ss-table th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  white-space: nowrap;
+}
+.dark .ss-table th {
+  background-color: #1e293b;
+  color: #94a3b8;
+  border-bottom-color: #334155;
+}
+.ss-table td {
+  padding: 0.65rem 0.75rem;
+  font-size: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+.dark .ss-table td {
+  border-bottom-color: #1e293b;
+  color: #cbd5e1;
+}
+.ss-table tr:hover td {
+  background-color: #f8fafc;
+}
+.dark .ss-table tr:hover td {
+  background-color: #1e293b/60;
+}

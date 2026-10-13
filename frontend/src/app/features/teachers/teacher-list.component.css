@@ -1,0 +1,4 @@
+/* Teacher List Component Styles */
+:host {
+  display: block;
+}

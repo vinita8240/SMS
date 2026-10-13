@@ -1,0 +1,4 @@
+/* Classes Component Styles */
+:host {
+  display: block;
+}

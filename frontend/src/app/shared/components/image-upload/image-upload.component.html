@@ -1,0 +1,54 @@
+<div class="relative w-full">
+      <!-- Loading Overlay -->
+      <div *ngIf="isUploading()" class="absolute inset-0 z-10 bg-white/70 backdrop-blur-sm flex flex-col items-center justify-center rounded-lg border border-slate-200">
+        <div class="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+        <span class="text-[10px] font-bold text-indigo-700 mt-2 uppercase tracking-wider">Uploading...</span>
+      </div>
+
+      <!-- Preview Image -->
+      <div class="mb-3 relative group rounded-lg overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center" [ngClass]="previewHeightClass">
+        <img *ngIf="displayUrl()" [src]="displayUrl()" class="w-full h-full object-contain" alt="Image preview" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjY2JkNWUxIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIgcnk9IjIiPjwvcmVjdD48Y2lyY2xlIGN4PSI4LjUiIGN5PSI4LjUiIHI9IjEuNSI+PC9jaXJjbGU+PHBvbHlsaW5lIHBvaW50cz0iMjEgMTUgMTYgMTAgNSAyMSI+PC9wb2x5bGluZT48L3N2Zz4='"/>
+        
+        <div *ngIf="!displayUrl()" class="text-slate-400 flex flex-col items-center justify-center space-y-2 p-4 text-center">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span class="text-xs">No image provided</span>
+        </div>
+      </div>
+
+      <!-- File Input -->
+      <div class="flex items-center space-x-2">
+        <input 
+          type="file" 
+          #fileInput
+          accept="image/png, image/jpeg, image/jpg, image/webp" 
+          class="hidden" 
+          (change)="onFileSelected($event)" 
+        />
+        
+        <button 
+          type="button" 
+          (click)="fileInput.click()" 
+          class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-wider border border-indigo-200 transition-colors flex items-center gap-1.5"
+          [disabled]="isUploading()"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+          </svg>
+          Upload Image
+        </button>
+
+        <span class="text-[10px] text-slate-500 font-mono flex-1 truncate" [title]="imageUrl">{{ imageUrl || 'Or paste URL below' }}</span>
+      </div>
+
+      <!-- Fallback URL Input -->
+      <input 
+        *ngIf="showUrlInput"
+        type="text" 
+        [ngModel]="imageUrl" 
+        (ngModelChange)="onUrlChange($event)"
+        class="w-full mt-2 px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono" 
+        placeholder="https://..." 
+      />
+    </div>

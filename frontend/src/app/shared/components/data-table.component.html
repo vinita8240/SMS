@@ -1,0 +1,147 @@
+<div class="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-card overflow-hidden">
+  
+  <!-- Table Header Toolbar -->
+  <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+    
+    <!-- Search Input -->
+    <div class="relative w-full sm:w-72">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange($event)"
+        placeholder="Search records..." 
+        class="w-full pl-9 pr-4 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all" />
+      <span class="absolute left-3 top-2.5 text-slate-400 text-sm">🔍</span>
+    </div>
+
+    <!-- Actions Toolbar (Export, Print, Custom Action) -->
+    <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
+      <button 
+        (click)="exportCSV()"
+        title="Export CSV"
+        class="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center space-x-1.5">
+        <span>📥</span>
+        <span>CSV</span>
+      </button>
+      <button 
+        (click)="printTable()"
+        title="Print Table"
+        class="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center space-x-1.5">
+        <span>🖨️</span>
+        <span>Print</span>
+      </button>
+
+      <ng-content select="[toolbar-actions]"></ng-content>
+    </div>
+
+  </div>
+
+  <!-- Table Body -->
+  <div class="overflow-x-auto">
+    <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300" id="sms-printable-table">
+      <thead class="bg-slate-50/80 dark:bg-slate-800/40 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800">
+        <tr>
+          @if (selectable) {
+            <th class="p-4 w-4">
+              <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()" class="rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
+            </th>
+          }
+          @for (col of columns; track col.key) {
+            <th 
+              class="px-5 py-3.5"
+              [ngClass]="{'cursor-pointer hover:text-slate-700 dark:hover:text-slate-200': col.sortable}"
+              (click)="col.sortable ? sort(col.key) : null">
+              <div class="flex items-center space-x-1">
+                <span>{{ col.label }}</span>
+                @if (col.sortable && sortColumn === col.key) {
+                  <span>{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                }
+              </div>
+            </th>
+          }
+          @if (hasActions) {
+            <th class="px-5 py-3.5 text-right">Actions</th>
+          }
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
+        @if (data.length === 0) {
+          <tr>
+            <td [attr.colspan]="columns.length + (selectable ? 1 : 0) + (hasActions ? 1 : 0)" class="text-center py-12 text-slate-400 dark:text-slate-500">
+              No records available
+            </td>
+          </tr>
+        }
+        @for (row of data; track row.id || row[keyField]; let idx = $index) {
+          <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors">
+            @if (selectable) {
+              <td class="p-4">
+                <input type="checkbox" [checked]="isSelected(row)" (change)="toggleSelectRow(row)" class="rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
+              </td>
+            }
+            @for (col of columns; track col.key) {
+              <td class="px-5 py-4">
+                @if (col.type === 'custom') {
+                  <ng-container *ngTemplateOutlet="customCellTmpl || defaultCell; context: { $implicit: row, col: col }"></ng-container>
+                } @else if (col.type === 'currency') {
+                  <span class="font-medium text-slate-900 dark:text-white">${{ row[col.key] | number:'1.2-2' }}</span>
+                } @else if (col.type === 'date') {
+                  <span>{{ row[col.key] | date:'mediumDate' }}</span>
+                } @else if (col.type === 'badge') {
+                  <span 
+                    class="px-2.5 py-1 rounded-full text-xs font-semibold capitalize"
+                    [ngClass]="{
+                      'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400': row[col.key] === 'active' || row[col.key] === 'paid' || row[col.key] === 'approved' || row[col.key] === 1,
+                      'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400': row[col.key] === 'pending' || row[col.key] === 'partially_paid' || row[col.key] === 'ongoing',
+                      'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400': row[col.key] === 'inactive' || row[col.key] === 'unpaid' || row[col.key] === 'rejected' || row[col.key] === 2
+                    }">
+                    {{ row[col.key] }}
+                  </span>
+                } @else {
+                  <span>{{ row[col.key] !== undefined && row[col.key] !== null ? row[col.key] : '-' }}</span>
+                }
+              </td>
+            }
+            @if (hasActions) {
+              <td class="px-5 py-4 text-right">
+                <ng-container *ngTemplateOutlet="actionsTmpl; context: { $implicit: row }"></ng-container>
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Footer -->
+  @if (pagination && pagination.totalPages > 1) {
+    <div class="p-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
+      <div>
+        Showing <span class="font-semibold text-slate-700 dark:text-slate-200">{{ ((pagination.page - 1) * pagination.limit) + 1 }}</span> to <span class="font-semibold text-slate-700 dark:text-slate-200">{{ Math.min(pagination.page * pagination.limit, pagination.total) }}</span> of <span class="font-semibold text-slate-700 dark:text-slate-200">{{ pagination.total }}</span> results
+      </div>
+
+      <div class="flex items-center space-x-1">
+        <button 
+          [disabled]="pagination.page <= 1"
+          (click)="pageChange.emit(pagination.page - 1)"
+          class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+          Previous
+        </button>
+        <span class="px-3 py-1.5 font-semibold text-slate-800 dark:text-slate-200">
+          Page {{ pagination.page }} of {{ pagination.totalPages }}
+        </span>
+        <button 
+          [disabled]="pagination.page >= pagination.totalPages"
+          (click)="pageChange.emit(pagination.page + 1)"
+          class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+          Next
+        </button>
+      </div>
+    </div>
+  }
+
+</div>
+
+<ng-template #defaultCell let-row let-col="col">
+  <span>{{ row[col.key] }}</span>
+</ng-template>

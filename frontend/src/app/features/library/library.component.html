@@ -1,0 +1,410 @@
+<div class="space-y-6">
+  <!-- Top header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Library Management</h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400">Manage cataloged books, categories, and track lending circulation</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button *ngIf="canManage() && activeTab === 'books'" (click)="openAddBookModal()" class="btn-primary">
+        <span>+</span>
+        <span class="ml-1.5">Add Book</span>
+      </button>
+      <button *ngIf="canManage() && activeTab === 'issues'" (click)="openIssueModal()" class="btn-primary">
+        <span>+</span>
+        <span class="ml-1.5">Issue Book</span>
+      </button>
+      <button *ngIf="canManage() && activeTab === 'categories'" (click)="openAddCategoryModal()" class="btn-primary">
+        <span>+</span>
+        <span class="ml-1.5">Add Category</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="border-b border-slate-200 dark:border-slate-800">
+    <nav class="flex space-x-6" aria-label="Tabs">
+      <button 
+        (click)="switchTab('books')"
+        [class]="activeTab === 'books' 
+          ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-semibold border-b-2 py-3 px-1 text-sm' 
+          : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 border-b-2 py-3 px-1 text-sm font-medium'"
+      >
+        <div class="flex items-center gap-2">
+          <span>📖</span>
+          Book Catalog ({{ books().length }})
+        </div>
+      </button>
+      <button 
+        (click)="switchTab('issues')"
+        [class]="activeTab === 'issues' 
+          ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-semibold border-b-2 py-3 px-1 text-sm' 
+          : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 border-b-2 py-3 px-1 text-sm font-medium'"
+      >
+        <div class="flex items-center gap-2">
+          <span>🔄</span>
+          Issue / Returns ({{ issues().length }})
+        </div>
+      </button>
+      <button 
+        (click)="switchTab('categories')"
+        [class]="activeTab === 'categories' 
+          ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-semibold border-b-2 py-3 px-1 text-sm' 
+          : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 border-b-2 py-3 px-1 text-sm font-medium'"
+      >
+        <div class="flex items-center gap-2">
+          <span>📂</span>
+          Categories ({{ categories().length }})
+        </div>
+      </button>
+    </nav>
+  </div>
+
+  <!-- TAB 1: BOOKS -->
+  <div *ngIf="activeTab === 'books'" class="space-y-4">
+    <!-- Search bar -->
+    <div class="card p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="relative w-full sm:w-80">
+        <input 
+          type="text" 
+          placeholder="Search books by title, author, ISBN..." 
+          (input)="onSearchBook($event)"
+          class="input-field w-full"
+        />
+      </div>
+      <div>
+        <select (change)="onCategorySelect($event)" class="input-field">
+          <option value="">All Categories</option>
+          <option *ngFor="let cat of categories()" [value]="cat.book_category_id || cat.id">{{ cat.name }}</option>
+        </select>
+      </div>
+    </div>
+
+    <app-skeleton-loader *ngIf="loadingBooks()" [rows]="5" [columns]="6"></app-skeleton-loader>
+
+    <app-empty-state 
+      *ngIf="!loadingBooks() && filteredBooks().length === 0"
+      title="No Books Found"
+      description="There are no cataloged books in the library system matching this criteria."
+      icon="book-open"
+      [actionLabel]="canManage() ? 'Add First Book' : ''"
+      (action)="openAddBookModal()"
+    ></app-empty-state>
+
+    <div *ngIf="!loadingBooks() && filteredBooks().length > 0" class="card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
+              <th class="py-3.5 px-4">Book Details</th>
+              <th class="py-3.5 px-4">Category</th>
+              <th class="py-3.5 px-4">ISBN / Rack</th>
+              <th class="py-3.5 px-4">Price</th>
+              <th class="py-3.5 px-4">Total Copies</th>
+              <th class="py-3.5 px-4">Available</th>
+              <th *ngIf="canManage()" class="py-3.5 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 text-sm">
+            <tr *ngFor="let b of filteredBooks()" class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+              <td class="py-3.5 px-4">
+                <div class="font-medium text-slate-800 dark:text-slate-200">{{ b.title || b.name }}</div>
+                <div class="text-xs text-slate-400">By {{ b.author || 'Unknown' }} {{ b.publisher ? '• ' + b.publisher : '' }} {{ b.edition ? '(' + b.edition + ')' : '' }}</div>
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">
+                  {{ b.category_name || 'General' }}
+                </span>
+              </td>
+              <td class="py-3.5 px-4 text-xs font-mono text-slate-600 dark:text-slate-400">
+                <div>ISBN: {{ b.isbn || 'N/A' }}</div>
+                <div class="text-slate-400 font-sans" *ngIf="b.rack_number">Rack #{{ b.rack_number }}</div>
+              </td>
+              <td class="py-3.5 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                ${{ b.price || 0 }}
+              </td>
+              <td class="py-3.5 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                {{ b.quantity || b.total_copies || b.copies || 0 }}
+              </td>
+              <td class="py-3.5 px-4">
+                <span 
+                  class="px-2.5 py-1 rounded-full text-xs font-bold"
+                  [ngClass]="(b.available_quantity !== undefined ? b.available_quantity : b.available_copies) > 0 ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300'"
+                >
+                  {{ b.available_quantity !== undefined ? b.available_quantity : (b.available_copies || 0) }} left
+                </span>
+              </td>
+              <td *ngIf="canManage()" class="py-3.5 px-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <button (click)="openEditBookModal(b)" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-indigo-600">
+                    ✏️
+                  </button>
+                  <button (click)="confirmDeleteBook(b)" class="p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-500 hover:text-rose-600">
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: ISSUES / CIRCULATION -->
+  <div *ngIf="activeTab === 'issues'" class="space-y-4">
+    <app-skeleton-loader *ngIf="loadingIssues()" [rows]="5" [columns]="6"></app-skeleton-loader>
+
+    <app-empty-state 
+      *ngIf="!loadingIssues() && issues().length === 0"
+      title="No Book Issues Recorded"
+      description="There are currently no active or historical book issue records."
+      icon="rotate-ccw"
+      [actionLabel]="canManage() ? 'Issue First Book' : ''"
+      (action)="openIssueModal()"
+    ></app-empty-state>
+
+    <div *ngIf="!loadingIssues() && issues().length > 0" class="card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
+              <th class="py-3.5 px-4">Book</th>
+              <th class="py-3.5 px-4">Student / Borrower</th>
+              <th class="py-3.5 px-4">Issue Date</th>
+              <th class="py-3.5 px-4">Due Date</th>
+              <th class="py-3.5 px-4">Status</th>
+              <th *ngIf="canManage()" class="py-3.5 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 text-sm">
+            <tr *ngFor="let iss of issues()" class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+              <td class="py-3.5 px-4 font-medium text-slate-800 dark:text-slate-200">
+                {{ iss.book_title || iss.title || iss.name }}
+              </td>
+              <td class="py-3.5 px-4">
+                <div class="font-medium text-slate-800 dark:text-slate-200">{{ iss.student_name || (iss.teacher_name ? 'Teacher: ' + iss.teacher_name : 'Borrower #' + (iss.student_id || iss.teacher_id)) }}</div>
+                <div class="text-xs text-slate-400" *ngIf="iss.class_name">Class: {{ iss.class_name }}</div>
+              </td>
+              <td class="py-3.5 px-4 text-slate-600 dark:text-slate-400">
+                {{ iss.issue_date | date:'mediumDate' }}
+              </td>
+              <td class="py-3.5 px-4 text-slate-600 dark:text-slate-400">
+                {{ iss.due_date | date:'mediumDate' }}
+              </td>
+              <td class="py-3.5 px-4">
+                <span 
+                  class="px-2.5 py-1 rounded-full text-xs font-semibold uppercase"
+                  [ngClass]="iss.status === 'returned' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300'"
+                >
+                  {{ iss.status || 'Issued' }}
+                </span>
+              </td>
+              <td *ngIf="canManage()" class="py-3.5 px-4 text-right">
+                <button 
+                  *ngIf="iss.status !== 'returned'"
+                  (click)="returnBook(iss)"
+                  class="btn-secondary text-xs py-1.5 px-3 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300"
+                >
+                  🔄 Return Book
+                </button>
+                <span *ngIf="iss.status === 'returned'" class="text-xs text-slate-400">
+                  Returned on {{ iss.return_date | date:'shortDate' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: CATEGORIES -->
+  <div *ngIf="activeTab === 'categories'" class="space-y-4">
+    <div class="flex justify-end">
+      <button *ngIf="canManage()" (click)="openAddCategoryModal()" class="btn-primary">
+        <span>+</span>
+        <span class="ml-1.5">Add Category</span>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div *ngFor="let cat of categories()" class="card p-5 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+            {{ cat.name?.charAt(0) }}
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 dark:text-white">{{ cat.name }}</h4>
+            <p class="text-xs text-slate-400">{{ cat.description || 'General Category' }}</p>
+          </div>
+        </div>
+        <div *ngIf="canManage()" class="flex items-center gap-1">
+          <button (click)="openEditCategoryModal(cat)" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500">
+            ✏️
+          </button>
+          <button (click)="confirmDeleteCat(cat)" class="p-1.5 rounded-lg hover:bg-rose-50 text-slate-500 hover:text-rose-600">
+            🗑️
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Book Add/Edit Modal -->
+  <app-modal 
+    [isOpen]="isBookModalOpen" 
+    [title]="editingBook ? 'Edit Book Details' : 'Add New Book to Catalog'"
+    (closeModal)="isBookModalOpen = false"
+  >
+    <form [formGroup]="bookForm" (ngSubmit)="saveBook()" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Book Title *</label>
+        <input type="text" formControlName="title" placeholder="e.g. Modern Physics & Quantum Mechanics" class="input-field w-full">
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Author *</label>
+          <input type="text" formControlName="author" placeholder="Author name" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Category *</label>
+          <select formControlName="category_id" class="input-field w-full">
+            <option value="">Select Category</option>
+            <option *ngFor="let cat of categories()" [value]="cat.book_category_id || cat.id">{{ cat.name }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">ISBN Number</label>
+          <input type="text" formControlName="isbn" placeholder="e.g. 978-0134494166" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Publisher</label>
+          <input type="text" formControlName="publisher" placeholder="e.g. Pearson / Oxford" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Edition</label>
+          <input type="text" formControlName="edition" placeholder="e.g. 4th Edition" class="input-field w-full">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Total Copies *</label>
+          <input type="number" formControlName="copies" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Price ($)</label>
+          <input type="number" formControlName="price" placeholder="45.00" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Rack / Shelf Location</label>
+          <input type="text" formControlName="rack_number" placeholder="e.g. R-12 / Shelf-B" class="input-field w-full">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Description / Summary</label>
+        <textarea formControlName="description" rows="2" placeholder="Brief book summary..." class="input-field w-full"></textarea>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isBookModalOpen = false" class="btn-secondary">Cancel</button>
+        <button type="submit" [disabled]="bookForm.invalid || isSubmitting" class="btn-primary">
+          {{ isSubmitting ? 'Saving...' : (editingBook ? 'Update Book' : 'Save Book') }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Book Issue Modal -->
+  <app-modal 
+    [isOpen]="isIssueModalOpen" 
+    title="Issue Book to Student / Staff"
+    (closeModal)="isIssueModalOpen = false"
+  >
+    <form [formGroup]="issueForm" (ngSubmit)="saveIssue()" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Select Book *</label>
+        <select formControlName="book_id" class="input-field w-full">
+          <option value="">Choose a book</option>
+          <option *ngFor="let b of books()" [value]="b.book_id || b.id">{{ b.title || b.name }} ({{ b.available_quantity !== undefined ? b.available_quantity : (b.available_copies || b.copies) }} available)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Select Student *</label>
+        <select formControlName="student_id" class="input-field w-full">
+          <option value="">Choose a student</option>
+          <option *ngFor="let s of students()" [value]="s.student_id || s.id">{{ s.name }} ({{ s.admission_no }})</option>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Issue Date *</label>
+          <input type="date" formControlName="issue_date" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Due Return Date *</label>
+          <input type="date" formControlName="due_date" class="input-field w-full">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isIssueModalOpen = false" class="btn-secondary">Cancel</button>
+        <button type="submit" [disabled]="issueForm.invalid || isSubmitting" class="btn-primary">
+          {{ isSubmitting ? 'Issuing...' : 'Issue Book' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Category Modal -->
+  <app-modal 
+    [isOpen]="isCategoryModalOpen" 
+    [title]="editingCategory ? 'Edit Category' : 'Add Book Category'"
+    (closeModal)="isCategoryModalOpen = false"
+  >
+    <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Category Name *</label>
+        <input type="text" formControlName="name" placeholder="e.g. Computer Science" class="input-field w-full">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Description</label>
+        <textarea formControlName="description" rows="2" class="input-field w-full"></textarea>
+      </div>
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isCategoryModalOpen = false" class="btn-secondary">Cancel</button>
+        <button type="submit" [disabled]="categoryForm.invalid || isSubmitting" class="btn-primary">
+          {{ editingCategory ? 'Update' : 'Save Category' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Delete Book Confirmation -->
+  <app-confirm-dialog
+    [isOpen]="isDeleteBookOpen"
+    title="Delete Book"
+    [message]="'Are you sure you want to remove ' + selectedBook?.name + ' from the library catalog?'"
+    confirmText="Delete"
+    (confirmed)="deleteBook()"
+    (cancelled)="isDeleteBookOpen = false"
+  ></app-confirm-dialog>
+
+  <!-- Delete Category Confirmation -->
+  <app-confirm-dialog
+    [isOpen]="isDeleteCatOpen"
+    title="Delete Book Category"
+    [message]="'Are you sure you want to delete category: ' + selectedCat?.name + '?'"
+    confirmText="Delete"
+    (confirmed)="deleteCategory()"
+    (cancelled)="isDeleteCatOpen = false"
+  ></app-confirm-dialog>
+</div>

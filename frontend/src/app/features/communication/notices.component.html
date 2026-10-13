@@ -1,0 +1,111 @@
+<div class="space-y-6">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Notice Board & Announcements</h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400">Broadcast important announcements to students, teachers, and parents</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button *ngIf="canManage()" (click)="openAddNoticeModal()" class="btn-primary">
+        <span>+</span>
+        <span class="ml-1.5">Post Notice</span>
+      </button>
+    </div>
+  </div>
+
+  <app-skeleton-loader *ngIf="loading()" [rows]="3" [columns]="3"></app-skeleton-loader>
+
+  <app-empty-state 
+    *ngIf="!loading() && notices().length === 0"
+    title="No Active Notices"
+    description="There are currently no public announcements on the notice board."
+    icon="bell"
+    [actionLabel]="canManage() ? 'Post First Notice' : ''"
+    (action)="openAddNoticeModal()"
+  ></app-empty-state>
+
+  <!-- Notices Grid -->
+  <div *ngIf="!loading() && notices().length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let n of notices()" class="card p-6 flex flex-col justify-between hover:shadow-lg transition-all duration-300 border-t-4 border-t-indigo-600">
+      <div>
+        <div class="flex items-center justify-between gap-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">
+            To: {{ n.audience || 'All' }}
+          </span>
+          <div *ngIf="canManage()" class="flex items-center gap-1">
+            <button (click)="openEditNoticeModal(n)" class="p-1 rounded text-slate-400 hover:text-indigo-600">
+              ✏️
+            </button>
+            <button (click)="confirmDeleteNotice(n)" class="p-1 rounded text-slate-400 hover:text-rose-600">
+              🗑️
+            </button>
+          </div>
+        </div>
+
+        <h3 class="text-xl font-bold text-slate-800 dark:text-white mt-3 leading-snug">{{ n.notice_title }}</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mt-3 whitespace-pre-line leading-relaxed">{{ n.notice }}</p>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+        <div class="flex items-center gap-1">
+          <span>📅</span>
+          <span>{{ n.date | date:'mediumDate' }}</span>
+        </div>
+        <div class="font-medium text-slate-600 dark:text-slate-400">
+          By Administration
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Notice Modal -->
+  <app-modal 
+    [isOpen]="isModalOpen" 
+    [title]="editingNotice ? 'Edit Notice' : 'Broadcast New Notice'"
+    (closeModal)="isModalOpen = false"
+  >
+    <form [formGroup]="noticeForm" (ngSubmit)="saveNotice()" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Notice Title *</label>
+        <input type="text" formControlName="notice_title" placeholder="e.g. Annual Sports Day 2026 Schedule" class="input-field w-full">
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Target Audience *</label>
+          <select formControlName="audience" class="input-field w-full">
+            <option value="all">Everyone (Public)</option>
+            <option value="student">Students Only</option>
+            <option value="teacher">Teachers Only</option>
+            <option value="parent">Parents Only</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Publish Date *</label>
+          <input type="date" formControlName="date" class="input-field w-full">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Notice Body / Message *</label>
+        <textarea formControlName="notice" rows="5" placeholder="Write announcement details..." class="input-field w-full"></textarea>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isModalOpen = false" class="btn-secondary">Cancel</button>
+        <button type="submit" [disabled]="noticeForm.invalid || isSubmitting" class="btn-primary">
+          {{ isSubmitting ? 'Saving...' : (editingNotice ? 'Update Notice' : 'Publish Notice') }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Delete Confirmation -->
+  <app-confirm-dialog
+    [isOpen]="isDeleteOpen"
+    title="Delete Notice"
+    [message]="'Are you sure you want to delete notice: ' + selectedNotice?.notice_title + '?'"
+    confirmText="Delete"
+    (confirmed)="deleteNotice()"
+    (cancelled)="isDeleteOpen = false"
+  ></app-confirm-dialog>
+</div>

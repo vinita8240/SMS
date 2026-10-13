@@ -1,0 +1,319 @@
+<!-- ========================================================================= -->
+<!-- THEME 2: PREMIUM SCHOOL (Luxury Private Academy)                          -->
+<!-- Forest Emerald Green, Warm Burnished Gold, Serif Typography, Crest Style  -->
+<!-- ========================================================================= -->
+<div class="min-h-screen bg-[#faf8f5] text-slate-900 font-sans selection:bg-[#064e3b] selection:text-amber-200">
+
+  <!-- Top Gold Accent Bar -->
+  <div class="bg-[#043327] text-amber-100 text-xs py-2 px-4 sm:px-8 border-b border-amber-900/40">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center space-x-6 text-[11px] font-medium tracking-wider">
+        <span>✨ An Institution of Heritage & Distinction</span>
+        <span class="hidden md:inline text-amber-400/80">|</span>
+        <span class="hidden md:inline">📞 {{ data?.settings?.phone }}</span>
+        <span class="hidden lg:inline">✉️ {{ data?.settings?.email }}</span>
+      </div>
+      <div class="flex items-center space-x-3">
+        <a routerLink="/login" class="text-[11px] text-amber-200 hover:text-white transition uppercase font-bold tracking-widest">
+          Staff & Parent Portal →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Premium Header -->
+  <header class="bg-[#064e3b] text-white sticky top-0 z-40 shadow-xl border-b border-amber-600/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 h-24 flex items-center justify-between">
+      
+      <!-- Brand Crest & Name -->
+      <a routerLink="/site" class="flex items-center space-x-4 no-underline group">
+        <div class="w-14 h-14 rounded-full p-1 bg-gradient-to-tr from-amber-600 via-amber-300 to-amber-500 shadow-md shrink-0 flex items-center justify-center">
+          <div class="w-full h-full rounded-full bg-[#043327] flex items-center justify-center p-1.5 overflow-hidden">
+            <img [src]="data?.settings?.school_logo || '/logo.png'" alt="Crest" class="w-full h-full object-contain" onerror="this.src='/logo.png'" />
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-lg sm:text-xl font-serif font-black tracking-wide text-amber-100 uppercase">
+            {{ data?.settings?.school_name || 'Mount Carmel International School' }}
+          </span>
+          <span class="text-[10px] sm:text-[11px] text-amber-300/80 tracking-widest font-serif italic">
+            Ad Gloriam & Scholastic Excellence Since 1998
+          </span>
+        </div>
+      </a>
+
+      <!-- Navigation Menu -->
+      <nav class="hidden lg:flex items-center space-x-1">
+        <ng-container *ngFor="let menu of data?.site?.menus">
+          <div *ngIf="menu.children && menu.children.length > 0" class="relative group">
+            <button class="px-3.5 py-2 text-amber-100 hover:text-amber-300 text-xs font-bold uppercase tracking-widest flex items-center gap-1 transition">
+              <span>{{ menu.title }}</span>
+              <span class="text-[8px] text-amber-400 group-hover:rotate-180 transition-transform">▾</span>
+            </button>
+            <div class="absolute top-full left-0 w-60 bg-[#043327] rounded-xl shadow-2xl border border-amber-600/30 p-2 hidden group-hover:block animate-in fade-in z-50">
+              <a 
+                *ngFor="let child of menu.children" 
+                [routerLink]="child.route" 
+                class="block px-3 py-2 rounded-lg text-xs font-medium text-amber-100 hover:bg-amber-500/20 hover:text-amber-300 transition">
+                {{ child.title }}
+              </a>
+            </div>
+          </div>
+
+          <a 
+            *ngIf="!menu.children || menu.children.length === 0" 
+            [routerLink]="menu.route" 
+            class="px-3.5 py-2 text-amber-100 hover:text-amber-300 text-xs font-bold uppercase tracking-widest transition">
+            {{ menu.title }}
+          </a>
+        </ng-container>
+
+        <!-- Gold Pill CTA -->
+        <a routerLink="/site/contact" class="ml-5 px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-slate-950 text-xs font-extrabold uppercase tracking-widest shadow-lg hover:shadow-amber-500/20 transition transform hover:-translate-y-0.5">
+          Book Campus Tour
+        </a>
+      </nav>
+
+      <!-- Mobile Button -->
+      <button (click)="isMobileMenuOpen = !isMobileMenuOpen" class="lg:hidden text-amber-300 p-2 text-2xl font-bold">
+        ☰
+      </button>
+
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div *ngIf="isMobileMenuOpen" class="lg:hidden bg-[#043327] border-t border-amber-600/30 px-6 py-4 space-y-3">
+      <div *ngFor="let menu of data?.site?.menus" class="space-y-1">
+        <a [routerLink]="menu.route" (click)="isMobileMenuOpen = false" class="block py-1 font-serif text-amber-200 text-sm font-bold">
+          {{ menu.title }}
+        </a>
+        <div *ngIf="menu.children" class="pl-4 space-y-1 border-l border-amber-600/40">
+          <a *ngFor="let child of menu.children" [routerLink]="child.route" (click)="isMobileMenuOpen = false" class="block py-1 text-xs text-amber-100/80">
+            {{ child.title }}
+          </a>
+        </div>
+      </div>
+      <div class="pt-2">
+        <a routerLink="/site/contact" (click)="isMobileMenuOpen = false" class="block text-center py-2.5 rounded-full bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-widest">
+          Schedule Admissions Visit
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- LUXURY EDITORIAL HERO BANNER                                              -->
+  <!-- ========================================================================= -->
+  <section class="relative bg-[#043327] text-white min-h-[580px] lg:min-h-[640px] flex items-center overflow-hidden">
+    <div 
+      class="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity scale-105 transition-transform duration-1000"
+      [style.background-image]="'url(' + (data?.banners?.[0]?.image_url || 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1600&q=85') + ')'">
+    </div>
+    <div class="absolute inset-0 bg-gradient-to-r from-[#064e3b] via-[#064e3b]/85 to-transparent"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-8 py-20 z-10 w-full">
+      <div class="max-w-2xl space-y-6">
+        
+        <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-serif italic tracking-wide">
+          <span>👑</span>
+          <span>Legacy of Distinction & Character Building</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-white leading-tight tracking-tight drop-shadow-lg">
+          Cultivating Visionaries for a Changing World
+        </h1>
+
+        <p class="text-base sm:text-lg text-amber-100/90 font-serif leading-relaxed italic">
+          "Where intellectual pursuit is elevated by compassion, integrity, and lifelong pursuit of scholastic excellence."
+        </p>
+
+        <div class="pt-4 flex flex-wrap gap-4">
+          <a routerLink="/site/contact" class="px-8 py-4 rounded-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-slate-950 font-bold text-xs uppercase tracking-widest shadow-xl transition transform hover:-translate-y-0.5">
+            Begin Application
+          </a>
+          <a routerLink="/site/p/about-us" class="px-8 py-4 rounded-full bg-white/10 hover:bg-white/20 border border-amber-300/40 text-amber-200 font-bold text-xs uppercase tracking-widest backdrop-blur-xs transition">
+            Explore Heritage
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- THREE PILLARS OF EXCELLENCE                                               -->
+  <!-- ========================================================================= -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-8 -mt-16 relative z-20">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <div class="bg-white rounded-2xl shadow-xl p-8 border-t-4 border-[#064e3b] space-y-3">
+        <span class="text-3xl">🏛️</span>
+        <h3 class="font-serif font-bold text-lg text-[#064e3b]">Academic Rigor</h3>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Comprehensive International Baccalaureate and Advanced Placement curricula designed to challenge inquisitive minds.
+        </p>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-xl p-8 border-t-4 border-amber-500 space-y-3">
+        <span class="text-3xl">🌿</span>
+        <h3 class="font-serif font-bold text-lg text-amber-800">Holistic Stewardship</h3>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Nurturing moral empathy, environmental consciousness, and community service through student-led global initiatives.
+        </p>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-xl p-8 border-t-4 border-[#064e3b] space-y-3">
+        <span class="text-3xl">🌐</span>
+        <h3 class="font-serif font-bold text-lg text-[#064e3b]">Global Placements</h3>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Our alumni consistently secure admissions to Ivy League, Oxford, Cambridge, and Stanford with premier merit scholarships.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- PRINCIPAL'S WELCOME LETTER                                                -->
+  <!-- ========================================================================= -->
+  <section class="py-20 max-w-6xl mx-auto px-4 sm:px-8">
+    <div class="bg-white rounded-3xl p-8 sm:p-14 border border-amber-900/10 shadow-2xl relative overflow-hidden">
+      <div class="absolute -top-10 -right-10 text-[180px] font-serif text-amber-500/10 pointer-events-none select-none font-black leading-none">“</div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div class="lg:col-span-4 flex flex-col items-center text-center space-y-3">
+          <div class="p-2 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-300 to-amber-600 shadow-xl">
+            <img [src]="data?.settings?.principal_image || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=80'" 
+                 alt="Principal" class="w-48 h-56 rounded-xl object-cover" />
+          </div>
+          <div class="font-serif font-bold text-base text-[#064e3b]">{{ data?.settings?.principal_name }}</div>
+          <div class="text-xs font-semibold text-amber-700 uppercase tracking-widest">{{ data?.settings?.principal_title }}</div>
+        </div>
+
+        <div class="lg:col-span-8 space-y-5">
+          <div class="text-xs font-serif font-extrabold uppercase tracking-widest text-amber-600">From the Head of School</div>
+          <h2 class="text-2xl sm:text-3xl font-serif font-bold text-[#064e3b] leading-tight">
+            "We do not merely teach students; we illuminate their innate potential."
+          </h2>
+          <p class="text-slate-700 font-serif leading-relaxed text-sm sm:text-base italic">
+            {{ data?.settings?.principal_message }}
+          </p>
+          <div class="pt-3">
+            <a routerLink="/site/p/principal-message" class="inline-flex items-center space-x-2 text-xs font-bold uppercase tracking-widest text-[#064e3b] hover:text-amber-600 transition">
+              <span>Read the Full Address</span>
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- LUXURY FACILITIES SHOWCASE                                                -->
+  <!-- ========================================================================= -->
+  <section class="py-20 bg-[#064e3b] text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 space-y-12">
+      
+      <div class="text-center max-w-2xl mx-auto space-y-3">
+        <span class="text-xs font-serif font-bold uppercase tracking-widest text-amber-300">A World of Possibility</span>
+        <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">Prestige Campus Infrastructure</h2>
+        <div class="w-16 h-0.5 bg-amber-400 mx-auto mt-2"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div *ngFor="let fac of data?.facilities" class="rounded-2xl bg-[#043327] border border-amber-500/20 overflow-hidden shadow-xl group hover:border-amber-400/50 transition">
+          <div class="h-52 overflow-hidden relative">
+            <img [src]="fac.image_url" [alt]="fac.title" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#043327] via-transparent to-transparent"></div>
+            <span class="absolute top-4 left-4 w-10 h-10 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center text-lg shadow-md">{{ fac.icon }}</span>
+          </div>
+          <div class="p-6 space-y-2">
+            <h3 class="font-serif font-bold text-base text-amber-200">{{ fac.title }}</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">{{ fac.description }}</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- TESTIMONIALS (Quotes from Parents & Alumni)                               -->
+  <!-- ========================================================================= -->
+  <section class="py-20 max-w-6xl mx-auto px-4 sm:px-8 space-y-12">
+    <div class="text-center space-y-2">
+      <span class="text-xs font-serif font-bold uppercase tracking-widest text-amber-700">Testimonials of Trust</span>
+      <h2 class="text-3xl font-serif font-bold text-[#064e3b]">Voices of Our Global Family</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div *ngFor="let test of data?.testimonials" class="bg-white rounded-2xl p-8 border border-amber-900/10 shadow-lg flex flex-col justify-between space-y-6">
+        <div class="space-y-3">
+          <div class="text-amber-500 text-sm">★★★★★</div>
+          <p class="text-xs sm:text-sm text-slate-700 font-serif italic leading-relaxed">
+            "{{ test.content }}"
+          </p>
+        </div>
+        <div class="flex items-center space-x-3 pt-4 border-t border-slate-100">
+          <img [src]="test.author_avatar" [alt]="test.author_name" class="w-11 h-11 rounded-full object-cover border border-amber-400" />
+          <div>
+            <div class="font-serif font-bold text-xs text-[#064e3b]">{{ test.author_name }}</div>
+            <div class="text-[10px] text-slate-500 font-medium">{{ test.author_role }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- OPULENT FOOTER                                                            -->
+  <!-- ========================================================================= -->
+  <footer class="bg-[#03231a] text-amber-100/80 text-xs pt-16 pb-12 border-t border-amber-600/30 font-serif">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+      
+      <div class="space-y-4">
+        <div class="flex items-center space-x-3">
+          <img [src]="data?.settings?.school_logo || '/logo.png'" alt="Logo" class="h-10 w-auto object-contain" />
+          <span class="font-serif font-bold text-amber-200 text-sm uppercase">{{ data?.settings?.school_name }}</span>
+        </div>
+        <p class="text-xs text-amber-200/60 leading-relaxed italic">
+          {{ data?.settings?.footer_text }}
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        <h4 class="font-bold text-amber-300 uppercase text-xs tracking-widest">Heritage & Governance</h4>
+        <ul class="space-y-2 text-amber-100/70">
+          <li><a routerLink="/site/p/about-us" class="hover:text-amber-300 transition">About Our School</a></li>
+          <li><a routerLink="/site/p/principal-message" class="hover:text-amber-300 transition">Principal's Address</a></li>
+          <li><a routerLink="/site/p/vision-mission" class="hover:text-amber-300 transition">Vision & Mission</a></li>
+          <li><a routerLink="/site/p/facilities" class="hover:text-amber-300 transition">Campus Architecture</a></li>
+        </ul>
+      </div>
+
+      <div class="space-y-3">
+        <h4 class="font-bold text-amber-300 uppercase text-xs tracking-widest">Admissions & Academics</h4>
+        <ul class="space-y-2 text-amber-100/70">
+          <li><a routerLink="/site/p/academics" class="hover:text-amber-300 transition">Academic Continuum</a></li>
+          <li><a routerLink="/site/p/admissions" class="hover:text-amber-300 transition">Admission Criteria</a></li>
+          <li><a routerLink="/site/news" class="hover:text-amber-300 transition">News & Bulletins</a></li>
+          <li><a routerLink="/site/events" class="hover:text-amber-300 transition">Upcoming Conclaves</a></li>
+        </ul>
+      </div>
+
+      <div class="space-y-3">
+        <h4 class="font-bold text-amber-300 uppercase text-xs tracking-widest">Admissions Office</h4>
+        <p class="text-xs text-amber-100/70 leading-relaxed">{{ data?.settings?.address }}</p>
+        <p><strong>Tel:</strong> {{ data?.settings?.phone }}</p>
+        <p><strong>Email:</strong> {{ data?.settings?.email }}</p>
+      </div>
+
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 mt-12 pt-6 border-t border-amber-900/40 text-center text-amber-300/40 text-[11px]">
+      {{ data?.settings?.copyright_text }}
+    </div>
+  </footer>
+
+</div>

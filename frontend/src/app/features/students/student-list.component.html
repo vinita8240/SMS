@@ -1,0 +1,942 @@
+<div class="space-y-5 animate-fade-in font-sans p-2 sm:p-4 max-w-7xl mx-auto">
+
+    <!-- Top Header Navigation & Active View Summary Banner -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800">
+        <div>
+            <div class="flex items-center space-x-2 text-xs font-semibold text-[#705ec8] dark:text-purple-400 uppercase tracking-wider mb-1">
+                <span>Student Information ERP</span>
+                <span>•</span>
+                <span class="capitalize">{{ currentFilterMode.replace('_', ' ') }}</span>
+            </div>
+            <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                <ng-container [ngSwitch]="currentFilterMode">
+                    <span *ngSwitchCase="'all'">Student Directory & Records</span>
+                    <span *ngSwitchCase="'disabled'">Disabled & Suspended Students</span>
+                    <!-- <span *ngSwitchCase="'multiclass'">Multi Class Enrolled Students</span> -->
+                    <span *ngSwitchCase="'bulk_delete'">Bulk Delete & Batch Management</span>
+                    <span *ngSwitchCase="'categories'">Student Categories Master</span>
+                    <span *ngSwitchCase="'house'">Student House Master</span>
+                    <span *ngSwitchCase="'disable_reason'">Disable Reason Master</span>
+                    <span *ngSwitchCase="'online'">Online Admission Applications</span>
+                    <span *ngSwitchCase="'import'">Import Students via CSV / Excel</span>
+                </ng-container>
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                Manage students, admissions, status changes, houses, categories, online applicants & batch workflows.
+            </p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="flex items-center space-x-2.5">
+            <a routerLink="/students/admission" class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#705ec8] to-[#5a48b5] text-white font-semibold text-xs sm:text-sm shadow-md hover:shadow-lg hover:opacity-95 transition-all no-underline">
+                <span>+ Student Admission</span>
+            </a>
+
+            <button *ngIf="currentFilterMode === 'categories'" (click)="openAddCategory()" class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-emerald-600 text-white font-semibold text-xs sm:text-sm shadow-md hover:opacity-95 transition-all">
+        <span>+ Add Category</span>
+      </button>
+
+            <button *ngIf="currentFilterMode === 'house'" (click)="openAddHouse()" class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs sm:text-sm shadow-md hover:opacity-95 transition-all">
+        <span>+ Add House</span>
+      </button>
+
+            <button *ngIf="currentFilterMode === 'disable_reason'" (click)="openAddDisableReason()" class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-rose-600 text-white font-semibold text-xs sm:text-sm shadow-md hover:opacity-95 transition-all">
+        <span>+ Add Reason</span>
+      </button>
+        </div>
+    </div>
+
+    <!-- Quick Sub-Menu Switcher Tabs -->
+    <div class="flex items-center space-x-1.5 overflow-x-auto pb-1 border-b border-slate-200 dark:border-slate-800 scrollbar-none text-xs">
+        <button (click)="setFilterMode('all')" [ngClass]="currentFilterMode === 'all' ? 'bg-[#705ec8] text-white font-bold shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 border border-slate-200/80 dark:border-slate-800'"
+            class="px-3.5 py-2 rounded-xl whitespace-nowrap transition-all flex items-center space-x-1.5">
+      <span>👤 Student Details</span>
+    </button>
+
+        <a routerLink="/students/admission" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 border border-slate-200/80 dark:border-slate-800 whitespace-nowrap transition-all flex items-center space-x-1.5 no-underline">
+            <span>📝 Student Admission</span>
+        </a>
+
+        <button (click)="setFilterMode('online')" [ngClass]="currentFilterMode === 'online' ? 'bg-[#705ec8] text-white font-bold shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 border border-slate-200/80 dark:border-slate-800'"
+            class="px-3.5 py-2 rounded-xl whitespace-nowrap transition-all flex items-center space-x-1.5">
+      <span>🌐 Online Admission</span>
+    </button>
+
+        <button (click)="setFilterMode('disabled')" [ngClass]="currentFilterMode === 'disabled' ? 'bg-[#705ec8] text-white font-bold shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 border border-slate-200/80 dark:border-slate-800'"
+            class="px-3.5 py-2 rounded-xl whitespace-nowrap transition-all flex items-center space-x-1.5">
+      <span>🚫 Disabled Students</span>
+    </button>
+
+        <!-- <button (click)="setFilterMode('multiclass')"
+      [ngClass]="currentFilterMode === 'multiclass' ? 'bg-[#705ec8] text-white font-bold shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 border border-slate-200/80 dark:border-slate-800'"
+      class="px-3.5 py-2 rounded-xl whitespace-nowrap transition-all flex items-center space-x-1.5">
+      <span>📚 Multi Class Student</span>
+    </button> -->
+
+        <button (click)="setFilterMode('bulk_delete')" [ngClass]="currentFilterMode === 'bulk_delete' ? 'bg-rose-600 text-white font-bold shadow-sm' : 'bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 hover:bg-rose-50 border border-slate-200/80 dark:border-slate-800'"
+            class="px-3.5 py-2 rounded-xl whitespace-nowrap transition-all flex items-center space-x-1.5">
+      <span>🗑️ Bulk Delete</span>
+    </button>
+
+        <button (click)="setFilterMode('categories')" [ngClass]="currentFilterMode === 'categories' ? 'bg-[#705ec8] text-white font-bold shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 border border-slate-200/80 dark:border-slate-800'"
+            class="px-3.5 py-2 rounded-xl whitespace-nowrap transition-all flex items-center space-x-1.5">
+      <span>🏷️ Student Categories</span>
+    </button>
+
+        <button (click)="setFilterMode('house')" [ngClass]="currentFilterMode === 'house' ? 'bg-[#705ec8] text-white font-bold shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 border border-slate-200/80 dark:border-slate-800'"
+            class="px-3.5 py-2 rounded-xl whitespace-nowrap transition-all flex items-center space-x-1.5">
+      <span>🏰 Student House</span>
+    </button>
+
+        <button (click)="setFilterMode('disable_reason')" [ngClass]="currentFilterMode === 'disable_reason' ? 'bg-[#705ec8] text-white font-bold shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 border border-slate-200/80 dark:border-slate-800'"
+            class="px-3.5 py-2 rounded-xl whitespace-nowrap transition-all flex items-center space-x-1.5">
+      <span>⚠️ Disable Reason</span>
+    </button>
+
+        <button (click)="setFilterMode('import')" [ngClass]="currentFilterMode === 'import' ? 'bg-emerald-600 text-white font-bold shadow-sm' : 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 border border-slate-200/80 dark:border-slate-800'"
+            class="px-3.5 py-2 rounded-xl whitespace-nowrap transition-all flex items-center space-x-1.5">
+      <span>📥 Import Students</span>
+    </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading()" class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800">
+        <app-skeleton-loader></app-skeleton-loader>
+    </div>
+
+    <!-- ======================== VIEW 1: STUDENT DETAILS & LIST ======================== -->
+    <div *ngIf="!isLoading() && (currentFilterMode === 'all' || currentFilterMode === 'disabled' || currentFilterMode === 'multiclass' || currentFilterMode === 'bulk_delete')" class="space-y-4">
+
+        <!-- Top Search & Criteria Selection Card -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-[#e9edf4] dark:border-slate-800 shadow-xs p-4 sm:p-5">
+            <div class="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider mb-3">
+                Filter Criteria
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- Left: Class & Section Search -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 items-end">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Class</label>
+                        <select [(ngModel)]="selectedClass" (change)="onClassChange()" class="w-full px-3 py-1.5 rounded-lg text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+              <option value="">All Classes</option>
+              <option *ngFor="let c of classes()" [value]="c.class_id">{{ c.name }}</option>
+            </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Section</label>
+                        <select [(ngModel)]="selectedSection" class="w-full px-3 py-1.5 rounded-lg text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+              <option value="">All Sections</option>
+              <option *ngFor="let s of sections()" [value]="s.section_id">{{ s.name }}</option>
+            </select>
+                    </div>
+
+                    <div>
+                        <button (click)="onSearchCriteria()" class="w-full py-1.5 rounded-lg bg-[#705ec8] hover:bg-[#5d4cb0] text-white text-xs font-bold transition-colors flex items-center justify-center space-x-1 shadow-sm">
+              <span>🔍</span>
+              <span>Search</span>
+            </button>
+                    </div>
+                </div>
+
+                <!-- Right: Keyword Search -->
+                <div class="flex items-end space-x-2">
+                    <div class="flex-1">
+                        <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Search By
+              Keyword</label>
+                        <input type="text" [(ngModel)]="keywordSearch" (keyup.enter)="onSearchKeyword()" placeholder="Search by Student Name, Roll No, Admission No, Phone..." class="w-full px-3 py-1.5 rounded-lg text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+                    <button (click)="onSearchKeyword()" class="px-4 py-1.5 rounded-lg bg-[#705ec8] hover:bg-[#5d4cb0] text-white text-xs font-bold transition-colors flex items-center space-x-1 shadow-sm">
+            <span>🔍 Search</span>
+          </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bulk Action Floating Alert Banner (When Bulk Delete Mode is Active) -->
+        <div *ngIf="currentFilterMode === 'bulk_delete'" class="bg-rose-50 dark:bg-rose-950/40 p-4 rounded-xl border border-rose-200 dark:border-rose-800/60 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="text-xl">⚠️</span>
+                <div>
+                    <div class="font-bold text-xs text-rose-900 dark:text-rose-200">Bulk Delete & Batch Disable Active</div>
+                    <div class="text-[11px] text-rose-700 dark:text-rose-300">
+                        Selected: <span class="font-black">{{ selectedStudentIds.size }}</span> of {{ filteredStudents().length }} students
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <button (click)="bulkDisableSelected()" [disabled]="selectedStudentIds.size === 0" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition-colors disabled:opacity-50">
+          Bulk Disable
+        </button>
+                <button (click)="bulkDeleteSelected()" [disabled]="selectedStudentIds.size === 0" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-colors disabled:opacity-50">
+          Delete Selected ({{ selectedStudentIds.size }})
+        </button>
+            </div>
+        </div>
+
+        <!-- Toolbar: Export Actions & View Switcher -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs">
+            <!-- Left: Export buttons -->
+            <div class="flex items-center space-x-2">
+                <button (click)="copyTableData()" class="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-200">Copy</button>
+                <button (click)="exportCSV()" class="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-200">CSV
+          / Excel</button>
+                <button (click)="printTable()" class="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-200">Print</button>
+            </div>
+
+            <!-- Right: View Toggle (List View vs Cards View) -->
+            <div class="flex items-center space-x-2">
+                <div class="text-xs text-slate-500 mr-2">Showing {{ filteredStudents().length }} students</div>
+                <button (click)="activeView = 'list'" [ngClass]="activeView === 'list' ? 'bg-[#705ec8] text-white font-bold' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'" class="px-3 py-1 rounded text-xs transition-colors">
+          📑 Table View
+        </button>
+                <button (click)="activeView = 'cards'" [ngClass]="activeView === 'cards' ? 'bg-[#705ec8] text-white font-bold' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'" class="px-3 py-1 rounded text-xs transition-colors">
+          📇 Cards View
+        </button>
+            </div>
+        </div>
+
+        <!-- Main Table View -->
+        <div *ngIf="activeView === 'list'" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-50/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-200 dark:border-slate-800">
+                            <th *ngIf="currentFilterMode === 'bulk_delete'" class="p-3.5 w-10 text-center">
+                                <input type="checkbox" [checked]="selectAllChecked" (change)="toggleSelectAll()" class="rounded text-[#705ec8]" />
+                            </th>
+                            <th class="p-3.5 cursor-pointer" (click)="sort('admission_no')">Admission No ⇅</th>
+                            <th class="p-3.5 cursor-pointer" (click)="sort('name')">Student Name ⇅</th>
+                            <th class="p-3.5 cursor-pointer" (click)="sort('class_name')">Class & Section ⇅</th>
+                            <th class="p-3.5">Father / Guardian</th>
+                            <th class="p-3.5">Gender & DOB</th>
+                            <th class="p-3.5">Mobile</th>
+                            <th class="p-3.5">Status</th>
+                            <th class="p-3.5 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300 font-medium">
+                        <tr *ngFor="let s of paginatedStudents()" class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                            <td *ngIf="currentFilterMode === 'bulk_delete'" class="p-3.5 text-center">
+                                <input type="checkbox" [checked]="isStudentSelected(s.student_id)" (change)="toggleStudentSelection(s.student_id)" class="rounded text-[#705ec8]" />
+                            </td>
+                            <td class="p-3.5 font-mono text-[#705ec8] dark:text-purple-400 font-bold whitespace-nowrap">
+                                {{ s.admission_no }}
+                            </td>
+                            <td class="p-3.5">
+                                <div class="font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                                    <span>{{ s.name }}</span>
+                                </div>
+                                <div *ngIf="s.roll_no" class="text-[11px] text-slate-400">Roll: {{ s.roll_no }}</div>
+                            </td>
+                            <td class="p-3.5 whitespace-nowrap">
+                                <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-purple-50 text-[#705ec8] dark:bg-purple-950 dark:text-purple-300">
+                  {{ s.class_name || ('Class ' + s.class_id) }} {{ s.section_name ? ('(' + s.section_name + ')') : '' }}
+                </span>
+                                <div *ngIf="currentFilterMode === 'multiclass'" class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mt-0.5">
+                                    + Evening Coaching Batch
+                                </div>
+                            </td>
+                            <td class="p-3.5">
+                                <div class="text-slate-800 dark:text-slate-200">{{ s.father_name || s.parent_name || '-' }}</div>
+                            </td>
+                            <td class="p-3.5 whitespace-nowrap">
+                                <div>{{ s.gender }}</div>
+                                <div class="text-[10px] text-slate-400">{{ s.birthday ? (s.birthday | date:'mediumDate') : '-' }}</div>
+                            </td>
+                            <td class="p-3.5 font-medium whitespace-nowrap">{{ s.phone || '-' }}</td>
+                            <td class="p-3.5 whitespace-nowrap">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold" [ngClass]="s.status === 'active' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'">
+                  {{ s.status }}
+                </span>
+                            </td>
+                            <td class="p-3.5 text-right whitespace-nowrap">
+                                <div class="flex items-center justify-end space-x-1.5">
+                                    <!-- If disabled, show reactivate button -->
+                                    <button *ngIf="s.status !== 'active'" (click)="reactivateStudent(s)" title="Reactivate Student" class="px-2 py-1 rounded bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[11px] font-bold">
+                    Reactivate
+                  </button>
+
+                                    <button (click)="viewStudentProfile(s)" title="View Profile" class="p-1.5 rounded-lg bg-purple-50 text-[#705ec8] hover:bg-purple-100 dark:bg-purple-950 dark:text-purple-300 text-xs">
+                    👁️
+                  </button>
+                                    <button (click)="openFeeModal(s)" title="Collect Fees" class="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 text-xs">
+                    💰
+                  </button>
+                                    <button (click)="openEditModal(s)" title="Edit Student" class="p-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-300 text-xs">
+                    ✏️
+                  </button>
+                                    <button (click)="confirmDelete(s)" title="Delete Student" class="p-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950 dark:text-rose-300 text-xs">
+                    🗑️
+                  </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr *ngIf="filteredStudents().length === 0">
+                            <td colspan="9" class="p-8 text-center text-slate-400">
+                                No student records found matching the criteria.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Cards View -->
+        <div *ngIf="activeView === 'cards'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div *ngFor="let s of paginatedStudents()" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-xs hover:shadow-md transition-shadow">
+                <div class="flex items-start justify-between">
+                    <div class="w-11 h-11 rounded-full bg-[#705ec8] text-white flex items-center justify-center font-bold text-sm">
+                        {{ s.name.charAt(0) }}
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold" [ngClass]="s.status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'">
+            {{ s.status }}
+          </span>
+                </div>
+
+                <div class="mt-3">
+                    <div class="font-bold text-slate-900 dark:text-white text-sm truncate">{{ s.name }}</div>
+                    <div class="text-[11px] font-mono text-[#705ec8]">{{ s.admission_no }}</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        {{ s.class_name || ('Class ' + s.class_id) }} • Roll: {{ s.roll_no || '-' }}
+                    </div>
+                </div>
+
+                <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 space-y-1">
+                    <div><span class="text-slate-400">Father:</span> {{ s.father_name || '-' }}</div>
+                    <div><span class="text-slate-400">Phone:</span> {{ s.phone || '-' }}</div>
+                </div>
+
+                <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                    <button (click)="viewStudentProfile(s)" class="text-xs text-[#705ec8] font-bold hover:underline">View
+            Profile</button>
+                    <div class="flex space-x-1">
+                        <button (click)="openEditModal(s)" class="p-1 rounded text-blue-600 hover:bg-blue-50">✏️</button>
+                        <button (click)="confirmDelete(s)" class="p-1 rounded text-rose-600 hover:bg-rose-50">🗑️</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================== VIEW 2: STUDENT CATEGORIES ======================== -->
+    <div *ngIf="!isLoading() && currentFilterMode === 'categories'" class="space-y-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white">Student Categories List</h3>
+                <button (click)="openAddCategory()" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs">+
+          Add Category</button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-800 text-slate-500 uppercase font-semibold border-b border-slate-200 dark:border-slate-800">
+                            <th class="p-3.5">Category ID</th>
+                            <th class="p-3.5">Category Name</th>
+                            <th class="p-3.5">Description</th>
+                            <th class="p-3.5">Enrolled Students</th>
+                            <th class="p-3.5 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                        <tr *ngFor="let cat of categories()" class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                            <td class="p-3.5 font-mono text-purple-700">CAT-00{{ cat.student_category_id }}</td>
+                            <td class="p-3.5 font-bold text-slate-900 dark:text-white">{{ cat.name }}</td>
+                            <td class="p-3.5 text-slate-500">{{ cat.description || '-' }}</td>
+                            <td class="p-3.5">
+                                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-purple-50 text-purple-700">{{
+                  cat.student_count || 0 }} Students</span>
+                            </td>
+                            <td class="p-3.5 text-right space-x-1.5">
+                                <button (click)="openEditCategory(cat)" class="p-1.5 rounded bg-blue-50 text-blue-700 text-xs">✏️</button>
+                                <button (click)="confirmDeleteMaster('categories', cat.student_category_id!, cat.name)" class="p-1.5 rounded bg-rose-50 text-rose-700 text-xs">🗑️</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================== VIEW 3: STUDENT HOUSES ======================== -->
+    <div *ngIf="!isLoading() && currentFilterMode === 'house'" class="space-y-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white">Student Houses List</h3>
+                <button (click)="openAddHouse()" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold text-xs">+ Add
+          House</button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-800 text-slate-500 uppercase font-semibold border-b border-slate-200 dark:border-slate-800">
+                            <th class="p-3.5">House Name</th>
+                            <th class="p-3.5">Color Badge</th>
+                            <th class="p-3.5">House Master / In-Charge</th>
+                            <th class="p-3.5">Description</th>
+                            <th class="p-3.5">Members Count</th>
+                            <th class="p-3.5 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                        <tr *ngFor="let h of houses()" class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                            <td class="p-3.5 font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                                <span class="w-3.5 h-3.5 rounded-full inline-block" [style.backgroundColor]="h.color_code || '#705ec8'"></span>
+                                <span>{{ h.name }}</span>
+                            </td>
+                            <td class="p-3.5 font-mono text-xs">{{ h.color_code }}</td>
+                            <td class="p-3.5 font-semibold text-slate-700 dark:text-slate-300">{{ h.house_master || 'Unassigned' }}
+                            </td>
+                            <td class="p-3.5 text-slate-500">{{ h.description || '-' }}</td>
+                            <td class="p-3.5">
+                                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-50 text-blue-700">{{ h.student_count || 0
+                  }} Students</span>
+                            </td>
+                            <td class="p-3.5 text-right space-x-1.5">
+                                <button (click)="openEditHouse(h)" class="p-1.5 rounded bg-blue-50 text-blue-700 text-xs">✏️</button>
+                                <button (click)="confirmDeleteMaster('house', h.house_id!, h.name)" class="p-1.5 rounded bg-rose-50 text-rose-700 text-xs">🗑️</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================== VIEW 4: DISABLE REASONS ======================== -->
+    <div *ngIf="!isLoading() && currentFilterMode === 'disable_reason'" class="space-y-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white">Disable Reasons List</h3>
+                <button (click)="openAddDisableReason()" class="px-3 py-1.5 rounded-lg bg-rose-600 text-white font-bold text-xs">+ Add Reason</button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-800 text-slate-500 uppercase font-semibold border-b border-slate-200 dark:border-slate-800">
+                            <th class="p-3.5">Reason ID</th>
+                            <th class="p-3.5">Reason Name</th>
+                            <th class="p-3.5">Description</th>
+                            <th class="p-3.5 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                        <tr *ngFor="let dr of disableReasons()" class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                            <td class="p-3.5 font-mono text-rose-700">DSR-00{{ dr.disable_reason_id }}</td>
+                            <td class="p-3.5 font-bold text-slate-900 dark:text-white">{{ dr.name }}</td>
+                            <td class="p-3.5 text-slate-500">{{ dr.description || '-' }}</td>
+                            <td class="p-3.5 text-right space-x-1.5">
+                                <button (click)="openEditDisableReason(dr)" class="p-1.5 rounded bg-blue-50 text-blue-700 text-xs">✏️</button>
+                                <button (click)="confirmDeleteMaster('disable_reason', dr.disable_reason_id!, dr.name)" class="p-1.5 rounded bg-rose-50 text-rose-700 text-xs">🗑️</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================== VIEW 5: ONLINE ADMISSIONS ======================== -->
+    <div *ngIf="!isLoading() && currentFilterMode === 'online'" class="space-y-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-sm text-slate-900 dark:text-white">Online Student Admission Applications</h3>
+                    <p class="text-[11px] text-slate-500">Applications received through website online registration portal.</p>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-800 text-slate-500 uppercase font-semibold border-b border-slate-200 dark:border-slate-800">
+                            <th class="p-3.5">Ref No</th>
+                            <th class="p-3.5">Student Name</th>
+                            <th class="p-3.5">Class</th>
+                            <th class="p-3.5">Father / Guardian</th>
+                            <th class="p-3.5">Mobile & Email</th>
+                            <th class="p-3.5">Submission Date</th>
+                            <th class="p-3.5">Status</th>
+                            <th class="p-3.5 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                        <tr *ngFor="let app of onlineAdmissions()" class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                            <td class="p-3.5 font-mono text-purple-700 font-bold">{{ app.reference_no }}</td>
+                            <td class="p-3.5 font-bold text-slate-900 dark:text-white">{{ app.student_name }}</td>
+                            <td class="p-3.5 font-semibold text-slate-700 dark:text-slate-300">{{ app.class_name || 'Class 1' }}</td>
+                            <td class="p-3.5">{{ app.father_name || '-' }}</td>
+                            <td class="p-3.5">
+                                <div>{{ app.phone }}</div>
+                                <div class="text-[10px] text-slate-400">{{ app.email || '-' }}</div>
+                            </td>
+                            <td class="p-3.5 whitespace-nowrap">{{ app.submission_date ? (app.submission_date | date:'mediumDate') : '-' }}</td>
+                            <td class="p-3.5 whitespace-nowrap">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold" [ngClass]="{
+                    'bg-emerald-100 text-emerald-800': app.status === 'Enrolled' || app.status === 'Approved',
+                    'bg-blue-100 text-blue-800': app.status === 'Under Review',
+                    'bg-amber-100 text-amber-800': app.status === 'Submitted',
+                    'bg-rose-100 text-rose-800': app.status === 'Rejected'
+                  }">
+                  {{ app.status }}
+                </span>
+                            </td>
+                            <td class="p-3.5 text-right whitespace-nowrap space-x-1.5">
+                                <button *ngIf="app.status !== 'Enrolled'" (click)="openEnrollOnlineModal(app)" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px]">
+                  🎓 Enroll Student
+                </button>
+                                <button (click)="updateOnlineStatus(app, 'Approved')" *ngIf="app.status === 'Submitted' || app.status === 'Under Review'" class="px-2 py-1 rounded bg-blue-100 text-blue-700 text-[11px] font-bold">
+                  Approve
+                </button>
+                                <button (click)="updateOnlineStatus(app, 'Rejected')" *ngIf="app.status !== 'Rejected' && app.status !== 'Enrolled'" class="px-2 py-1 rounded bg-rose-100 text-rose-700 text-[11px] font-bold">
+                  Reject
+                </button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="onlineAdmissions().length === 0">
+                            <td colspan="8" class="p-8 text-center text-slate-400">
+                                No online admission applications submitted yet.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================== EXTENDED MODALS ======================== -->
+
+    <!-- Online Admission Enroll Modal -->
+    <app-modal [isOpen]="isOnlineEnrollModalOpen()" [title]="'Enroll Applicant: ' + (selectedOnlineApp()?.student_name || '')" (closeModal)="isOnlineEnrollModalOpen.set(false)">
+        <form [formGroup]="onlineEnrollForm" (ngSubmit)="enrollOnlineStudent()" class="space-y-4 text-xs">
+            <div class="p-3 bg-purple-50 dark:bg-purple-950/40 rounded-xl text-purple-900 dark:text-purple-200">
+                Assign class and section to automatically create student account, roll number and enroll into active session roster.
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-semibold mb-1">Class *</label>
+                    <select formControlName="class_id" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700">
+            <option *ngFor="let c of classes()" [value]="c.class_id">{{ c.name }}</option>
+          </select>
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Section</label>
+                    <select formControlName="section_id" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700">
+            <option *ngFor="let s of sections()" [value]="s.section_id">{{ s.name }}</option>
+          </select>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <button type="button" (click)="isOnlineEnrollModalOpen.set(false)" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-semibold">Cancel</button>
+                <button type="submit" class="px-4 py-2 rounded-xl bg-[#705ec8] text-white font-semibold">Complete
+          Enrollment</button>
+            </div>
+        </form>
+    </app-modal>
+
+    <!-- Category Master Modal -->
+    <app-modal [isOpen]="isMasterModalOpen() && currentFilterMode === 'categories'" [title]="editingMasterId ? 'Edit Student Category' : 'Add Student Category'" (closeModal)="isMasterModalOpen.set(false)">
+        <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()" class="space-y-4 text-xs">
+            <div>
+                <label class="block font-semibold mb-1">Category Name *</label>
+                <input type="text" formControlName="name" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" placeholder="e.g. OBC, Special Quota" />
+            </div>
+            <div>
+                <label class="block font-semibold mb-1">Description</label>
+                <textarea formControlName="description" rows="3" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" placeholder="Description..."></textarea>
+            </div>
+            <div class="flex justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <button type="button" (click)="isMasterModalOpen.set(false)" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-semibold">Cancel</button>
+                <button type="submit" [disabled]="categoryForm.invalid" class="px-4 py-2 rounded-xl bg-emerald-600 text-white font-semibold">Save Category</button>
+            </div>
+        </form>
+    </app-modal>
+
+    <!-- House Master Modal -->
+    <app-modal [isOpen]="isMasterModalOpen() && currentFilterMode === 'house'" [title]="editingMasterId ? 'Edit Student House' : 'Add Student House'" (closeModal)="isMasterModalOpen.set(false)">
+        <form [formGroup]="houseForm" (ngSubmit)="saveHouse()" class="space-y-4 text-xs">
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-semibold mb-1">House Name *</label>
+                    <input type="text" formControlName="name" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" placeholder="e.g. Blue Phoenix" />
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Color Code *</label>
+                    <div class="flex items-center space-x-2">
+                        <input type="color" formControlName="color_code" class="h-9 w-12 rounded cursor-pointer border-0" />
+                        <input type="text" formControlName="color_code" class="flex-1 px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono" />
+                    </div>
+                </div>
+            </div>
+            <div>
+                <label class="block font-semibold mb-1">House Master / Teacher In-Charge</label>
+                <input type="text" formControlName="house_master" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" placeholder="Teacher Name" />
+            </div>
+            <div>
+                <label class="block font-semibold mb-1">Description</label>
+                <textarea formControlName="description" rows="2" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" placeholder="Description..."></textarea>
+            </div>
+            <div class="flex justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <button type="button" (click)="isMasterModalOpen.set(false)" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-semibold">Cancel</button>
+                <button type="submit" [disabled]="houseForm.invalid" class="px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold">Save House</button>
+            </div>
+        </form>
+    </app-modal>
+
+    <!-- Disable Reason Master Modal -->
+    <app-modal [isOpen]="isMasterModalOpen() && currentFilterMode === 'disable_reason'" [title]="editingMasterId ? 'Edit Disable Reason' : 'Add Disable Reason'" (closeModal)="isMasterModalOpen.set(false)">
+        <form [formGroup]="disableReasonForm" (ngSubmit)="saveDisableReason()" class="space-y-4 text-xs">
+            <div>
+                <label class="block font-semibold mb-1">Reason Name *</label>
+                <input type="text" formControlName="name" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" placeholder="e.g. Transferred to other city" />
+            </div>
+            <div>
+                <label class="block font-semibold mb-1">Description</label>
+                <textarea formControlName="description" rows="3" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" placeholder="Description..."></textarea>
+            </div>
+            <div class="flex justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <button type="button" (click)="isMasterModalOpen.set(false)" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-semibold">Cancel</button>
+                <button type="submit" [disabled]="disableReasonForm.invalid" class="px-4 py-2 rounded-xl bg-rose-600 text-white font-semibold">Save Reason</button>
+            </div>
+        </form>
+    </app-modal>
+
+    <!-- Student Add / Edit Modal -->
+    <app-modal [isOpen]="isFormModalOpen()" [title]="editingStudentId ? 'Edit Student Details' : 'Student Quick Enrollment'" (closeModal)="isFormModalOpen.set(false)">
+        <form [formGroup]="studentForm" (ngSubmit)="saveStudent()" class="space-y-4 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-semibold mb-1">Student Full Name *</label>
+                    <input type="text" formControlName="name" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" />
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Admission No *</label>
+                    <input type="text" formControlName="admission_no" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono" />
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Class *</label>
+                    <select formControlName="class_id" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700">
+            <option *ngFor="let c of classes()" [value]="c.class_id">{{ c.name }}</option>
+          </select>
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Section</label>
+                    <select formControlName="section_id" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700">
+            <option *ngFor="let s of sections()" [value]="s.section_id">{{ s.name }}</option>
+          </select>
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Father Name</label>
+                    <input type="text" formControlName="father_name" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" />
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Phone Number *</label>
+                    <input type="text" formControlName="phone" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" />
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Gender *</label>
+                    <select formControlName="gender" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Status</label>
+                    <select formControlName="status" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700">
+            <option value="active">Active</option>
+            <option value="disabled">Disabled / Suspended</option>
+            <option value="inactive">Inactive</option>
+          </select>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <button type="button" (click)="isFormModalOpen.set(false)" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-semibold">Cancel</button>
+                <button type="submit" [disabled]="studentForm.invalid" class="px-4 py-2 rounded-xl bg-[#705ec8] text-white font-semibold">Save Student</button>
+            </div>
+        </form>
+    </app-modal>
+
+    <!-- Student Profile Quick View Modal -->
+    <app-modal [isOpen]="isProfileModalOpen()" [title]="'Student Profile: ' + (selectedStudent()?.name || '')" (closeModal)="isProfileModalOpen.set(false)">
+        <div *ngIf="selectedStudent()" class="space-y-4 text-xs select-none">
+            <div class="flex items-center space-x-4 p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
+                <div class="w-14 h-14 rounded-2xl bg-[#705ec8] text-white font-black text-xl flex items-center justify-center shadow-md">
+                    {{ selectedStudent()?.name?.charAt(0) }}
+                </div>
+                <div>
+                    <div class="text-base font-extrabold text-slate-900 dark:text-white">{{ selectedStudent()?.name }}</div>
+                    <div class="text-xs font-mono text-[#705ec8]">Admission No: {{ selectedStudent()?.admission_no }}</div>
+                    <div class="text-xs text-slate-500">{{ selectedStudent()?.class_name || ('Class ' + selectedStudent()?.class_id) }} • Session {{ selectedStudent()?.session || '2026-27' }}</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-xs">
+                <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                    <span class="text-slate-400 block mb-0.5">Father Name</span>
+                    <span class="font-bold text-slate-800 dark:text-white">{{ selectedStudent()?.father_name || '-' }}</span>
+                </div>
+                <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                    <span class="text-slate-400 block mb-0.5">Contact Phone</span>
+                    <span class="font-bold text-slate-800 dark:text-white">{{ selectedStudent()?.phone || '-' }}</span>
+                </div>
+                <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                    <span class="text-slate-400 block mb-0.5">Gender & Blood Group</span>
+                    <span class="font-bold text-slate-800 dark:text-white">{{ selectedStudent()?.gender }} ({{
+            selectedStudent()?.blood_group || 'O+' }})</span>
+                </div>
+                <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                    <span class="text-slate-400 block mb-0.5">Current Status</span>
+                    <span class="font-bold capitalize text-emerald-600 dark:text-emerald-400">{{ selectedStudent()?.status
+            }}</span>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <button (click)="isProfileModalOpen.set(false)" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-semibold">Close</button>
+            </div>
+        </div>
+    </app-modal>
+
+    <!-- Delete Confirm Dialog -->
+    <app-confirm-dialog [isOpen]="isDeleteDialogOpen()" title="Confirm Deletion" [message]="'Are you sure you want to delete this record?'" (confirm)="masterItemToDelete ? executeDeleteMaster() : deleteStudent()" (cancel)="isDeleteDialogOpen.set(false)">
+    </app-confirm-dialog>
+
+    <!-- ======================== VIEW: IMPORT STUDENTS ======================== -->
+    <div *ngIf="!isLoading() && currentFilterMode === 'import'" class="space-y-5">
+
+        <!-- Step Banner -->
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-5 text-white shadow-lg">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <div class="text-xs font-bold uppercase tracking-wider opacity-80 mb-1">Bulk Import Tool</div>
+                    <h2 class="text-lg font-black mb-1">Import Students via CSV / Excel</h2>
+                    <p class="text-sm opacity-90">Upload a <strong>.csv</strong> or <strong>.xlsx</strong> file to bulk-enroll students into a selected class. Download the sample file below to see the expected format.</p>
+                </div>
+                <div class="text-5xl select-none">📥</div>
+            </div>
+        </div>
+
+        <!-- Main Import Card -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+
+            <!-- Step 1: Download Sample -->
+            <div class="p-5 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center justify-between flex-wrap gap-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 font-black text-sm flex items-center justify-center">1</div>
+                        <div>
+                            <div class="font-bold text-sm text-slate-800 dark:text-white">Download Sample File</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">Get the template with correct column headers and example data</div>
+                        </div>
+                    </div>
+                    <button (click)="downloadSampleCsv()" class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-colors">
+            <span>⬇️</span>
+            <span>Download Sample CSV</span>
+          </button>
+                </div>
+            </div>
+
+            <!-- Sample File Format Preview -->
+            <div class="px-5 py-4 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
+                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Sample File Format (Required Columns)</div>
+                <div class="overflow-x-auto">
+                    <table class="text-[10px] font-mono w-max min-w-full">
+                        <thead>
+                            <tr class="text-left">
+                                <th class="px-2 py-1 bg-emerald-600 text-white rounded-tl-lg">admission_no</th>
+                                <th class="px-2 py-1 bg-emerald-600 text-white">roll_no</th>
+                                <th class="px-2 py-1 bg-emerald-600 text-white">first_name *</th>
+                                <th class="px-2 py-1 bg-emerald-600 text-white">last_name</th>
+                                <th class="px-2 py-1 bg-emerald-600 text-white">gender</th>
+                                <th class="px-2 py-1 bg-emerald-600 text-white">birthday</th>
+                                <th class="px-2 py-1 bg-emerald-600 text-white">phone</th>
+                                <th class="px-2 py-1 bg-emerald-600 text-white">email</th>
+                                <th class="px-2 py-1 bg-emerald-600 text-white">father_name</th>
+                                <th class="px-2 py-1 bg-emerald-600 text-white">mother_name</th>
+                                <th class="px-2 py-1 bg-emerald-600 text-white">address</th>
+                                <th class="px-2 py-1 bg-emerald-600 text-white">blood_group</th>
+                                <th class="px-2 py-1 bg-emerald-600 text-white rounded-tr-lg">religion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-white dark:bg-slate-900">
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-700">ADM-2026-001</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-700">101</td>
+                                <td class="px-2 py-1 font-bold text-emerald-700 dark:text-emerald-400 border-b border-slate-100 dark:border-slate-700">Alexander</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-700">Wright</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-700">Male</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-700">2015-04-12</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-700">9876543210</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-700">alex.w&#64;example.com</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-700">George Wright</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-700">Martha Wright</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-700">124 Park Avenue</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-700">O+</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-700">Christian</td>
+                            </tr>
+                            <tr class="bg-slate-50 dark:bg-slate-800/40">
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300">ADM-2026-002</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300">102</td>
+                                <td class="px-2 py-1 font-bold text-emerald-700 dark:text-emerald-400">Sophia</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300">Sharma</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300">Female</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300">2015-08-25</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300">9812345678</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300">sophia.s&#64;example.com</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300">Rajesh Sharma</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300">Sunita Sharma</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300">Flat 402, Green Valley</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300">A+</td>
+                                <td class="px-2 py-1 text-slate-600 dark:text-slate-300">Hindu</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-2">* <strong>first_name</strong> is required. <strong>admission_no</strong> is auto-generated if left blank. All other fields are optional.</p>
+            </div>
+
+            <!-- Step 2: Select Class & Section -->
+            <div class="p-5 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 font-black text-sm flex items-center justify-center">2</div>
+                    <div>
+                        <div class="font-bold text-sm text-slate-800 dark:text-white">Select Target Class & Section</div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400">All imported students will be enrolled into the selected class and section</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Class <span class="text-rose-500">*</span></label>
+                        <select [ngModel]="importClassId()" (ngModelChange)="importClassId.set($event); onImportClassChange()" id="importClassSelect" class="w-full px-3 py-2 rounded-xl text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20">
+              <option value="">-- Select Class --</option>
+              <option *ngFor="let c of classes()" [value]="c.class_id">{{ c.name }}</option>
+            </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Section <span class="text-slate-400">(optional)</span></label>
+                        <select [ngModel]="importSectionId()" (ngModelChange)="importSectionId.set($event)" id="importSectionSelect" class="w-full px-3 py-2 rounded-xl text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20">
+              <option value="">-- Select Section --</option>
+              <option *ngFor="let s of importSections()" [value]="s.section_id">{{ s.name }}</option>
+            </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Upload File -->
+            <div class="p-5 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400 font-black text-sm flex items-center justify-center">3</div>
+                    <div>
+                        <div class="font-bold text-sm text-slate-800 dark:text-white">Upload Your File</div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400">Supports CSV (.csv) and Excel (.xlsx / .xls) — Max 10 MB</div>
+                    </div>
+                </div>
+
+                <!-- Drag-drop style upload area -->
+                <label for="importFileInput" class="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-2xl cursor-pointer transition-all" [ngClass]="importFile
+            ? 'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/10'
+            : 'border-slate-300 dark:border-slate-600 hover:border-emerald-400 hover:bg-emerald-50/50'">
+          <div *ngIf="!importFile" class="text-center">
+            <div class="text-4xl mb-2">📂</div>
+            <div class="text-sm font-semibold text-slate-600 dark:text-slate-300">Click to choose a file</div>
+            <div class="text-xs text-slate-400">or drag and drop here</div>
+            <div class="text-[10px] text-slate-400 mt-1">.csv, .xlsx, .xls supported</div>
+          </div>
+          <div *ngIf="importFile" class="text-center">
+            <div class="text-4xl mb-2">✅</div>
+            <div class="text-sm font-bold text-emerald-700 dark:text-emerald-400">{{ importFileName() }}</div>
+            <div class="text-xs text-slate-500 mt-0.5">File selected — click to change</div>
+          </div>
+          <input id="importFileInput" type="file" accept=".csv,.xlsx,.xls" class="hidden"
+            (change)="onImportFileChange($event)" />
+        </label>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="p-5 flex items-center justify-between flex-wrap gap-3">
+                <div class="text-xs text-slate-500 dark:text-slate-400">
+                    <span *ngIf="!importClassId()" class="text-rose-500 font-semibold">⚠ Select a class first.</span>
+                    <span *ngIf="importClassId() && !importFile" class="text-amber-600 dark:text-amber-400 font-semibold">⚠ Choose a file to upload.</span>
+                    <span *ngIf="importClassId() && importFile" class="text-emerald-600 dark:text-emerald-400 font-semibold">✅ Ready to import! Click the button →</span>
+                </div>
+                <button (click)="submitImport()" [disabled]="isImporting() || !importClassId() || !importFile" id="submitImportBtn" class="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+          <span *ngIf="!isImporting()">📥 Import Students</span>
+          <span *ngIf="isImporting()" class="flex items-center space-x-2">
+            <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+            </svg>
+            <span>Importing...</span>
+          </span>
+        </button>
+            </div>
+        </div>
+
+        <!-- Import Result Panel -->
+        <div *ngIf="importResult()" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+            <!-- Summary Stats -->
+            <div class="p-5 border-b border-slate-100 dark:border-slate-800">
+                <div class="text-sm font-bold text-slate-800 dark:text-white mb-3">📊 Import Summary</div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl text-center">
+                        <div class="text-2xl font-black text-slate-800 dark:text-white">{{ importResult().totalRows }}</div>
+                        <div class="text-[10px] text-slate-500 uppercase tracking-wide mt-0.5">Total Rows</div>
+                    </div>
+                    <div class="p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl text-center">
+                        <div class="text-2xl font-black text-emerald-700 dark:text-emerald-400">{{ importResult().importedCount }}</div>
+                        <div class="text-[10px] text-emerald-600 dark:text-emerald-500 uppercase tracking-wide mt-0.5">Imported ✓</div>
+                    </div>
+                    <div class="p-3 rounded-xl text-center" [ngClass]="importResult().failedCount > 0 ? 'bg-rose-50 dark:bg-rose-900/30' : 'bg-slate-50 dark:bg-slate-800'">
+                        <div class="text-2xl font-black" [ngClass]="importResult().failedCount > 0 ? 'text-rose-600' : 'text-slate-400'">{{ importResult().failedCount }}</div>
+                        <div class="text-[10px] uppercase tracking-wide mt-0.5" [ngClass]="importResult().failedCount > 0 ? 'text-rose-500' : 'text-slate-400'">Failed / Skipped</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Imported Students List -->
+            <div *ngIf="importResult().importedStudents?.length > 0" class="p-5 border-b border-slate-100 dark:border-slate-800">
+                <div class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide mb-3">✅ Successfully Imported ({{ importResult().importedCount }})</div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead>
+                            <tr class="text-left border-b border-slate-100 dark:border-slate-800">
+                                <th class="pb-2 text-slate-500 font-semibold">#</th>
+                                <th class="pb-2 text-slate-500 font-semibold">Student Name</th>
+                                <th class="pb-2 text-slate-500 font-semibold">Admission No</th>
+                                <th class="pb-2 text-slate-500 font-semibold">Roll No</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let s of importResult().importedStudents; let i = index" class="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                                <td class="py-1.5 text-slate-400">{{ i + 1 }}</td>
+                                <td class="py-1.5 font-semibold text-slate-800 dark:text-white">{{ s.name }}</td>
+                                <td class="py-1.5 font-mono text-[#705ec8]">{{ s.admission_no }}</td>
+                                <td class="py-1.5 text-slate-600 dark:text-slate-400">{{ s.roll_no || '—' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Errors List -->
+            <div *ngIf="importResult().errors?.length > 0" class="p-5">
+                <div class="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wide mb-3">❌ Failed / Skipped Rows ({{ importResult().failedCount }})</div>
+                <div class="space-y-2">
+                    <div *ngFor="let e of importResult().errors" class="flex items-start space-x-2 p-2.5 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/50 rounded-lg">
+                        <span class="text-rose-500 font-bold text-xs mt-0.5">Row {{ e.row }}</span>
+                        <div class="text-xs text-rose-700 dark:text-rose-300">{{ e.error }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- End Import View -->
+
+</div>

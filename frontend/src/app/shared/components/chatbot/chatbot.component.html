@@ -1,0 +1,190 @@
+<!-- Floating AI Chatbot Launcher Button -->
+<button type="button" (click)="toggle()" id="ai-chatbot-launcher"
+  class="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white rounded-full shadow-2xl hover:shadow-indigo-500/40 hover:scale-105 active:scale-95 transition-all duration-300 group focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:focus:ring-indigo-800"
+  [class.hidden]="chatbotService.isOpen()" aria-label="Open AI School Assistant">
+  <!-- Animated Pulse Effect -->
+  <span class="relative flex h-3 w-3">
+    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+    <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+  </span>
+
+  <!-- Bot Icon / Sparkle -->
+  <svg class="w-6 h-6 text-white transform group-hover:rotate-12 transition-transform duration-300" fill="none"
+    viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+  </svg>
+
+  <span class="font-semibold text-sm tracking-wide hidden sm:inline-block">Ask School AI</span>
+</button>
+
+<!-- Main AI Chatbot Drawer Modal -->
+<div *ngIf="chatbotService.isOpen()" id="ai-chatbot-window"
+  class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] max-w-[440px] h-[580px] max-h-[calc(100vh-2rem)] flex flex-col bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 animate-slide-up">
+  <!-- Chat Header -->
+  <div
+    class="px-4 py-3.5 bg-gradient-to-r from-indigo-700 via-indigo-800 to-slate-900 text-white flex items-center justify-between shadow-md relative">
+    <div class="flex items-center gap-3">
+      <div
+        class="relative w-9 h-9 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
+        <svg class="w-5 h-5 text-indigo-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+        <span
+          class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-slate-900 rounded-full"></span>
+      </div>
+      <div>
+        <div class="flex items-center gap-1.5">
+          <h3 class="font-bold text-sm leading-tight text-white tracking-wide">School AI Assistant</h3>
+          <span
+            class="px-1.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase bg-indigo-500/30 border border-indigo-400/30 rounded text-indigo-200">
+            {{ authService.userRole() || 'Public' }}
+          </span>
+        </div>
+        <p class="text-[11px] text-indigo-200/80 font-medium">Real-time SMS Database Powered</p>
+      </div>
+    </div>
+
+    <!-- Header Actions -->
+    <div class="flex items-center gap-1">
+      <button type="button" (click)="clearChat()" title="Clear conversation"
+        class="p-1.5 text-indigo-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors focus:outline-none">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+      </button>
+      <button type="button" (click)="toggle()" title="Minimize chat"
+        class="p-1.5 text-indigo-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors focus:outline-none">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Suggestion Chips Bar -->
+  <div *ngIf="chatbotService.suggestions().length > 0"
+    class="px-3 py-2 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200/80 dark:border-slate-800 flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth">
+    <span
+      class="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider whitespace-nowrap pl-1">Ask:</span>
+    <button *ngFor="let s of chatbotService.suggestions()" type="button" (click)="useSuggestion(s.prompt)"
+      class="px-2.5 py-1 text-xs whitespace-nowrap font-medium rounded-full bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 hover:shadow-sm active:scale-95 transition-all">
+      {{ s.label }}
+    </button>
+  </div>
+
+  <!-- Messages History View -->
+  <div #messagesContainer
+    class="flex-1 px-4 py-3.5 overflow-y-auto space-y-3.5 bg-slate-50/50 dark:bg-slate-900/50 text-sm">
+    <div *ngFor="let msg of chatbotService.messages(); let i = index" class="flex flex-col"
+      [class.items-end]="msg.sender === 'user'" [class.items-start]="msg.sender === 'bot'">
+      <!-- Message Card -->
+      <div class="relative max-w-[85%] rounded-2xl p-3.5 shadow-sm transition-all text-xs sm:text-sm"
+        [ngClass]="msg.sender === 'user'
+          ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-br-xs shadow-indigo-500/20'
+          : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-bl-xs border border-slate-200/70 dark:border-slate-700/70 shadow-slate-200/50 dark:shadow-none'">
+        <!-- Markdown Body -->
+        <div class="leading-relaxed break-words" [innerHTML]="renderMarkdown(msg.message)"></div>
+
+        <!-- Sources / Verification Tag Pills -->
+        <div *ngIf="msg.sources && msg.sources.length > 0"
+          class="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-700/60 flex flex-wrap items-center gap-1.5">
+          <span class="text-[10px] uppercase font-semibold text-slate-400 dark:text-slate-500 flex items-center gap-1">
+            <svg class="w-3 h-3 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd" />
+            </svg>
+            Verified from:
+          </span>
+          <span *ngFor="let s of msg.sources"
+            class="px-2 py-0.5 text-[10px] font-medium rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50">
+            {{ s.label }}
+          </span>
+        </div>
+
+        <!-- Actions for Bot Messages (Feedback + Copy) -->
+        <div *ngIf="msg.sender === 'bot'"
+          class="absolute top-full right-2 flex items-center gap-0.5 opacity-80 hover:opacity-100 transition-opacity">
+          <!-- Thumbs Up -->
+          <button type="button" (click)="rateMessage(i, 'up')"
+            [title]="ratedMessages()[i] === 'up' ? 'Helpful' : 'Rate helpful'"
+            class="p-1 rounded text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+            [class.text-emerald-600]="ratedMessages()[i] === 'up'">
+            <svg class="w-3.5 h-3.5" [attr.fill]="ratedMessages()[i] === 'up' ? 'currentColor' : 'none'"
+              viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+            </svg>
+          </button>
+          <!-- Thumbs Down -->
+          <button type="button" (click)="rateMessage(i, 'down')"
+            [title]="ratedMessages()[i] === 'down' ? 'Not helpful' : 'Rate not helpful'"
+            class="p-1 rounded text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
+            [class.text-rose-600]="ratedMessages()[i] === 'down'">
+            <svg class="w-3.5 h-3.5" [attr.fill]="ratedMessages()[i] === 'down' ? 'currentColor' : 'none'"
+              viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76 1.04m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" />
+            </svg>
+          </button>
+          <!-- Copy -->
+          <button type="button" (click)="copyMessage(msg.message, i)" title="Copy response"
+            class="p-1 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+            <svg *ngIf="copiedIndex() !== i" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <svg *ngIf="copiedIndex() === i" class="w-3.5 h-3.5 text-emerald-500" fill="currentColor"
+              viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Time Tag -->
+      <span class="text-[10px] text-slate-400 dark:text-slate-500 mt-1 px-1">
+        {{ msg.sender === 'user' ? 'You' : 'AI Assistant' }}
+      </span>
+    </div>
+
+    <!-- Live Thinking / Typing Indicator -->
+    <div *ngIf="chatbotService.isLoading()" class="flex items-start gap-2 animate-fade-in">
+      <div
+        class="bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl rounded-bl-xs p-3 shadow-sm flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-indigo-500 animate-bounce"></span>
+        <span class="w-2 h-2 rounded-full bg-purple-500 animate-bounce [animation-delay:0.2s]"></span>
+        <span class="w-2 h-2 rounded-full bg-pink-500 animate-bounce [animation-delay:0.4s]"></span>
+        <span class="text-xs text-slate-500 dark:text-slate-400 font-medium ml-1.5">Querying school database...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Input Footer -->
+  <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800">
+    <form (submit)="send(); $event.preventDefault()" class="flex items-end gap-2">
+      <div class="relative flex-1">
+        <textarea #inputElement [(ngModel)]="messageInput" (keydown)="onKeyDown($event)" name="userMessage" rows="1"
+          placeholder="Ask a question..."
+          class="w-full resize-none py-2.5 pl-3.5 pr-9 text-xs sm:text-sm rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-transparent focus:border-transparent transition-all max-h-24 leading-normal"></textarea>
+      </div>
+      <button type="submit" [disabled]="!messageInput().trim() || chatbotService.isLoading()"
+        class="h-10 w-10 flex items-center justify-center rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 dark:disabled:bg-slate-800 text-white disabled:text-slate-400 shadow-md hover:shadow-indigo-500/30 active:scale-95 transition-all focus:outline-none"
+        aria-label="Send message">
+        <svg class="w-4 h-4 transform rotate-90" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+        </svg>
+      </button>
+    </form>
+    <div class="mt-1.5 flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 px-1">
+      <span>🔒 Safe & Authorized Data Access</span>
+      <span>Press Enter to send</span>
+    </div>
+  </div>
+</div>

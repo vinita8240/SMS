@@ -1,0 +1,314 @@
+<div class="h-screen w-full bg-[#f2f4f8] dark:bg-slate-950 flex flex-col font-sans overflow-hidden">
+  
+  <!-- Top Smart School Header Bar -->
+  <header class="h-14 shrink-0 z-40 bg-white dark:bg-slate-900 border-b border-[#e9edf4] dark:border-slate-800 shadow-sm flex items-center justify-between px-3 sm:px-4">
+    
+    <!-- Left: Brand Logo + Toggle + School Name -->
+    <div class="flex items-center space-x-3 sm:space-x-4">
+      
+      <!-- Brand Logo Badge with Uploaded Logo -->
+      <a routerLink="/dashboard" class="flex items-center space-x-2.5 no-underline group">
+        <img 
+          src="/logo.png" 
+          alt="Samarth Technology Logo" 
+          class="h-8 max-h-8 w-auto object-contain transition-transform group-hover:scale-105" 
+          onerror="this.src='/favicon.ico'" />
+        <div class="flex flex-col select-none">
+          <span class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white tracking-tight leading-tight">
+            SAMARTH TECHNOLOGY
+          </span>
+          <span class="text-[9px] text-slate-500 dark:text-slate-400 font-medium tracking-wide uppercase">
+            School Management System
+          </span>
+        </div>
+      </a>
+
+      <!-- Hamburger Sidebar Toggle -->
+      <button 
+        (click)="toggleSidebar()"
+        class="p-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#705ec8]/30"
+        title="Toggle Sidebar">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <!-- School Name -->
+      <div class="hidden xl:flex items-center space-x-2 border-l border-slate-200 dark:border-slate-800 pl-3">
+        <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">
+          🏫 Mount Carmel School
+        </span>
+      </div>
+    </div>
+
+    <!-- Middle: Global Header Search Bar -->
+    <div class="hidden lg:flex items-center flex-1 max-w-lg mx-6">
+      <div class="relative w-full flex items-center">
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery"
+          (keyup)="onSearch($event)"
+          placeholder="Search By Student Name, Roll Number, Enroll Number, National Id, Local Id Etc."
+          class="w-full pl-3.5 pr-10 py-1.5 rounded-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#705ec8] focus:bg-white transition-all shadow-inner" />
+        <button 
+          (click)="executeGlobalSearch()" 
+          class="absolute right-1 w-7 h-7 rounded-full bg-[#705ec8] text-white flex items-center justify-center text-xs hover:bg-[#5d4cb0] transition-colors">
+          🔍
+        </button>
+
+        <!-- Global Search Results Dropdown -->
+        <div *ngIf="searchResults().length > 0" class="absolute top-10 left-0 w-full bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-2 z-50">
+          <div class="p-2 text-[11px] font-bold uppercase text-slate-400 border-b border-slate-100 dark:border-slate-800 flex justify-between">
+            <span>Search Results ({{ searchResults().length }})</span>
+            <button (click)="clearSearch()" class="text-slate-400 hover:text-slate-600 text-xs">✕</button>
+          </div>
+          <div class="max-h-60 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/50">
+            <a 
+              *ngFor="let item of searchResults()"
+              [routerLink]="item.link" 
+              (click)="clearSearch()"
+              class="flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">
+              <div>
+                <div class="text-xs font-semibold text-slate-800 dark:text-white">{{ item.title }}</div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400">{{ item.subtitle }}</div>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">{{ item.type }}</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Utility Icons & Profile -->
+    <div class="flex items-center space-x-1.5 sm:space-x-3 text-xs">
+      
+      <!-- Live School Website Quick Link Button -->
+      <a 
+        routerLink="/site" 
+        target="_blank"
+        class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 font-semibold border border-emerald-200 dark:border-emerald-800/60 transition-all shadow-2xs no-underline"
+        title="Open Live Public School Website">
+        <span class="text-sm">🌐</span>
+        <span class="hidden md:inline">Live Website</span>
+      </a>
+
+      <!-- Currency Badge -->
+      <div class="hidden sm:flex items-center px-2 py-1 rounded text-slate-600 dark:text-slate-300 font-semibold text-[11px]">
+        USD ($)
+      </div>
+
+      <!-- Interactive Language Selector Dropdown -->
+      <div class="relative language-dropdown-container">
+        <button 
+          (click)="isLanguageMenuOpen.set(!isLanguageMenuOpen()); isUserMenuOpen.set(false)"
+          class="flex items-center space-x-1.5 px-2 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors focus:outline-none"
+          [title]="'Language: ' + currentLanguage().name">
+          <span class="text-base leading-none">{{ currentLanguage().flag }}</span>
+          <span class="text-xs font-bold uppercase hidden sm:inline">{{ currentLanguage().code }}</span>
+          <span class="text-[10px] text-slate-400">▾</span>
+        </button>
+
+        <!-- Language Dropdown Menu -->
+        <div *ngIf="isLanguageMenuOpen()" 
+             class="absolute right-0 top-10 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-1.5 z-50 animate-in fade-in select-none">
+          <div class="px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-800">
+            Select Language
+          </div>
+          <div class="py-1 space-y-0.5 max-h-60 overflow-y-auto">
+            <button 
+              *ngFor="let lang of languages"
+              (click)="setLanguage(lang)"
+              [ngClass]="lang.code === currentLanguage().code 
+                ? 'bg-purple-50 dark:bg-purple-950/40 text-[#705ec8] dark:text-purple-300 font-bold' 
+                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium'"
+              class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs transition-colors text-left">
+              <div class="flex items-center space-x-2">
+                <span class="text-base">{{ lang.flag }}</span>
+                <span>{{ lang.name }}</span>
+              </div>
+              <span *ngIf="lang.code === currentLanguage().code" class="text-xs text-[#705ec8] dark:text-purple-400 font-bold">✓</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid Menu Quick Links -->
+      <button title="Quick Apps" class="p-1.5 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-sm">
+        ☵
+      </button>
+
+      <!-- Calendar Icon -->
+      <button routerLink="/attendance" title="Academic Calendar" class="p-1.5 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-sm">
+        📅
+      </button>
+
+      <!-- Tasks / Todo -->
+      <button routerLink="/academics/assignments" title="Tasks & Assignments" class="p-1.5 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-sm">
+        📋
+      </button>
+
+      <!-- Notifications with Red Badge -->
+      <div class="relative">
+        <button routerLink="/communication/notices" title="Announcements" class="p-1.5 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-sm">
+          🔔
+          <span class="absolute 0 top-0 right-0 w-3.5 h-3.5 rounded-full bg-rose-500 text-white text-[8px] font-bold flex items-center justify-center">
+            0
+          </span>
+        </button>
+      </div>
+
+      <!-- WhatsApp / Chat -->
+      <button title="Direct Support" class="p-1.5 text-emerald-600 text-sm">
+        💬
+      </button>
+
+      <!-- Dark / Light Theme Toggle -->
+      <button 
+        (click)="theme.toggleDarkMode()" 
+        title="Toggle Theme"
+        class="p-1.5 text-slate-500 hover:text-slate-700 dark:text-slate-400 text-sm">
+        {{ theme.isDarkMode() ? '☀️' : '🌙' }}
+      </button>
+
+      <!-- User Profile Avatar & Dropdown -->
+      <div class="relative pl-1 border-l border-slate-200 dark:border-slate-800 user-dropdown-container">
+        <button 
+          (click)="isUserMenuOpen.set(!isUserMenuOpen()); isLanguageMenuOpen.set(false)"
+          class="flex items-center space-x-1.5 focus:outline-none">
+          <div class="w-7 h-7 rounded-full bg-[#705ec8] text-white font-bold flex items-center justify-center text-xs shadow-sm">
+            {{ (auth.currentUser()?.name || 'A').charAt(0) }}
+          </div>
+          <span class="text-[10px] text-slate-400">▾</span>
+        </button>
+
+        <!-- User Menu Dropdown -->
+        <div *ngIf="isUserMenuOpen()" class="absolute right-0 top-10 w-52 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-2 z-50 animate-in fade-in select-none">
+          <div class="p-2.5 border-b border-slate-100 dark:border-slate-800">
+            <div class="text-xs font-bold text-slate-900 dark:text-white">{{ auth.currentUser()?.name }}</div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ auth.currentUser()?.email }}</div>
+            <span class="inline-block mt-1 px-2 py-0.5 rounded text-[9px] font-semibold bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300 capitalize">
+              {{ userRoleDisplay() }}
+            </span>
+          </div>
+          <div class="p-1 space-y-0.5 text-xs">
+            <a routerLink="/settings" (click)="isUserMenuOpen.set(false)" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+              <span>⚙️</span>
+              <span>System Settings</span>
+            </a>
+            <button 
+              (click)="logout()" 
+              class="w-full flex items-center space-x-2 px-3 py-1.5 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors text-left">
+              <span>🚪</span>
+              <span>Sign Out</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </header>
+
+  <!-- Main Layout: Sidebar + Main Content -->
+  <div class="flex-1 flex overflow-hidden min-h-0 w-full relative">
+    
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div 
+      *ngIf="isSidebarOpen()" 
+      (click)="isSidebarOpen.set(false)"
+      class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 lg:hidden transition-opacity">
+    </div>
+
+    <!-- Sidebar Navigation Drawer -->
+    <aside 
+      class="fixed lg:static inset-y-0 left-0 z-50 shrink-0 h-full bg-white dark:bg-slate-900 border-r border-[#e9edf4] dark:border-slate-800 flex flex-col transition-all duration-300 ease-in-out shadow-lg lg:shadow-none min-h-0 overflow-hidden"
+      [ngClass]="{
+        'w-60 translate-x-0 opacity-100': isSidebarOpen(),
+        '-translate-x-full lg:translate-x-0 lg:w-0 lg:opacity-0 lg:border-r-0': !isSidebarOpen()
+      }">
+      
+      <div class="w-60 h-full flex flex-col min-h-0">
+        <!-- Current Session Header Box -->
+        <div class="shrink-0 px-4 py-2.5 border-b border-[#e9edf4] dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center justify-between select-none">
+          <span>Current Session: 2026-27</span>
+        </div>
+
+        <!-- Quick Links Row -->
+        <div class="shrink-0 px-4 py-2 border-b border-[#e9edf4] dark:border-slate-800 bg-[#f8fafc] dark:bg-slate-900/60 text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center justify-between select-none">
+          <div class="flex items-center space-x-2">
+            <span class="text-slate-400">▦</span>
+            <span>Quick Links</span>
+          </div>
+          <span class="text-slate-400 text-xs">▦</span>
+        </div>
+
+        <!-- Tree Navigation Menu with Vertical Scrolling -->
+        <nav class="flex-1 overflow-y-auto overscroll-contain custom-scrollbar text-xs min-h-0 pb-16">
+          <div *ngFor="let item of visibleMenuItems()" class="border-b border-[#f1f4f9] dark:border-slate-800/60">
+            
+            <!-- Menu Header Item (Accordion Parent) -->
+            <div 
+              *ngIf="item.children && item.children.length > 0"
+              (click)="toggleMenu(item)"
+              [ngClass]="isParentActive(item) ? 'text-[#705ec8] dark:text-purple-400 bg-purple-50/40 dark:bg-purple-950/20' : 'text-slate-700 dark:text-slate-200'"
+              class="flex items-center justify-between px-3.5 py-2.5 cursor-pointer font-semibold hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:text-[#705ec8] transition-colors select-none group">
+              <div class="flex items-center space-x-2.5">
+                <span class="text-sm transition-transform group-hover:scale-110" [ngClass]="isParentActive(item) ? 'text-[#705ec8]' : 'text-slate-400'">{{ item.icon }}</span>
+                <span class="tracking-tight">{{ item.label }}</span>
+              </div>
+              <span class="text-[10px] transition-transform duration-200" 
+                    [ngClass]="{ 'rotate-90': item.isOpen, 'text-[#705ec8]': isParentActive(item), 'text-slate-400': !isParentActive(item) }">
+                ❯
+              </span>
+            </div>
+
+            <!-- Single Direct Route Item -->
+            <a 
+              *ngIf="!item.children || item.children.length === 0"
+              [routerLink]="item.route"
+              [queryParams]="item.queryParams || null"
+              (click)="onNavClick()"
+              [ngClass]="isRouteActive(item.route, item.queryParams) 
+                ? 'bg-[#705ec8] text-white shadow-sm font-semibold' 
+                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:text-[#705ec8] font-semibold'"
+              class="flex items-center justify-between px-3.5 py-2.5 mx-2 my-0.5 rounded-md transition-all no-underline">
+              <div class="flex items-center space-x-2.5">
+                <span class="text-sm" [ngClass]="isRouteActive(item.route, item.queryParams) ? 'text-white' : 'text-slate-400'">{{ item.icon }}</span>
+                <span>{{ item.label }}</span>
+              </div>
+            </a>
+
+            <!-- Submenu Children (Accordion) -->
+            <div *ngIf="item.children && item.isOpen" class="bg-[#fafbfd] dark:bg-slate-900/50 py-1 space-y-0.5 border-t border-b border-[#f1f4f9] dark:border-slate-800/40">
+              <a 
+                *ngFor="let sub of getVisibleChildren(item)"
+                [routerLink]="sub.route"
+                [queryParams]="sub.queryParams || null"
+                (click)="onNavClick()"
+                [ngClass]="isSubActive(sub, item) 
+                  ? 'bg-[#705ec8] text-white font-semibold shadow-sm' 
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-purple-50 dark:hover:bg-slate-800/60 hover:text-[#705ec8] font-medium'"
+                class="flex items-center justify-between pl-8 pr-3 py-1.5 mx-2 rounded-md text-[12px] transition-all no-underline cursor-pointer">
+                <span>{{ sub.label }}</span>
+                <span *ngIf="sub.badge" 
+                      [ngClass]="isSubActive(sub, item) ? 'bg-white/20 text-white' : 'bg-purple-100 text-[#705ec8]'"
+                      class="px-1.5 py-0.2 rounded text-[9px] font-bold">
+                  {{ sub.badge }}
+                </span>
+              </a>
+            </div>
+
+          </div>
+        </nav>
+      </div>
+
+    </aside>
+
+    <!-- Main Content Area with Independent Vertical Scrolling -->
+    <main class="flex-1 overflow-y-auto p-4 sm:p-5 w-full bg-[#f2f4f8] dark:bg-slate-950 min-h-0">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+
+</div>

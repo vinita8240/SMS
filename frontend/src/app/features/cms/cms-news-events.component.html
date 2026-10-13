@@ -1,0 +1,124 @@
+<div class="space-y-6">
+      
+      <!-- Top Navigation Tabs -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+            <span>📰</span> News, Events & Official Notices
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Publish academic achievements, milestones, upcoming events, and official circulars for public and parent view.
+          </p>
+        </div>
+
+        <button (click)="openCreateModal()" class="px-5 py-2.5 rounded-xl bg-[#705ec8] hover:bg-[#5d4cb0] text-white text-xs font-bold uppercase tracking-wider shadow-md transition flex items-center gap-1.5 self-start">
+          <span>+</span> {{ activeTab === 'news' ? 'Add News Article' : 'Add Event' }}
+        </button>
+      </div>
+
+      <!-- Tabs Switcher -->
+      <div class="flex border-b border-slate-200 dark:border-slate-800 space-x-6">
+        <button 
+          (click)="activeTab = 'news'"
+          [ngClass]="activeTab === 'news' ? 'border-[#705ec8] text-[#705ec8] font-bold border-b-2' : 'border-transparent text-slate-500 hover:text-slate-700'"
+          class="py-3 text-xs uppercase tracking-wider transition">
+          📰 News Dispatches ({{ news().length }})
+        </button>
+        <button 
+          (click)="activeTab = 'events'"
+          [ngClass]="activeTab === 'events' ? 'border-[#705ec8] text-[#705ec8] font-bold border-b-2' : 'border-transparent text-slate-500 hover:text-slate-700'"
+          class="py-3 text-xs uppercase tracking-wider transition">
+          📅 Campus Events ({{ events().length }})
+        </button>
+      </div>
+
+      <!-- NEWS LIST -->
+      <div *ngIf="activeTab === 'news'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let item of news()" class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="h-40 bg-slate-100 dark:bg-slate-800 relative overflow-hidden">
+              <img [src]="item.image_url" [alt]="item.title" class="w-full h-full object-cover" />
+              <span class="absolute top-3 left-3 px-2 py-0.5 rounded text-[10px] font-bold bg-white text-indigo-900 uppercase">
+                {{ item.category }}
+              </span>
+            </div>
+            <div class="p-5 space-y-2">
+              <div class="text-[11px] text-slate-400">📅 {{ item.published_at }}</div>
+              <h3 class="font-bold text-sm text-slate-800 dark:text-white leading-snug">{{ item.title }}</h3>
+              <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">{{ item.summary }}</p>
+            </div>
+          </div>
+          <div class="p-5 pt-0 flex justify-end space-x-2 border-t border-slate-100 dark:border-slate-800 pt-3">
+            <button (click)="openEditNews(item)" class="px-3 py-1 text-xs text-indigo-600 font-bold hover:bg-indigo-50 rounded">✏️ Edit</button>
+            <button (click)="deleteNews(item)" class="px-3 py-1 text-xs text-rose-600 font-bold hover:bg-rose-50 rounded">🗑️ Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- EVENTS LIST -->
+      <div *ngIf="activeTab === 'events'" class="space-y-4">
+        <div *ngFor="let ev of events()" class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="flex items-start space-x-4">
+            <div class="w-14 h-14 rounded-xl bg-[#705ec8] text-white flex flex-col items-center justify-center shrink-0">
+              <span class="text-xs uppercase font-extrabold">{{ ev.start_date | date:'MMM' }}</span>
+              <span class="text-base font-black">{{ ev.start_date | date:'dd' }}</span>
+            </div>
+            <div class="space-y-1">
+              <h3 class="font-bold text-sm text-slate-800 dark:text-white">{{ ev.title }}</h3>
+              <p class="text-xs text-slate-500">{{ ev.description }}</p>
+              <div class="text-[11px] text-slate-400">📍 {{ ev.venue }} | ⏰ {{ ev.time }}</div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2 self-end sm:self-center">
+            <button (click)="openEditEvent(ev)" class="px-3 py-1 text-xs text-indigo-600 font-bold hover:bg-indigo-50 rounded">✏️ Edit</button>
+            <button (click)="deleteEvent(ev)" class="px-3 py-1 text-xs text-rose-600 font-bold hover:bg-rose-50 rounded">🗑️ Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div *ngIf="isModalOpen()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg p-6 sm:p-8 space-y-4">
+          <div class="flex items-center justify-between border-b pb-3">
+            <h3 class="font-bold text-sm text-slate-800 dark:text-white">
+              {{ editingItemId() ? 'Edit Item' : (activeTab === 'news' ? 'Add News Article' : 'Add Event') }}
+            </h3>
+            <button (click)="isModalOpen.set(false)" class="text-slate-400 text-lg font-bold">✕</button>
+          </div>
+
+          <form (ngSubmit)="saveItem()" class="space-y-3 text-xs">
+            <div>
+              <label class="block font-bold uppercase text-slate-600 mb-1">Title *</label>
+              <input type="text" [(ngModel)]="formData.title" name="title" required class="w-full px-3 py-2 rounded-lg border text-xs" />
+            </div>
+
+            <div *ngIf="activeTab === 'news'">
+              <label class="block font-bold uppercase text-slate-600 mb-1">Summary *</label>
+              <textarea [(ngModel)]="formData.summary" name="summary" rows="2" required class="w-full px-3 py-2 rounded-lg border text-xs"></textarea>
+            </div>
+
+            <div *ngIf="activeTab === 'events'" class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold uppercase text-slate-600 mb-1">Start Date *</label>
+                <input type="date" [(ngModel)]="formData.start_date" name="start_date" required class="w-full px-3 py-2 rounded-lg border text-xs" />
+              </div>
+              <div>
+                <label class="block font-bold uppercase text-slate-600 mb-1">Time</label>
+                <input type="text" [(ngModel)]="formData.time" name="time" class="w-full px-3 py-2 rounded-lg border text-xs" placeholder="09:00 AM" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold uppercase text-slate-600 mb-1">Featured Image</label>
+              <app-image-upload [(imageUrl)]="formData.image_url" previewHeightClass="h-32"></app-image-upload>
+            </div>
+
+            <div class="pt-4 border-t flex justify-end space-x-3">
+              <button type="button" (click)="isModalOpen.set(false)" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600">Cancel</button>
+              <button type="submit" class="px-6 py-2 rounded-xl bg-[#705ec8] text-white font-bold text-xs uppercase shadow-md">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>

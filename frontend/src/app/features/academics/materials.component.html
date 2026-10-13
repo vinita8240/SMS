@@ -1,0 +1,281 @@
+<div class="space-y-6 animate-fade-in font-sans">
+  
+  <!-- Module Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Syllabus & Study Materials</h1>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Class academic curricula, lecture notes, slide packs, and downloadable PDFs.</p>
+    </div>
+
+    <!-- Upload Buttons (Restricted to Admin and Teachers only) -->
+    @if (canUpload()) {
+      <div class="flex items-center space-x-2">
+        <button 
+          (click)="openAddSyllabusModal()" 
+          class="px-4 py-2 rounded text-xs font-bold text-white bg-[#705ec8] hover:bg-[#5d4cb0] shadow-sm transition-all flex items-center space-x-1.5 cursor-pointer">
+          <span>+</span>
+          <span>Upload Syllabus</span>
+        </button>
+        <button 
+          (click)="openAddMaterialModal()" 
+          class="px-4 py-2 rounded text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 transition-all flex items-center space-x-1.5 cursor-pointer">
+          <span>+</span>
+          <span>Upload Study Material</span>
+        </button>
+      </div>
+    }
+  </div>
+
+  <!-- Student Enrolled Class Notification Banner -->
+  @if (isStudent()) {
+    <div class="p-3.5 bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800/50 rounded-lg flex items-center justify-between text-xs">
+      <div class="flex items-center space-x-2 text-purple-900 dark:text-purple-200 font-medium">
+        <span class="text-base">🎓</span>
+        <span>Showing academic syllabus and study materials strictly curated for <strong>{{ studentClassName() || 'your enrolled class' }}</strong>.</span>
+      </div>
+      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#705ec8] text-white uppercase tracking-wider">Enrolled</span>
+    </div>
+  } @else {
+    <!-- Filter Criteria Bar for Admin & Teachers -->
+    <div class="bg-white dark:bg-slate-900 rounded-lg border border-[#e9edf4] dark:border-slate-800 shadow-sm p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center space-x-3 w-full sm:w-auto">
+        <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 whitespace-nowrap">Filter By Class:</label>
+        <select 
+          [(ngModel)]="selectedClassId" 
+          (change)="onFilterChange()"
+          class="px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+          <option value="">All Classes</option>
+          @for (c of classes(); track c.class_id) {
+            <option [value]="c.class_id">{{ c.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="w-full sm:w-64">
+        <input 
+          type="text" 
+          [(ngModel)]="searchKeyword" 
+          placeholder="Search syllabus or notes..." 
+          class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#705ec8]" />
+      </div>
+    </div>
+  }
+
+  <!-- Syllabus Section -->
+  <div class="space-y-3">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+        <span>📑</span>
+        <span>Academic Syllabi ({{ filteredSyllabi().length }})</span>
+      </h3>
+    </div>
+
+    @if (filteredSyllabi().length === 0) {
+      <div class="p-8 text-center bg-white dark:bg-slate-900 rounded-lg border border-[#e9edf4] dark:border-slate-800 text-xs text-slate-500">
+        No syllabus uploaded for the selected class criteria.
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for (syl of filteredSyllabi(); track syl.academic_syllabus_id) {
+          <div class="p-4 rounded-lg bg-white dark:bg-slate-900 border border-[#e9edf4] dark:border-slate-800 shadow-sm flex flex-col justify-between hover:border-[#705ec8]/40 transition-colors">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-50 text-[#705ec8] dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40">
+                  {{ syl.class_name }}
+                </span>
+                <span class="text-[10px] font-semibold text-slate-400">{{ syl.session || '2026-27' }}</span>
+              </div>
+              <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-1">{{ syl.title }}</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{{ syl.description || 'Master class academic syllabus document' }}</p>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-[#f1f4f9] dark:border-slate-800 flex items-center justify-between text-xs">
+              <span class="text-[11px] text-slate-400">Code: {{ syl.academic_syllabus_code || 'SYL-' + syl.academic_syllabus_id }}</span>
+              <div class="flex items-center space-x-2">
+                <button 
+                  (click)="downloadFile(syl.file_name)" 
+                  class="px-2.5 py-1 rounded bg-[#705ec8] hover:bg-[#5d4cb0] text-white text-[11px] font-semibold flex items-center space-x-1 shadow-sm transition-colors cursor-pointer">
+                  <span>📥</span>
+                  <span>Download</span>
+                </button>
+                @if (canUpload()) {
+                  <button 
+                    (click)="deleteSyllabus(syl.academic_syllabus_id)" 
+                    title="Delete Syllabus"
+                    class="p-1 rounded text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer">
+                    🗑️
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Study Materials Section -->
+  <div class="space-y-3 pt-4 border-t border-[#e9edf4] dark:border-slate-800">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+        <span>📚</span>
+        <span>Study Materials & Lecture Notes ({{ filteredMaterials().length }})</span>
+      </h3>
+    </div>
+
+    @if (filteredMaterials().length === 0) {
+      <div class="p-8 text-center bg-white dark:bg-slate-900 rounded-lg border border-[#e9edf4] dark:border-slate-800 text-xs text-slate-500">
+        No study materials uploaded for the selected class criteria.
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for (mat of filteredMaterials(); track mat.document_id) {
+          <div class="p-4 rounded-lg bg-white dark:bg-slate-900 border border-[#e9edf4] dark:border-slate-800 shadow-sm flex flex-col justify-between hover:border-[#705ec8]/40 transition-colors">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40">
+                  {{ mat.class_name }} • {{ mat.subject_name || 'General' }}
+                </span>
+                <span class="text-[10px] font-semibold text-slate-400 uppercase">{{ mat.file_type || 'PDF' }}</span>
+              </div>
+              <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-1">{{ mat.title }}</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{{ mat.description || 'Downloadable lecture notes and slide pack' }}</p>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-[#f1f4f9] dark:border-slate-800 flex items-center justify-between text-xs">
+              <span class="text-[11px] text-slate-400">By: {{ mat.teacher_name || 'Faculty' }}</span>
+              <div class="flex items-center space-x-2">
+                <button 
+                  (click)="downloadFile(mat.file_name)" 
+                  class="px-2.5 py-1 rounded bg-[#705ec8] hover:bg-[#5d4cb0] text-white text-[11px] font-semibold flex items-center space-x-1 shadow-sm transition-colors cursor-pointer">
+                  <span>📥</span>
+                  <span>Download</span>
+                </button>
+                @if (canUpload()) {
+                  <button 
+                    (click)="deleteMaterial(mat.document_id)" 
+                    title="Delete Material"
+                    class="p-1 rounded text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer">
+                    🗑️
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Add Syllabus Modal (Admin/Teacher Only) -->
+  @if (canUpload()) {
+    <app-modal [isOpen]="isSyllabusModalOpen()" title="Upload Academic Syllabus" (close)="isSyllabusModalOpen.set(false)">
+      <form [formGroup]="syllabusForm" (ngSubmit)="saveSyllabus()" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Syllabus Title *</label>
+            <input type="text" formControlName="title" placeholder="e.g. Grade 2 Mathematics & Science Syllabus" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-[#705ec8]" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Class *</label>
+            <select formControlName="class_id" (change)="onSyllabusClassChange()" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-[#705ec8]">
+              <option value="">Select Class</option>
+              @for (c of classes(); track c.class_id) {
+                <option [value]="c.class_id">{{ c.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Subject (Optional)</label>
+            <select formControlName="subject_id" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-[#705ec8]">
+              <option value="">All Subjects (Master)</option>
+              @for (sub of syllabusSubjects(); track sub.subject_id) {
+                <option [value]="sub.subject_id">{{ sub.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Session</label>
+            <input type="text" formControlName="session" placeholder="2026-2027" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-[#705ec8]" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">File Name / Attachment Key *</label>
+            <input type="text" formControlName="file_name" placeholder="syllabus_document.pdf" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-[#705ec8]" />
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Description</label>
+            <textarea formControlName="description" rows="2" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-[#705ec8]" placeholder="Brief notes about this syllabus..."></textarea>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" (click)="isSyllabusModalOpen.set(false)" class="px-4 py-2 rounded text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">Cancel</button>
+          <button type="submit" [disabled]="syllabusForm.invalid" class="px-5 py-2 rounded text-xs font-bold text-white bg-[#705ec8] hover:bg-[#5d4cb0]">Upload Syllabus</button>
+        </div>
+      </form>
+    </app-modal>
+
+    <!-- Add Material Modal (Admin/Teacher Only) -->
+    <app-modal [isOpen]="isMaterialModalOpen()" title="Upload Study Material" (close)="isMaterialModalOpen.set(false)">
+      <form [formGroup]="materialForm" (ngSubmit)="saveMaterial()" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Document Title *</label>
+            <input type="text" formControlName="title" placeholder="e.g. Grade 2 Science Chapter 01 Slide Deck" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-[#705ec8]" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Class *</label>
+            <select formControlName="class_id" (change)="onMaterialClassChange()" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-[#705ec8]">
+              <option value="">Select Class</option>
+              @for (c of classes(); track c.class_id) {
+                <option [value]="c.class_id">{{ c.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Subject</label>
+            <select formControlName="subject_id" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-[#705ec8]">
+              <option value="">General / All Subjects</option>
+              @for (sub of materialSubjects(); track sub.subject_id) {
+                <option [value]="sub.subject_id">{{ sub.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Document Type</label>
+            <select formControlName="file_type" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-[#705ec8]">
+              <option value="PDF">PDF Document</option>
+              <option value="PPT">Presentation Slide</option>
+              <option value="DOC">Word Document</option>
+              <option value="ZIP">Archive / Code Pack</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">File Name *</label>
+            <input type="text" formControlName="file_name" placeholder="lecture_notes.pdf" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-[#705ec8]" />
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Description / Summary</label>
+            <textarea formControlName="description" rows="2" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-[#705ec8]" placeholder="Key study topics covered..."></textarea>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" (click)="isMaterialModalOpen.set(false)" class="px-4 py-2 rounded text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">Cancel</button>
+          <button type="submit" [disabled]="materialForm.invalid" class="px-5 py-2 rounded text-xs font-bold text-white bg-[#705ec8] hover:bg-[#5d4cb0]">Upload Material</button>
+        </div>
+      </form>
+    </app-modal>
+  }
+
+</div>

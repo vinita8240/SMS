@@ -1,0 +1,19 @@
+/* Data Table Styles */
+:host {
+  display: block;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #sms-printable-table, #sms-printable-table * {
+    visibility: visible;
+  }
+  #sms-printable-table {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

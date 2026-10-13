@@ -1,0 +1,166 @@
+<div class="space-y-8 animate-fade-in">
+  
+  <!-- Welcome Page Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 p-6 sm:p-8 rounded-3xl text-white shadow-lg relative overflow-hidden">
+    <div class="relative z-10">
+      <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md">
+        Academic Session 2026-2027
+      </span>
+      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-2">
+        Welcome, {{ auth.currentUser()?.name }}! 👋
+      </h1>
+      <p class="text-xs sm:text-sm text-indigo-100 max-w-xl mt-1 leading-relaxed">
+        Real-time analytics and dynamic school administration dashboard. Everything is synchronized with the live MySQL database.
+      </p>
+    </div>
+
+    <div class="flex flex-wrap gap-2.5 relative z-10">
+      <a routerLink="/students" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-indigo-700 hover:bg-indigo-50 shadow-sm transition-all transform hover:-translate-y-0.5">
+        + Add Student
+      </a>
+      <a routerLink="/attendance" class="px-4 py-2 rounded-xl text-xs font-bold bg-white/20 hover:bg-white/30 text-white backdrop-blur-md transition-all">
+        Mark Attendance
+      </a>
+    </div>
+
+    <!-- Decorative circles -->
+    <div class="absolute -right-10 -bottom-10 w-48 h-48 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+  </div>
+
+  <!-- Loading Skeleton -->
+  @if (isLoading()) {
+    <app-skeleton-loader type="cards"></app-skeleton-loader>
+  }
+
+  <!-- Admin & General Dashboard Metrics -->
+  @if (!isLoading() && metrics()) {
+    
+    <!-- KPI Stat Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <app-stat-card 
+        title="Total Students" 
+        [value]="metrics()?.kpi?.totalStudents || 0" 
+        icon="👨‍🎓" 
+        subtitle="Enrolled in active session"
+        badgeClass="bg-brand-50 text-brand-600 dark:bg-brand-950/60 dark:text-brand-400">
+      </app-stat-card>
+
+      <app-stat-card 
+        title="Total Faculty" 
+        [value]="metrics()?.kpi?.totalTeachers || 0" 
+        icon="👨‍🏫" 
+        subtitle="Academic staff"
+        badgeClass="bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400">
+      </app-stat-card>
+
+      <app-stat-card 
+        title="Fee Collections" 
+        [value]="metrics()?.kpi?.totalRevenue || 0" 
+        [isCurrency]="true"
+        icon="💰" 
+        subtitle="Collected revenue"
+        badgeClass="bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400">
+      </app-stat-card>
+
+      <app-stat-card 
+        title="Pending Due Fees" 
+        [value]="metrics()?.kpi?.pendingFees || 0" 
+        [isCurrency]="true"
+        icon="💳" 
+        subtitle="Outstanding balance"
+        badgeClass="bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400">
+      </app-stat-card>
+    </div>
+
+    <!-- Secondary Stat Row -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+      <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm text-center">
+        <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Classes</div>
+        <div class="text-xl font-bold text-slate-900 dark:text-white mt-1">{{ metrics()?.kpi?.totalClasses }}</div>
+      </div>
+      <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm text-center">
+        <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Sections</div>
+        <div class="text-xl font-bold text-slate-900 dark:text-white mt-1">{{ metrics()?.kpi?.totalSections }}</div>
+      </div>
+      <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm text-center">
+        <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Library Books</div>
+        <div class="text-xl font-bold text-slate-900 dark:text-white mt-1">{{ metrics()?.kpi?.totalBooks }}</div>
+      </div>
+      <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm text-center">
+        <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Hostel Beds</div>
+        <div class="text-xl font-bold text-slate-900 dark:text-white mt-1">{{ metrics()?.kpi?.occupiedBeds }}/{{ metrics()?.kpi?.totalBeds }}</div>
+      </div>
+      <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm text-center">
+        <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Upcoming Exams</div>
+        <div class="text-xl font-bold text-slate-900 dark:text-white mt-1">{{ metrics()?.kpi?.upcomingExams }}</div>
+      </div>
+      <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm text-center">
+        <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Assignments</div>
+        <div class="text-xl font-bold text-slate-900 dark:text-white mt-1">{{ metrics()?.kpi?.pendingAssignments }}</div>
+      </div>
+    </div>
+
+    <!-- Dynamic Visual Charts Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- Chart 1: Student Strength by Class -->
+      <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-card">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Students by Class</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Class enrollment distribution</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-brand-50 text-brand-600 dark:bg-brand-950/60 dark:text-brand-400">Live DB</span>
+        </div>
+        <div class="h-64 relative">
+          <canvas #studentsClassChart></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: Attendance Trend -->
+      <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-card">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Attendance Trend</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Daily presence logs</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400">Daily Track</span>
+        </div>
+        <div class="h-64 relative">
+          <canvas #attendanceTrendChart></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 3: Expense by Category -->
+      <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-card">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Expense Distribution</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Categorized expenditure breakdown</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-600 dark:bg-purple-950/60 dark:text-purple-400">Finance</span>
+        </div>
+        <div class="h-64 relative">
+          <canvas #expenseCategoryChart></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 4: Faculty by Department -->
+      <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-card">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Teacher Departments</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Faculty department allocation</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400">HR Staff</span>
+        </div>
+        <div class="h-64 relative">
+          <canvas #teacherDeptChart></canvas>
+        </div>
+      </div>
+
+    </div>
+
+  }
+
+</div>

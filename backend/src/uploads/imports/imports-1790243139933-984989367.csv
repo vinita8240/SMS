@@ -1,0 +1,2 @@
+admission_no,roll_no,first_name,last_name,gender,birthday,phone,email,admission_date
+ADM-TEST-9901,88,Marcus,Testman,Male,2014-06-15,9988776655,marcus.test@example.com,2026-09-24

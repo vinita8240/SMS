@@ -1,0 +1,94 @@
+<div class="space-y-6 animate-fade-in">
+  
+  <!-- Module Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Assignment Management</h1>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Class homework, problem sets, deadlines, and project submissions.</p>
+    </div>
+
+    <button (click)="openAddModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 shadow-sm transition-all flex items-center space-x-1.5">
+      <span>+</span>
+      <span>Create Assignment</span>
+    </button>
+  </div>
+
+  <!-- Data Table -->
+  <app-data-table 
+    [columns]="columns" 
+    [data]="assignments()" 
+    (search)="onSearch($event)">
+    
+    <ng-template #actions let-row>
+      <div class="flex items-center justify-end space-x-1.5">
+        <button (click)="openEditModal(row)" class="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg">✏️</button>
+        <button (click)="confirmDelete(row)" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg">🗑️</button>
+      </div>
+    </ng-template>
+
+  </app-data-table>
+
+  <!-- Add/Edit Assignment Modal -->
+  <app-modal [isOpen]="isModalOpen()" [title]="editingAssignmentId ? 'Edit Assignment' : 'Create Class Assignment'" (close)="isModalOpen.set(false)">
+    <form [formGroup]="assignmentForm" (ngSubmit)="saveAssignment()" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="md:col-span-2">
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Assignment Title *</label>
+          <input type="text" formControlName="title" placeholder="e.g. Newtonian Mechanics Problem Set #1" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Class *</label>
+          <select formControlName="class_id" (change)="onClassChange()" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none">
+            <option value="">Select Class</option>
+            @for (c of classes(); track c.class_id) {
+              <option [value]="c.class_id">{{ c.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Subject *</label>
+          <select formControlName="subject_id" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none">
+            <option value="">Select Subject</option>
+            @for (sub of subjects(); track sub.subject_id) {
+              <option [value]="sub.subject_id">{{ sub.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Due Date *</label>
+          <input type="date" formControlName="due_date" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Attachment File</label>
+          <input type="text" formControlName="file_name" placeholder="problem_set_01.pdf" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Instructions & Problem Details</label>
+          <textarea formControlName="description" rows="3" placeholder="Solve problems 1-15 on page 42..." class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+        <button type="button" (click)="isModalOpen.set(false)" class="px-4 py-2 rounded-xl text-xs bg-slate-100 dark:bg-slate-800">Cancel</button>
+        <button type="submit" [disabled]="assignmentForm.invalid" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-700">
+          {{ editingAssignmentId ? 'Update Assignment' : 'Save Assignment' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Delete Dialog -->
+  <app-confirm-dialog 
+    [isOpen]="isDeleteDialogOpen()" 
+    title="Delete Assignment" 
+    [message]="'Are you sure you want to delete ' + (assignmentToDelete?.title || '') + '?'" 
+    (confirm)="executeDelete()" 
+    (cancel)="isDeleteDialogOpen.set(false)">
+  </app-confirm-dialog>
+
+</div>

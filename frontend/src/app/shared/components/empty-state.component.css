@@ -1,0 +1,4 @@
+/* Empty State Styles */
+:host {
+  display: block;
+}

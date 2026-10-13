@@ -1,0 +1,19 @@
+/* Student List Component Styles */
+:host {
+  display: block;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #smart-school-student-table, #smart-school-student-table * {
+    visibility: visible;
+  }
+  #smart-school-student-table {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

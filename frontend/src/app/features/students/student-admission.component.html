@@ -1,0 +1,816 @@
+<div class="space-y-4 animate-fade-in font-sans pb-12">
+
+    <!-- Top Title Bar -->
+    <div class="bg-white dark:bg-slate-900 rounded-lg border border-[#e9edf4] dark:border-slate-800 shadow-sm px-4 py-3 flex items-center justify-between">
+        <h1 class="text-sm font-bold text-slate-800 dark:text-white tracking-tight">Student Admission</h1>
+
+        <div class="flex items-center space-x-2">
+            <a routerLink="/students" class="px-3 py-1.5 rounded text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-300 dark:border-slate-700">
+        ← Back to Directory
+      </a>
+            <button type="button" (click)="openImportModal()" class="px-3 py-1.5 rounded bg-[#705ec8] hover:bg-[#5d4cb0] text-white text-xs font-bold transition-colors flex items-center space-x-1 shadow-sm">
+        <span>👤</span>
+        <span>Import Student</span>
+      </button>
+        </div>
+    </div>
+
+    <form [formGroup]="admissionForm" (ngSubmit)="onSubmit()" class="space-y-4">
+
+        <!-- SECTION 1: Student Primary Admission Card -->
+        <div class="bg-white dark:bg-slate-900 rounded-lg border border-[#e9edf4] dark:border-slate-800 shadow-sm p-4 sm:p-5 space-y-4">
+
+            <!-- Row 1: Admission No, Roll Number, Class, Section -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Admission No <span class="text-rose-500">*</span>
+          </label>
+                    <input type="text" formControlName="admission_no" placeholder="ADM-1001" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                    /> @if (admissionForm.get('admission_no')?.touched && admissionForm.get('admission_no')?.invalid) {
+                    <span class="text-[10px] text-rose-500 mt-0.5 block">Admission No is required</span> }
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Roll Number
+          </label>
+                    <input type="text" formControlName="roll_no" placeholder="101" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                    />
+                </div>
+
+                <div>
+                    <div class="mb-1 flex items-center justify-between gap-2">
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">Class <span class="text-rose-500">*</span></label>
+                        <button type="button" (click)="openMasterModal('class')" class="text-[10px] font-bold text-[#705ec8] hover:underline">+ Create</button>
+                    </div>
+                    <select formControlName="class_id" (change)="onClassChange()" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+            <option value="">Select</option>
+            @for (c of classes(); track c.class_id) {
+              <option [value]="c.class_id">{{ c.name }}</option>
+            }
+          </select> @if (admissionForm.get('class_id')?.touched && admissionForm.get('class_id')?.invalid) {
+                    <span class="text-[10px] text-rose-500 mt-0.5 block">Class is required</span> }
+                </div>
+
+                <div>
+                    <div class="mb-1 flex items-center justify-between gap-2">
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">Section <span class="text-rose-500">*</span></label>
+                        <button type="button" (click)="openMasterModal('section')" [disabled]="!admissionForm.get('class_id')?.value" class="text-[10px] font-bold text-[#705ec8] hover:underline disabled:opacity-40">+ Create</button>
+                    </div>
+                    <select formControlName="section_id" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+            <option value="">Select</option>
+            @for (s of sections(); track s.section_id) {
+              <option [value]="s.section_id">{{ s.name }}</option>
+            }
+          </select> @if (admissionForm.get('section_id')?.touched && admissionForm.get('section_id')?.invalid) {
+                    <span class="text-[10px] text-rose-500 mt-0.5 block">Section is required</span> }
+                </div>
+            </div>
+
+            <!-- Row 2: First Name, Last Name, Gender, Date Of Birth -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            First Name <span class="text-rose-500">*</span>
+          </label>
+                    <input type="text" formControlName="first_name" placeholder="John" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                    /> @if (admissionForm.get('first_name')?.touched && admissionForm.get('first_name')?.invalid) {
+                    <span class="text-[10px] text-rose-500 mt-0.5 block">First Name is required</span> }
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Last Name
+          </label>
+                    <input type="text" formControlName="last_name" placeholder="Doe" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                    />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Gender <span class="text-rose-500">*</span>
+          </label>
+                    <select formControlName="gender" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select> @if (admissionForm.get('gender')?.touched && admissionForm.get('gender')?.invalid) {
+                    <span class="text-[10px] text-rose-500 mt-0.5 block">Gender is required</span> }
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Date Of Birth <span class="text-rose-500">*</span>
+          </label>
+                    <input type="date" formControlName="birthday" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]" />                    @if (admissionForm.get('birthday')?.touched && admissionForm.get('birthday')?.invalid) {
+                    <span class="text-[10px] text-rose-500 mt-0.5 block">Date of Birth is required</span> }
+                </div>
+            </div>
+
+            <!-- Row 3: Category, Religion, Caste, Mobile Number, Email -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div>
+                    <div class="mb-1 flex items-center justify-between gap-2">
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">Category</label>
+                        <button type="button" (click)="openMasterModal('category')" class="text-[10px] font-bold text-[#705ec8] hover:underline">+ Create</button>
+                    </div>
+                    <select formControlName="student_category_id" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+            <option value="">Select</option>
+                        @for (category of categories(); track category.student_category_id) {
+                            <option [value]="category.student_category_id">{{ category.name }}</option>
+                        }
+          </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Religion</label>
+                    <input type="text" formControlName="religion" placeholder="Christian / Hindu / Muslim" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                    />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Caste</label>
+                    <input type="text" formControlName="caste" placeholder="Caste" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                    />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Mobile Number</label>
+                    <input type="text" formControlName="phone" placeholder="+1 555-0100" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                    />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email</label>
+                    <input type="email" formControlName="email" placeholder="student@school.com" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                    />
+                </div>
+            </div>
+
+            <!-- Row 4: Admission Date, Student Photo, Blood Group, House -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Admission Date</label>
+                    <input type="date" formControlName="admission_date" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Student Photo (100px X 100px)</label>
+                    <div class="border border-dashed border-slate-300 dark:border-slate-700 rounded p-2 text-center bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 transition-colors cursor-pointer flex items-center justify-center space-x-1.5 text-xs text-slate-500">
+                        <span>☁</span>
+                        <span class="text-[11px]">Drag and drop a file here or click</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Blood Group</label>
+                    <select formControlName="blood_group" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+            <option value="">Select</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+          </select>
+                </div>
+
+                <div>
+                    <div class="mb-1 flex items-center justify-between gap-2">
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">House</label>
+                        <button type="button" (click)="openMasterModal('house')" class="text-[10px] font-bold text-[#705ec8] hover:underline">+ Create</button>
+                    </div>
+                    <select formControlName="house_id" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+            <option value="">Select</option>
+                        @for (house of houses(); track house.house_id) {
+                            <option [value]="house.house_id">{{ house.name }}</option>
+                        }
+          </select>
+                </div>
+            </div>
+
+            <!-- Row 5: Height, Weight, Measurement Date, Add Sibling -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-center">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Height (cm)</label>
+                    <input type="text" formControlName="height" placeholder="145" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                    />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Weight (kg)</label>
+                    <input type="text" formControlName="weight" placeholder="38" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Measurement Date</label>
+                    <input type="date" formControlName="measurement_date" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]" />
+                </div>
+
+                <div class="pt-5">
+                    <button type="button" (click)="addSibling()" class="text-xs font-bold text-[#705ec8] hover:text-[#5d4cb0] transition-colors flex items-center space-x-1">
+            <span>+</span>
+            <span>Add Sibling</span>
+          </button>
+                </div>
+            </div>
+
+            <!-- Row 6: Medical History -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Medical History</label>
+                <input type="text" formControlName="medical_history" placeholder="Allergies, asthma, dietary requirements, chronic illnesses..." class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                />
+            </div>
+
+        </div>
+
+        <!-- SECTION 2: Transport Details -->
+        <div class="bg-white dark:bg-slate-900 rounded-lg border border-[#e9edf4] dark:border-slate-800 shadow-sm overflow-hidden">
+            <div class="bg-[#f8fafc] dark:bg-slate-800/60 px-4 py-2.5 border-b border-[#e9edf4] dark:border-slate-800">
+                <h3 class="text-xs font-bold text-slate-700 dark:text-slate-200">Transport Details</h3>
+            </div>
+            <div class="p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <div class="mb-1 flex items-center justify-between gap-2">
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">Route List</label>
+                        <button type="button" (click)="openMasterModal('route')" class="text-[10px] font-bold text-[#705ec8] hover:underline">+ Create</button>
+                    </div>
+                    <select formControlName="route_id" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+            <option value="">Select</option>
+                        @for (route of routes(); track route.transport_route_id || route.id) {
+                            <option [value]="route.transport_route_id || route.id">{{ route.name || route.title }}</option>
+                        }
+          </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Pickup Point</label>
+                    <select formControlName="pickup_point" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+            <option value="">Select</option>
+                        @for (point of pickupPoints(); track point) {
+                            <option [value]="point">{{ point }}</option>
+                        }
+          </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Fees Month</label>
+                    <select formControlName="fees_month" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+            <option value="">Select Month</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+          </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: Hostel Details -->
+        <div class="bg-white dark:bg-slate-900 rounded-lg border border-[#e9edf4] dark:border-slate-800 shadow-sm overflow-hidden">
+            <div class="bg-[#f8fafc] dark:bg-slate-800/60 px-4 py-2.5 border-b border-[#e9edf4] dark:border-slate-800">
+                <h3 class="text-xs font-bold text-slate-700 dark:text-slate-200">Hostel Details</h3>
+            </div>
+            <div class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <div class="mb-1 flex items-center justify-between gap-2">
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">Hostel</label>
+                        <button type="button" (click)="openMasterModal('hostel')" class="text-[10px] font-bold text-[#705ec8] hover:underline">+ Create</button>
+                    </div>
+                    <select formControlName="hostel_id" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+            <option value="">Select</option>
+                        @for (hostel of hostels(); track hostel.hostel_category_id || hostel.id) {
+                            <option [value]="hostel.hostel_category_id || hostel.id">{{ hostel.name }}</option>
+                        }
+          </select>
+                </div>
+
+                <div>
+                    <div class="mb-1 flex items-center justify-between gap-2">
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">Room No.</label>
+                        <button type="button" (click)="openMasterModal('room')" [disabled]="!admissionForm.get('hostel_id')?.value" class="text-[10px] font-bold text-[#705ec8] hover:underline disabled:opacity-40">+ Create</button>
+                    </div>
+                    <select formControlName="room_no" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+            <option value="">Select</option>
+                        @for (room of roomsForSelectedHostel(); track room.hostel_room_id || room.id) {
+                            <option [value]="room.room_number || room.name">{{ room.room_number || room.name }}</option>
+                        }
+          </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 4: Fees Details -->
+        <div class="bg-white dark:bg-slate-900 rounded-lg border border-[#e9edf4] dark:border-slate-800 shadow-sm overflow-hidden">
+            <div class="bg-[#f8fafc] dark:bg-slate-800/60 px-4 py-2.5 border-b border-[#e9edf4] dark:border-slate-800 flex items-center justify-between">
+                <h3 class="text-xs font-bold text-slate-700 dark:text-slate-200">Fees Details</h3>
+                <button type="button" (click)="openMasterModal('feeGroup')" class="text-[10px] font-bold text-[#705ec8] hover:underline">+ Create Fee Group</button>
+            </div>
+            <div class="p-2 divide-y divide-[#f1f4f9] dark:divide-slate-800 text-xs">
+                @for (fee of feeGroups(); track fee.id) {
+                <div class="py-2 px-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <label class="flex items-center space-x-2.5 cursor-pointer">
+              <span class="text-slate-400 font-bold text-[11px]">+</span>
+              <input 
+                type="checkbox" 
+                [(ngModel)]="fee.selected" 
+                [ngModelOptions]="{standalone: true}"
+                class="rounded text-[#705ec8] focus:ring-[#705ec8] h-3.5 w-3.5" />
+              <span class="text-slate-700 dark:text-slate-300 font-medium">{{ fee.name }}</span>
+            </label>
+                    <span class="font-semibold text-slate-800 dark:text-slate-200">{{ fee.amount }}</span>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- SECTION 5: Fees Discount Details -->
+        <div class="bg-white dark:bg-slate-900 rounded-lg border border-[#e9edf4] dark:border-slate-800 shadow-sm overflow-hidden">
+            <div class="bg-[#f8fafc] dark:bg-slate-800/60 px-4 py-2.5 border-b border-[#e9edf4] dark:border-slate-800 flex items-center justify-between">
+                <h3 class="text-xs font-bold text-slate-700 dark:text-slate-200">Fees Discount Details</h3>
+                <button type="button" (click)="openMasterModal('discount')" class="text-[10px] font-bold text-[#705ec8] hover:underline">+ Create Discount</button>
+            </div>
+            <div class="p-2 divide-y divide-[#f1f4f9] dark:divide-slate-800 text-xs">
+                @for (disc of discounts(); track disc.id) {
+                <div class="py-2 px-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <label class="flex items-center space-x-2.5 cursor-pointer">
+              <span class="text-slate-400 font-bold text-[11px]">+</span>
+              <input 
+                type="checkbox" 
+                [(ngModel)]="disc.selected" 
+                [ngModelOptions]="{standalone: true}"
+                class="rounded text-[#705ec8] focus:ring-[#705ec8] h-3.5 w-3.5" />
+              <span class="text-slate-700 dark:text-slate-300 font-medium">{{ disc.name }} - {{ disc.code }}</span>
+            </label>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- SECTION 6: Parent Guardian Detail -->
+        <div class="bg-white dark:bg-slate-900 rounded-lg border border-[#e9edf4] dark:border-slate-800 shadow-sm overflow-hidden">
+            <div class="bg-[#f8fafc] dark:bg-slate-800/60 px-4 py-2.5 border-b border-[#e9edf4] dark:border-slate-800">
+                <h3 class="text-xs font-bold text-slate-700 dark:text-slate-200">Parent Guardian Detail</h3>
+            </div>
+
+            <div class="p-4 sm:p-5 space-y-4">
+
+                <!-- Father Info Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Father Name</label>
+                        <input type="text" formControlName="father_name" placeholder="Father's full name" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Father Phone</label>
+                        <input type="text" formControlName="father_phone" placeholder="+1 555-0155" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Father Occupation</label>
+                        <input type="text" formControlName="father_occupation" placeholder="Business / Engineer / Doctor" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Father Photo (100px X 100px)</label>
+                        <div class="border border-dashed border-slate-300 dark:border-slate-700 rounded p-2 text-center bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 transition-colors cursor-pointer flex items-center justify-center space-x-1.5 text-xs text-slate-500">
+                            <span>☁</span>
+                            <span class="text-[11px]">Drag and drop a file here or click</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mother Info Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Mother Name</label>
+                        <input type="text" formControlName="mother_name" placeholder="Mother's full name" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Mother Phone</label>
+                        <input type="text" formControlName="mother_phone" placeholder="+1 555-0156" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Mother Occupation</label>
+                        <input type="text" formControlName="mother_occupation" placeholder="Teacher / Homemaker / Professional" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Mother Photo (100px X 100px)</label>
+                        <div class="border border-dashed border-slate-300 dark:border-slate-700 rounded p-2 text-center bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 transition-colors cursor-pointer flex items-center justify-center space-x-1.5 text-xs text-slate-500">
+                            <span>☁</span>
+                            <span class="text-[11px]">Drag and drop a file here or click</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- If Guardian Is * Radio Options -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            If Guardian Is <span class="text-rose-500">*</span>
+          </label>
+                    <div class="flex items-center space-x-6 text-xs text-slate-700 dark:text-slate-300">
+                        <label class="inline-flex items-center space-x-1.5 cursor-pointer">
+              <input 
+                type="radio" 
+                value="Father" 
+                formControlName="guardian_is" 
+                (change)="onGuardianTypeChange('Father')"
+                class="text-[#705ec8] focus:ring-[#705ec8]" />
+              <span>Father</span>
+            </label>
+                        <label class="inline-flex items-center space-x-1.5 cursor-pointer">
+              <input 
+                type="radio" 
+                value="Mother" 
+                formControlName="guardian_is" 
+                (change)="onGuardianTypeChange('Mother')"
+                class="text-[#705ec8] focus:ring-[#705ec8]" />
+              <span>Mother</span>
+            </label>
+                        <label class="inline-flex items-center space-x-1.5 cursor-pointer">
+              <input 
+                type="radio" 
+                value="Other" 
+                formControlName="guardian_is" 
+                (change)="onGuardianTypeChange('Other')"
+                class="text-[#705ec8] focus:ring-[#705ec8]" />
+              <span>Other</span>
+            </label>
+                    </div>
+                </div>
+
+                <!-- Guardian Row 1: Guardian Name, Relation, Email, Photo -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              Guardian Name <span class="text-rose-500">*</span>
+            </label>
+                        <input type="text" formControlName="guardian_name" placeholder="Primary Guardian" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        /> @if (admissionForm.get('guardian_name')?.touched && admissionForm.get('guardian_name')?.invalid) {
+                        <span class="text-[10px] text-rose-500 mt-0.5 block">Guardian Name is required</span> }
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Guardian Relation</label>
+                        <input type="text" formControlName="guardian_relation" placeholder="Father / Mother / Uncle" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Guardian Email</label>
+                        <input type="email" formControlName="guardian_email" placeholder="guardian@email.com" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Guardian Photo (100px X 100px)</label>
+                        <div class="border border-dashed border-slate-300 dark:border-slate-700 rounded p-2 text-center bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 transition-colors cursor-pointer flex items-center justify-center space-x-1.5 text-xs text-slate-500">
+                            <span>☁</span>
+                            <span class="text-[11px]">Drag and drop a file here or click</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guardian Row 2: Guardian Phone, Occupation, Address -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              Guardian Phone <span class="text-rose-500">*</span>
+            </label>
+                        <input type="text" formControlName="guardian_phone" placeholder="+1 555-0155" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        /> @if (admissionForm.get('guardian_phone')?.touched && admissionForm.get('guardian_phone')?.invalid) {
+                        <span class="text-[10px] text-rose-500 mt-0.5 block">Guardian Phone is required</span> }
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Guardian Occupation</label>
+                        <input type="text" formControlName="guardian_occupation" placeholder="Occupation" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Guardian Address</label>
+                        <input type="text" formControlName="guardian_address" placeholder="Full residential address" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SECTION 7: Add More Details (Collapsible) -->
+        <div class="bg-white dark:bg-slate-900 rounded-lg border border-[#e9edf4] dark:border-slate-800 shadow-sm overflow-hidden">
+            <div (click)="isMoreDetailsOpen = !isMoreDetailsOpen" class="bg-[#f8fafc] dark:bg-slate-800/60 px-4 py-2.5 border-b border-[#e9edf4] dark:border-slate-800 flex items-center justify-between cursor-pointer select-none">
+                <h3 class="text-xs font-bold text-slate-700 dark:text-slate-200">Add More Details</h3>
+                <span class="text-slate-500 font-bold text-sm">{{ isMoreDetailsOpen ? '−' : '+' }}</span>
+            </div>
+
+            <div *ngIf="isMoreDetailsOpen" class="p-4 sm:p-5 space-y-4">
+                <!-- Student Address & Bank Details -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">National ID / Social Security</label>
+                        <input type="text" formControlName="national_id" placeholder="NAT-123456" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Local ID</label>
+                        <input type="text" formControlName="local_id" placeholder="LOC-9988" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Bank Name</label>
+                        <input type="text" formControlName="bank_name" placeholder="State Bank / Chase" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Bank Account Number</label>
+                        <input type="text" formControlName="bank_account_no" placeholder="987654321012" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">IFSC / Routing Code</label>
+                        <input type="text" formControlName="ifsc_code" placeholder="SBIN0001234" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Previous School Details</label>
+                        <input type="text" formControlName="previous_school" placeholder="Previous Institution / Grade" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Residential Address</label>
+                        <input type="text" formControlName="address" placeholder="Current address details" class="w-full px-3 py-1.5 rounded text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div class="flex items-center justify-end space-x-3 pt-2">
+            <button type="button" (click)="resetForm()" class="px-5 py-2 rounded text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-colors">
+        Reset
+      </button>
+
+            <button type="submit" [disabled]="admissionForm.invalid || isSubmitting()" class="px-8 py-2 rounded bg-[#705ec8] hover:bg-[#5d4cb0] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold transition-colors shadow-md flex items-center space-x-2">
+        @if (isSubmitting()) {
+          <span class="inline-block animate-spin mr-1">⏳</span>
+          <span>Saving Admission...</span>
+        } @else {
+          <span>Save</span>
+        }
+      </button>
+        </div>
+
+    </form>
+
+    <!-- Import Student Modal -->
+    <app-modal [isOpen]="isImportModalOpen()" title="Import Student Data" (close)="closeImportModal()">
+        <div class="space-y-4 text-xs font-sans">
+
+            <!-- Top Instruction Card & Download Sample Button -->
+            <div class="p-3.5 bg-purple-50 dark:bg-purple-950/40 rounded-xl border border-purple-200/80 dark:border-purple-800/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div class="space-y-1">
+                    <div class="font-bold text-[#705ec8] dark:text-purple-300 flex items-center space-x-1.5">
+                        <span>📥</span>
+                        <span>Batch Upload Guidelines & Sample Format</span>
+                    </div>
+                    <p class="text-[11px] text-slate-600 dark:text-slate-300">
+                        Download the pre-formatted CSV template. Mandatory columns: <strong>first_name</strong>, <strong>gender</strong>. Dates must be <strong>YYYY-MM-DD</strong>.
+                    </p>
+                </div>
+
+                <button type="button" (click)="downloadSampleCsv()" class="shrink-0 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-purple-300 dark:border-purple-700 text-[#705ec8] dark:text-purple-300 font-bold hover:bg-purple-100/50 dark:hover:bg-purple-900/40 transition-all flex items-center space-x-1.5 shadow-xs">
+          <span>📄</span>
+          <span>Download Sample CSV</span>
+        </button>
+            </div>
+
+            <!-- Selection Criteria: Class & Section -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                <div>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Target Class <span class="text-rose-500">*</span>
+          </label>
+                    <select [ngModel]="importClassId()" (ngModelChange)="importClassId.set($event); onImportClassChange()" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+            <option value="" disabled>-- Select Class --</option>
+            <option *ngFor="let c of classes()" [value]="c.class_id">{{ c.name }}</option>
+          </select>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Target Section
+          </label>
+                    <select [ngModel]="importSectionId()" (ngModelChange)="importSectionId.set($event)" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:border-[#705ec8]">
+            <option value="">-- All / Default Section --</option>
+            <option *ngFor="let s of importSections()" [value]="s.section_id">{{ s.name }}</option>
+          </select>
+                </div>
+            </div>
+
+            <!-- File Upload Zone -->
+            <div class="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-[#705ec8] rounded-xl p-5 text-center transition-all bg-white dark:bg-slate-800/30">
+                <input type="file" id="studentImportFileInput" (change)="onImportFileChange($event)" accept=".csv, .xlsx, .xls" class="hidden" />
+                <label for="studentImportFileInput" class="cursor-pointer block space-y-2">
+          <div class="text-3xl">📁</div>
+          <div class="font-bold text-slate-700 dark:text-slate-200">
+            {{ importFileName() ? importFileName() : 'Click to select CSV or Excel file (.csv, .xlsx)' }}
+          </div>
+          <p class="text-[11px] text-slate-400">
+            Supports UTF-8 CSV, Microsoft Excel 97-2004 (.xls) and Excel Workbook (.xlsx)
+          </p>
+        </label>
+            </div>
+
+            <!-- Import Progress / Results Feedback -->
+            <div *ngIf="importResult()" class="space-y-2 pt-2">
+                <div class="p-3 rounded-xl border flex items-center justify-between" [ngClass]="importResult().failedCount === 0 ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 text-emerald-800 dark:text-emerald-300' : 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 text-amber-800 dark:text-amber-300'">
+                    <div class="font-semibold">
+                        Import Summary: Total {{ importResult().totalRows }} | Successfully Imported: {{ importResult().importedCount }} | Failed/Skipped: {{ importResult().failedCount }}
+                    </div>
+                </div>
+
+                <div *ngIf="importResult().errors?.length > 0" class="max-h-40 overflow-y-auto rounded-lg border border-rose-200 bg-rose-50/50 p-2 text-[11px] text-rose-700">
+                    <div class="font-bold mb-1">Row Errors:</div>
+                    <ul class="list-disc pl-4 space-y-0.5">
+                        <li *ngFor="let err of importResult().errors">
+                            Row {{ err.row }}: {{ err.name ? '(' + err.name + ') ' : '' }}{{ err.error }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-end space-x-2.5 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <button type="button" (click)="closeImportModal()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-200">
+          Close
+        </button>
+
+                <button type="button" (click)="submitImport()" [disabled]="isImporting() || !importFile" class="px-5 py-2 rounded-xl bg-gradient-to-r from-[#705ec8] to-[#5a48b5] text-white font-bold hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center space-x-1.5">
+          <span *ngIf="isImporting()" class="inline-block animate-spin">⏳</span>
+          <span>{{ isImporting() ? 'Importing Students...' : 'Import Students' }}</span>
+        </button>
+            </div>
+
+        </div>
+    </app-modal>
+
+    <app-modal [isOpen]="isMasterModalOpen()" [title]="masterTitle()" (close)="isMasterModalOpen.set(false)">
+        <form [formGroup]="masterForm" (ngSubmit)="saveMaster()" class="space-y-4 text-xs">
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Name <span class="text-rose-500">*</span></label>
+                <input type="text" formControlName="name" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-white" /> @if (masterForm.get('name')?.touched && masterForm.get('name')?.invalid)
+                {
+                <span class="mt-1 block text-[10px] text-rose-500">Name is required.</span> }
+            </div>
+
+            @switch (masterKind()) { @case ('class') {
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Numeric order</label>
+                <input type="number" formControlName="name_numeric" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800" />
+            </div>
+            } @case ('section') {
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Class</label>
+                <select formControlName="class_id" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800">
+                            <option value="">Select class</option>
+                            @for (item of classes(); track item.class_id) {
+                                <option [value]="item.class_id">{{ item.name }}</option>
+                            }
+                        </select>
+            </div>
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Section capacity</label>
+                <input type="number" formControlName="capacity" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800" />
+            </div>
+            } @case ('category') {
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Description</label>
+                <textarea rows="2" formControlName="description" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800"></textarea>
+            </div>
+            } @case ('house') {
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">House color</label>
+                <input type="color" formControlName="color_code" class="h-9 w-full rounded border border-slate-300 bg-white p-1 dark:border-slate-700 dark:bg-slate-800" />
+            </div>
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">House master</label>
+                <input type="text" formControlName="house_master" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800" />
+            </div>
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Description</label>
+                <textarea rows="2" formControlName="description" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800"></textarea>
+            </div>
+            } @case ('feeGroup') {
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Amount</label>
+                <input type="number" min="0" formControlName="amount" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800" />
+            </div>
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Description</label>
+                <textarea rows="2" formControlName="description" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800"></textarea>
+            </div>
+            } @case ('discount') {
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Code <span class="text-rose-500">*</span></label>
+                <input type="text" formControlName="code" required class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800" />
+            </div>
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Description</label>
+                <textarea rows="2" formControlName="description" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800"></textarea>
+            </div>
+            } @case ('route') {
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                    <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Start point</label>
+                    <input type="text" formControlName="start_point" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800" />
+                </div>
+                <div>
+                    <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">End point</label>
+                    <input type="text" formControlName="end_point" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800" />
+                </div>
+            </div>
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Fare</label>
+                <input type="number" min="0" formControlName="fare" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800" />
+            </div>
+            } @case ('hostel') {
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Hostel type</label>
+                <select formControlName="type" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800">
+                            <option value="Boys">Boys</option>
+                            <option value="Girls">Girls</option>
+                            <option value="Mixed">Mixed</option>
+                            <option value="Staff">Staff</option>
+                        </select>
+            </div>
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Description</label>
+                <textarea rows="2" formControlName="description" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800"></textarea>
+            </div>
+            } @case ('room') {
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Hostel</label>
+                <select formControlName="hostel_id" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800">
+                            <option value="">Select hostel</option>
+                            @for (item of hostels(); track item.hostel_category_id || item.id) {
+                                <option [value]="item.hostel_category_id || item.id">{{ item.name }}</option>
+                            }
+                        </select>
+            </div>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                    <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Room type</label>
+                    <input type="text" formControlName="room_type" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800" />
+                </div>
+                <div>
+                    <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Number of beds</label>
+                    <input type="number" min="1" formControlName="number_of_bed" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800" />
+                </div>
+            </div>
+            <div>
+                <label class="mb-1 block font-semibold text-slate-700 dark:text-slate-300">Cost per bed</label>
+                <input type="number" min="0" formControlName="cost_per_bed" class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800" />
+            </div>
+            } }
+
+            <div class="flex justify-end gap-2 border-t border-slate-200 pt-3 dark:border-slate-800">
+                <button type="button" (click)="isMasterModalOpen.set(false)" class="rounded bg-slate-100 px-4 py-2 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">Cancel</button>
+                <button type="submit" [disabled]="masterForm.invalid" class="rounded bg-[#705ec8] px-4 py-2 text-xs font-bold text-white disabled:opacity-50">Create</button>
+            </div>
+        </form>
+    </app-modal>
+
+</div>

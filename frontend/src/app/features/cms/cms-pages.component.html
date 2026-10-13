@@ -1,0 +1,152 @@
+<div class="space-y-6">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+            <span>📄</span> Dynamic CMS Pages
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Create, edit, and publish custom institutional pages with SEO titles, meta descriptions, and rich content.
+          </p>
+        </div>
+
+        <button (click)="openCreateModal()" class="px-5 py-2.5 rounded-xl bg-[#705ec8] hover:bg-[#5d4cb0] text-white text-xs font-bold uppercase tracking-wider shadow-md transition flex items-center gap-1.5 self-start">
+          <span>+</span> Create New Page
+        </button>
+      </div>
+
+      <!-- Pages Table -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase font-bold border-b border-slate-200 dark:border-slate-800 text-[10px] tracking-wider">
+                <th class="p-4">Page Title & Slug</th>
+                <th class="p-4">Template</th>
+                <th class="p-4">SEO Title</th>
+                <th class="p-4">Status</th>
+                <th class="p-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              <tr *ngFor="let page of pages()" class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
+                <td class="p-4">
+                  <div class="font-bold text-slate-800 dark:text-white text-sm">{{ page.title }}</div>
+                  <div class="text-[11px] font-mono text-indigo-600 dark:text-indigo-400">/site/p/{{ page.slug }}</div>
+                </td>
+                <td class="p-4">
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    {{ page.template_type }}
+                  </span>
+                </td>
+                <td class="p-4 text-slate-500 max-w-xs truncate">
+                  {{ page.seo_title || page.title }}
+                </td>
+                <td class="p-4">
+                  <span [ngClass]="page.is_published ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-amber-50 text-amber-700'"
+                        class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase">
+                    {{ page.is_published ? 'Published' : 'Draft' }}
+                  </span>
+                </td>
+                <td class="p-4 text-right space-x-2">
+                  <a [routerLink]="['/site/p', page.slug]" target="_blank" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 text-xs inline-block" title="View Page">
+                    👁️
+                  </a>
+                  <button (click)="openEditModal(page)" class="p-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs" title="Edit Page">
+                    ✏️
+                  </button>
+                  <button (click)="deletePage(page)" class="p-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs" title="Delete Page">
+                    🗑️
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Create / Edit Page Modal -->
+      <div *ngIf="isModalOpen()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-5">
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 class="font-bold text-base text-slate-800 dark:text-white">
+              {{ editingPageId() ? 'Edit Page' : 'Create New Page' }}
+            </h3>
+            <button (click)="isModalOpen.set(false)" class="text-slate-400 text-xl font-bold">✕</button>
+          </div>
+
+          <form (ngSubmit)="savePage()" class="space-y-4 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">Page Title *</label>
+                <input type="text" [(ngModel)]="formData.title" (ngModelChange)="autoSlugify()" name="title" required class="w-full px-3 py-2 rounded-lg border text-xs" placeholder="e.g. Vision & Mission" />
+              </div>
+              <div>
+                <label class="block font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">URL Slug *</label>
+                <input type="text" [(ngModel)]="formData.slug" name="slug" required class="w-full px-3 py-2 rounded-lg border text-xs font-mono" placeholder="vision-mission" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">Subtitle</label>
+              <input type="text" [(ngModel)]="formData.subtitle" name="subtitle" class="w-full px-3 py-2 rounded-lg border text-xs" placeholder="Brief tagline or description" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">Featured Image URL</label>
+                <input type="text" [(ngModel)]="formData.featured_image" name="featured_image" class="w-full px-3 py-2 rounded-lg border text-xs" placeholder="https://..." />
+              </div>
+              <div>
+                <label class="block font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">Template Type</label>
+                <select [(ngModel)]="formData.template_type" name="template_type" class="w-full px-3 py-2 rounded-lg border text-xs">
+                  <option value="standard">Standard Content</option>
+                  <option value="letter">Principal Letter</option>
+                  <option value="curriculum">Curriculum / Program</option>
+                  <option value="contact">Contact & Inquiry</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">Page HTML Content *</label>
+              <textarea [(ngModel)]="formData.content" name="content" rows="8" required class="w-full px-3 py-2 rounded-lg border text-xs font-mono" placeholder="<h2>Heading</h2><p>Content...</p>"></textarea>
+            </div>
+
+            <!-- SEO Accordion -->
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+              <div class="font-bold text-slate-700 dark:text-slate-200">🔍 SEO & Social Metadata</div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">SEO Meta Title</label>
+                  <input type="text" [(ngModel)]="formData.seo_title" name="seo_title" class="w-full px-2.5 py-1.5 rounded border text-xs" />
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">SEO Meta Keywords</label>
+                  <input type="text" [(ngModel)]="formData.seo_keywords" name="seo_keywords" class="w-full px-2.5 py-1.5 rounded border text-xs" placeholder="school, admissions, cbse" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">SEO Meta Description</label>
+                <textarea [(ngModel)]="formData.seo_description" name="seo_description" rows="2" class="w-full px-2.5 py-1.5 rounded border text-xs"></textarea>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-6">
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" [(ngModel)]="formData.is_published" name="is_published" [checked]="formData.is_published === 1" (change)="formData.is_published = formData.is_published ? 1 : 0" class="rounded" />
+                <span class="font-bold text-slate-700 dark:text-slate-200">Publish to Live Site</span>
+              </label>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end space-x-3">
+              <button type="button" (click)="isModalOpen.set(false)" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600">Cancel</button>
+              <button type="submit" class="px-6 py-2 rounded-xl bg-[#705ec8] text-white font-bold text-xs uppercase shadow-md">
+                {{ editingPageId() ? 'Save Changes' : 'Create Page' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>

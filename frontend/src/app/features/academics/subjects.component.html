@@ -1,0 +1,115 @@
+<div class="space-y-6 animate-fade-in">
+  
+  <!-- Module Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Subject Management</h1>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Curriculum subjects, pass marks, and assigned subject teachers.</p>
+    </div>
+
+    <button (click)="openAddModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 shadow-sm transition-all flex items-center space-x-1.5">
+      <span>+</span>
+      <span>Add Subject</span>
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-wrap gap-4 items-center">
+    <div class="w-full sm:w-56">
+      <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Class Filter</label>
+      <select [(ngModel)]="selectedClass" (change)="fetchSubjects()" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white outline-none">
+        <option value="">All Classes</option>
+        @for (c of classes(); track c.class_id) {
+          <option [value]="c.class_id">{{ c.name }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <app-data-table 
+    [columns]="columns" 
+    [data]="subjects()" 
+    (search)="onSearch($event)">
+    
+    <ng-template #actions let-row>
+      <div class="flex items-center justify-end space-x-1.5">
+        <button (click)="openEditModal(row)" class="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg">✏️</button>
+        <button (click)="confirmDelete(row)" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg">🗑️</button>
+      </div>
+    </ng-template>
+
+  </app-data-table>
+
+  <!-- Add/Edit Subject Modal -->
+  <app-modal [isOpen]="isModalOpen()" [title]="editingSubjectId ? 'Edit Subject' : 'Add New Subject'" (close)="isModalOpen.set(false)">
+    <form [formGroup]="subjectForm" (ngSubmit)="saveSubject()" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Subject Name *</label>
+          <input type="text" formControlName="name" placeholder="e.g. Advanced Physics" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Subject Code</label>
+          <input type="text" formControlName="code" placeholder="e.g. PHY-101" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Class *</label>
+          <select formControlName="class_id" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none">
+            <option value="">Select Class</option>
+            @for (c of classes(); track c.class_id) {
+              <option [value]="c.class_id">{{ c.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Assigned Teacher</label>
+          <select formControlName="teacher_id" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none">
+            <option value="">Select Teacher</option>
+            @for (t of teachers(); track t.teacher_id) {
+              <option [value]="t.teacher_id">{{ t.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Pass Mark</label>
+          <input type="number" formControlName="pass_mark" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Final Total Mark</label>
+          <input type="number" formControlName="final_mark" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Subject Type</label>
+          <select formControlName="type" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none">
+            <option value="theory">Theory</option>
+            <option value="practical">Practical</option>
+            <option value="optional">Optional</option>
+            <option value="mandatory">Mandatory</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+        <button type="button" (click)="isModalOpen.set(false)" class="px-4 py-2 rounded-xl text-xs bg-slate-100 dark:bg-slate-800">Cancel</button>
+        <button type="submit" [disabled]="subjectForm.invalid" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-700">Save Subject</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Confirm Delete Dialog -->
+  <app-confirm-dialog 
+    [isOpen]="isDeleteDialogOpen()" 
+    title="Delete Subject"
+    [message]="'Are you sure you want to delete ' + (subjectToDelete?.name || '') + '?'"
+    (confirm)="executeDelete()"
+    (cancel)="isDeleteDialogOpen.set(false)">
+  </app-confirm-dialog>
+
+</div>

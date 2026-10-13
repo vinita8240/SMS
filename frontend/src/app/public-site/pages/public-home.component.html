@@ -1,0 +1,29 @@
+<div *ngIf="publicService.isLoading()" class="min-h-screen flex items-center justify-center bg-slate-50">
+      <div class="flex flex-col items-center space-y-3">
+        <div class="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+        <div class="text-xs font-bold text-slate-600 uppercase tracking-wider">Loading Website...</div>
+      </div>
+    </div>
+
+    <div *ngIf="!publicService.isLoading() && publicService.homeData()">
+      <!-- DYNAMIC THEME RESOLVER (Renders the selected theme) -->
+      <ng-container [ngSwitch]="publicService.currentTheme()?.theme_id">
+        <!-- Theme 1: Modern Academic -->
+        <app-theme-one *ngSwitchCase="1" [data]="publicService.homeData()!"></app-theme-one>
+        
+        <!-- Theme 2: Premium School -->
+        <app-theme-two *ngSwitchCase="2" [data]="publicService.homeData()!"></app-theme-two>
+        
+        <!-- Theme 3: Colorful Education -->
+        <app-theme-three *ngSwitchCase="3" [data]="publicService.homeData()!"></app-theme-three>
+        
+        <!-- Theme 4: Institutional -->
+        <app-theme-four *ngSwitchCase="4" [data]="publicService.homeData()!"></app-theme-four>
+        
+        <!-- Theme 5: Minimal / Modern -->
+        <app-theme-five *ngSwitchCase="5" [data]="publicService.homeData()!"></app-theme-five>
+        
+        <!-- Default Fallback -->
+        <app-theme-one *ngSwitchDefault [data]="publicService.homeData()!"></app-theme-one>
+      </ng-container>
+    </div>

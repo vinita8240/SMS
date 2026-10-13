@@ -1,0 +1,151 @@
+<!-- ========================================================================= -->
+<!-- THEME 5: MINIMAL / MODERN (Editorial Monochrome & Electric Cobalt)        -->
+<!-- Generous Whitespace, Zero Border-Radius, Hairline Borders, Bold Type      -->
+<!-- ========================================================================= -->
+<div class="min-h-screen bg-white text-slate-900 font-sans selection:bg-black selection:text-white">
+
+  <!-- Minimal Hairline Header -->
+  <header class="border-b border-black bg-white sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 h-20 flex items-center justify-between">
+      
+      <!-- Monogram / Stark Logo -->
+      <a routerLink="/site" class="flex items-center space-x-3 no-underline group">
+        <img [src]="data?.settings?.school_logo || '/logo.png'" alt="Logo" class="h-10 w-auto object-contain grayscale group-hover:grayscale-0 transition" onerror="this.src='/logo.png'" />
+        <span class="text-base sm:text-lg font-black tracking-tighter uppercase text-black">
+          {{ data?.settings?.school_name || 'Mount Carmel' }}
+        </span>
+      </a>
+
+      <!-- Minimal Menu Links -->
+      <nav class="hidden md:flex items-center space-x-8">
+        <ng-container *ngFor="let menu of data?.site?.menus">
+          <a [routerLink]="menu.route" class="text-xs font-mono uppercase tracking-widest text-slate-700 hover:text-black hover:underline transition">
+            {{ menu.title }}
+          </a>
+        </ng-container>
+
+        <a routerLink="/site/contact" class="px-5 py-2.5 bg-black text-white text-xs font-mono uppercase tracking-widest hover:bg-blue-600 transition">
+          Apply ↗
+        </a>
+      </nav>
+
+      <!-- Mobile Button -->
+      <button (click)="isMobileMenuOpen = !isMobileMenuOpen" class="md:hidden font-mono text-xl">
+        [+]
+      </button>
+
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div *ngIf="isMobileMenuOpen" class="md:hidden border-t border-black p-6 space-y-3 bg-white">
+      <div *ngFor="let menu of data?.site?.menus">
+        <a [routerLink]="menu.route" (click)="isMobileMenuOpen = false" class="block font-mono text-sm uppercase py-1 text-black">
+          {{ menu.title }}
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- EDITORIAL TYPOGRAPHY HERO                                                 -->
+  <!-- ========================================================================= -->
+  <section class="border-b border-black py-20 sm:py-28 px-6 sm:px-10 max-w-7xl mx-auto">
+    <div class="space-y-8 max-w-4xl">
+      <div class="font-mono text-xs uppercase tracking-widest text-slate-500">
+        // 01. SCHOLASTIC CONTINUUM EST. 1998
+      </div>
+
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black text-black leading-none tracking-tighter">
+        Radical Thinking.<br>
+        Rigorous Science.<br>
+        Human Character.
+      </h1>
+
+      <p class="text-slate-600 text-base sm:text-xl font-normal leading-relaxed max-w-2xl">
+        {{ data?.settings?.tagline || 'An autonomous academic community preparing students for global impact through deep inquiry and innovative discovery.' }}
+      </p>
+
+      <div class="pt-4 flex flex-wrap gap-4 font-mono text-xs uppercase">
+        <a routerLink="/site/contact" class="px-8 py-4 bg-black text-white hover:bg-blue-600 transition">
+          Admissions 2026-27 ↗
+        </a>
+        <a routerLink="/site/p/about-us" class="px-8 py-4 border border-black text-black hover:bg-slate-100 transition">
+          Read Manifesto
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- BOLD NUMBERS (Minimalist Statistics)                                      -->
+  <!-- ========================================================================= -->
+  <section class="border-b border-black grid grid-cols-2 md:grid-cols-4 max-w-7xl mx-auto divide-x divide-black">
+    <div class="p-8 sm:p-12 space-y-2">
+      <div class="text-4xl sm:text-6xl font-black text-black tracking-tighter">{{ data?.stats?.totalStudents }}+</div>
+      <div class="font-mono text-xs text-slate-500 uppercase tracking-widest">Enrolled Learners</div>
+    </div>
+    <div class="p-8 sm:p-12 space-y-2">
+      <div class="text-4xl sm:text-6xl font-black text-blue-600 tracking-tighter">{{ data?.stats?.totalTeachers }}+</div>
+      <div class="font-mono text-xs text-slate-500 uppercase tracking-widest">Faculty Mentors</div>
+    </div>
+    <div class="p-8 sm:p-12 space-y-2">
+      <div class="text-4xl sm:text-6xl font-black text-black tracking-tighter">{{ data?.stats?.academicPassRate }}</div>
+      <div class="font-mono text-xs text-slate-500 uppercase tracking-widest">Distinction Rate</div>
+    </div>
+    <div class="p-8 sm:p-12 space-y-2">
+      <div class="text-4xl sm:text-6xl font-black text-black tracking-tighter">{{ data?.stats?.yearsOfExcellence }}</div>
+      <div class="font-mono text-xs text-slate-500 uppercase tracking-widest">Years of Impact</div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- MINIMAL NEWS & IDEAS TIMELINE                                             -->
+  <!-- ========================================================================= -->
+  <section class="py-20 px-6 sm:px-10 max-w-7xl mx-auto space-y-12">
+    <div class="flex items-center justify-between border-b border-black pb-4">
+      <div class="font-mono text-xs uppercase tracking-widest text-slate-500">// 02. DISPATCHES & EVENTS</div>
+      <a routerLink="/site/news" class="font-mono text-xs uppercase tracking-widest text-black hover:text-blue-600">All Dispatches ↗</a>
+    </div>
+
+    <div class="divide-y divide-slate-200">
+      <div *ngFor="let n of data?.news" class="py-8 flex flex-col md:flex-row md:items-baseline justify-between gap-6 group">
+        <div class="font-mono text-xs text-slate-400 w-32 shrink-0">{{ n.published_at }}</div>
+        <div class="flex-1 space-y-2">
+          <span class="font-mono text-[10px] uppercase tracking-wider text-blue-600">[{{ n.category }}]</span>
+          <h3 class="text-xl sm:text-2xl font-bold text-black group-hover:text-blue-600 transition">{{ n.title }}</h3>
+          <p class="text-slate-600 text-sm max-w-2xl">{{ n.summary }}</p>
+        </div>
+        <a routerLink="/site/news" class="font-mono text-xs uppercase text-black group-hover:translate-x-2 transition-transform shrink-0">
+          Read ↗
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- MINIMAL FOOTER                                                            -->
+  <!-- ========================================================================= -->
+  <footer class="border-t border-black bg-black text-white py-16 px-6 sm:px-10 font-mono text-xs">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+      <div class="space-y-2">
+        <div class="text-sm font-bold uppercase tracking-widest">{{ data?.settings?.school_name }}</div>
+        <p class="text-slate-400">{{ data?.settings?.address }}</p>
+        <p class="text-slate-400">T: {{ data?.settings?.phone }} | E: {{ data?.settings?.email }}</p>
+      </div>
+
+      <div class="flex flex-wrap gap-6 text-slate-300">
+        <a routerLink="/site/p/about-us" class="hover:text-white">About</a>
+        <a routerLink="/site/p/academics" class="hover:text-white">Academics</a>
+        <a routerLink="/site/gallery" class="hover:text-white">Gallery</a>
+        <a routerLink="/site/contact" class="hover:text-white">Contact</a>
+        <a routerLink="/login" class="text-blue-400 hover:text-white">Portal</a>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto mt-12 pt-6 border-t border-slate-800 text-slate-500 text-[11px] flex justify-between">
+      <span>{{ data?.settings?.copyright_text }}</span>
+      <span>THEME 05 // MINIMAL MODERN</span>
+    </div>
+  </footer>
+
+</div>

@@ -1,0 +1,1142 @@
+<div class="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+  
+  <!-- Top Breadcrumb & Header Banner -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800">
+    <div>
+      <div class="flex items-center space-x-2 text-xs font-semibold text-[#705ec8] dark:text-purple-400 uppercase tracking-wider mb-1">
+        <span>Front Office Management</span>
+        <span>•</span>
+        <span class="capitalize">{{ activeTab.replace('_', ' ') }}</span>
+      </div>
+      <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+        Reception & Front Desk ERP
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+        Manage admission leads, visitors, telephonic logs, postal dispatches, complaints & setup masters.
+      </p>
+    </div>
+
+    <!-- Quick Action / Add Button -->
+    <div class="flex items-center space-x-3">
+      <button 
+        *ngIf="activeTab === 'enquiry'" 
+        (click)="openAddEnquiry()" 
+        class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#705ec8] to-[#5a48b5] text-white font-semibold text-xs sm:text-sm shadow-md hover:shadow-lg hover:opacity-95 transition-all">
+        <span>+ Add Admission Enquiry</span>
+      </button>
+
+      <button 
+        *ngIf="activeTab === 'visitor'" 
+        (click)="openAddVisitor()" 
+        class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-semibold text-xs sm:text-sm shadow-md hover:shadow-lg hover:opacity-95 transition-all">
+        <span>+ Add Visitor Entry</span>
+      </button>
+
+      <button 
+        *ngIf="activeTab === 'call_log'" 
+        (click)="openAddCallLog()" 
+        class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-md hover:shadow-lg hover:opacity-95 transition-all">
+        <span>+ Log Phone Call</span>
+      </button>
+
+      <button 
+        *ngIf="activeTab === 'postal_dispatch'" 
+        (click)="openAddDispatch()" 
+        class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 text-white font-semibold text-xs sm:text-sm shadow-md hover:shadow-lg hover:opacity-95 transition-all">
+        <span>+ Add Postal Dispatch</span>
+      </button>
+
+      <button 
+        *ngIf="activeTab === 'postal_receive'" 
+        (click)="openAddReceive()" 
+        class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-semibold text-xs sm:text-sm shadow-md hover:shadow-lg hover:opacity-95 transition-all">
+        <span>+ Add Postal Receive</span>
+      </button>
+
+      <button 
+        *ngIf="activeTab === 'complain'" 
+        (click)="openAddComplaint()" 
+        class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-700 text-white font-semibold text-xs sm:text-sm shadow-md hover:shadow-lg hover:opacity-95 transition-all">
+        <span>+ Register Complaint</span>
+      </button>
+
+      <button 
+        *ngIf="activeTab === 'setup'" 
+        (click)="openAddSetup()" 
+        class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-[#705ec8] text-white font-semibold text-xs sm:text-sm shadow-md hover:opacity-95 transition-all">
+        <span>+ Add {{ activeSetupSubTab.replace('_', ' ') | titlecase }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tab Navigation Bar -->
+  <div class="flex items-center space-x-1.5 overflow-x-auto pb-1 border-b border-slate-200 dark:border-slate-800 scrollbar-none">
+    <button 
+      (click)="setTab('enquiry')"
+      [ngClass]="activeTab === 'enquiry' ? 'bg-[#705ec8] text-white shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800'"
+      class="px-4 py-2 rounded-xl font-semibold text-xs whitespace-nowrap transition-all flex items-center space-x-2">
+      <span>🎯 Admission Enquiries</span>
+      <span *ngIf="enquiries().length > 0" class="px-1.5 py-0.5 rounded-full text-[10px]" [ngClass]="activeTab === 'enquiry' ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300'">{{ enquiries().length }}</span>
+    </button>
+
+    <button 
+      (click)="setTab('visitor')"
+      [ngClass]="activeTab === 'visitor' ? 'bg-[#705ec8] text-white shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800'"
+      class="px-4 py-2 rounded-xl font-semibold text-xs whitespace-nowrap transition-all flex items-center space-x-2">
+      <span>📖 Visitor Book</span>
+      <span *ngIf="visitors().length > 0" class="px-1.5 py-0.5 rounded-full text-[10px]" [ngClass]="activeTab === 'visitor' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'">{{ visitors().length }}</span>
+    </button>
+
+    <button 
+      (click)="setTab('call_log')"
+      [ngClass]="activeTab === 'call_log' ? 'bg-[#705ec8] text-white shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800'"
+      class="px-4 py-2 rounded-xl font-semibold text-xs whitespace-nowrap transition-all flex items-center space-x-2">
+      <span>📞 Phone Call Log</span>
+      <span *ngIf="callLogs().length > 0" class="px-1.5 py-0.5 rounded-full text-[10px]" [ngClass]="activeTab === 'call_log' ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300'">{{ callLogs().length }}</span>
+    </button>
+
+    <button 
+      (click)="setTab('postal_dispatch')"
+      [ngClass]="activeTab === 'postal_dispatch' ? 'bg-[#705ec8] text-white shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800'"
+      class="px-4 py-2 rounded-xl font-semibold text-xs whitespace-nowrap transition-all flex items-center space-x-2">
+      <span>📤 Postal Dispatch</span>
+      <span *ngIf="dispatches().length > 0" class="px-1.5 py-0.5 rounded-full text-[10px]" [ngClass]="activeTab === 'postal_dispatch' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'">{{ dispatches().length }}</span>
+    </button>
+
+    <button 
+      (click)="setTab('postal_receive')"
+      [ngClass]="activeTab === 'postal_receive' ? 'bg-[#705ec8] text-white shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800'"
+      class="px-4 py-2 rounded-xl font-semibold text-xs whitespace-nowrap transition-all flex items-center space-x-2">
+      <span>📥 Postal Receive</span>
+      <span *ngIf="receives().length > 0" class="px-1.5 py-0.5 rounded-full text-[10px]" [ngClass]="activeTab === 'postal_receive' ? 'bg-white/20 text-white' : 'bg-cyan-100 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-300'">{{ receives().length }}</span>
+    </button>
+
+    <button 
+      (click)="setTab('complain')"
+      [ngClass]="activeTab === 'complain' ? 'bg-[#705ec8] text-white shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800'"
+      class="px-4 py-2 rounded-xl font-semibold text-xs whitespace-nowrap transition-all flex items-center space-x-2">
+      <span>⚖️ Complain / Grievance</span>
+      <span *ngIf="complaints().length > 0" class="px-1.5 py-0.5 rounded-full text-[10px]" [ngClass]="activeTab === 'complain' ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'">{{ complaints().length }}</span>
+    </button>
+
+    <button 
+      (click)="setTab('setup')"
+      [ngClass]="activeTab === 'setup' ? 'bg-[#705ec8] text-white shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800'"
+      class="px-4 py-2 rounded-xl font-semibold text-xs whitespace-nowrap transition-all flex items-center space-x-2">
+      <span>⚙️ Setup Front Office</span>
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800">
+    <app-skeleton-loader></app-skeleton-loader>
+  </div>
+
+  <!-- ======================== TAB 1: ADMISSION ENQUIRIES ======================== -->
+  <div *ngIf="!isLoading() && activeTab === 'enquiry'" class="space-y-4">
+    
+    <!-- Filter and Search Row -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs">
+      <div class="flex items-center space-x-3 w-full sm:w-auto">
+        <div class="relative flex-1 sm:w-72">
+          <input 
+            type="text" 
+            [(ngModel)]="searchTerm" 
+            (keyup.enter)="loadEnquiries()"
+            placeholder="Search by Name, Phone, Class..." 
+            class="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#705ec8]" />
+          <span class="absolute left-2.5 top-2 text-slate-400 text-xs">🔍</span>
+        </div>
+
+        <select 
+          [(ngModel)]="filterStatus" 
+          (change)="loadEnquiries()"
+          class="px-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:outline-none">
+          <option value="all">All Status</option>
+          <option value="Active">Active</option>
+          <option value="Won">Won (Enrolled)</option>
+          <option value="Passive">Passive</option>
+          <option value="Dead">Dead / Lost</option>
+        </select>
+      </div>
+
+      <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        Total Enquiries: <span class="font-bold text-slate-800 dark:text-white">{{ enquiries().length }}</span>
+      </div>
+    </div>
+
+    <!-- Enquiries Table -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-50/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-200 dark:border-slate-800">
+              <th class="p-3.5">Name / Parent</th>
+              <th class="p-3.5">Phone & Email</th>
+              <th class="p-3.5">Source / Ref</th>
+              <th class="p-3.5">Enquiry Date</th>
+              <th class="p-3.5">Next Follow Up</th>
+              <th class="p-3.5">Class & Child</th>
+              <th class="p-3.5">Status</th>
+              <th class="p-3.5 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300 font-medium">
+            <tr *ngFor="let item of enquiries()" class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+              <td class="p-3.5">
+                <div class="font-bold text-slate-900 dark:text-white">{{ item.name }}</div>
+                <div class="text-[11px] text-slate-400">{{ item.address || 'No address' }}</div>
+              </td>
+              <td class="p-3.5">
+                <div class="text-slate-800 dark:text-slate-200 font-semibold">{{ item.phone }}</div>
+                <div class="text-[11px] text-slate-400">{{ item.email || '-' }}</div>
+              </td>
+              <td class="p-3.5">
+                <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
+                  {{ item.source || 'Walk-in' }}
+                </span>
+                <div class="text-[10px] text-slate-400 mt-0.5">Ref: {{ item.reference || 'None' }}</div>
+              </td>
+              <td class="p-3.5 whitespace-nowrap">{{ item.date ? (item.date | date:'mediumDate') : '-' }}</td>
+              <td class="p-3.5 whitespace-nowrap">
+                <span *ngIf="item.next_follow_up_date" class="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+                  {{ item.next_follow_up_date | date:'mediumDate' }}
+                </span>
+                <span *ngIf="!item.next_follow_up_date" class="text-slate-400">-</span>
+              </td>
+              <td class="p-3.5 whitespace-nowrap">
+                <div class="font-semibold text-slate-800 dark:text-slate-200">{{ item.class_name || 'Class 1' }}</div>
+                <div class="text-[10px] text-slate-400">{{ item.no_of_child || 1 }} Child</div>
+              </td>
+              <td class="p-3.5 whitespace-nowrap">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                  [ngClass]="{
+                    'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300': item.status === 'Won' || item.status === 'Enrolled',
+                    'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300': item.status === 'Active',
+                    'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300': item.status === 'Passive',
+                    'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300': item.status === 'Dead' || item.status === 'Lost'
+                  }">
+                  {{ item.status || 'Active' }}
+                </span>
+              </td>
+              <td class="p-3.5 text-right whitespace-nowrap">
+                <div class="flex items-center justify-end space-x-1.5">
+                  <button 
+                    (click)="openFollowUpModal(item)"
+                    title="Log Follow Up"
+                    class="p-1.5 rounded-lg bg-purple-50 text-[#705ec8] hover:bg-purple-100 dark:bg-purple-950 dark:text-purple-300 text-xs">
+                    💬
+                  </button>
+                  <a 
+                    routerLink="/students/admission" 
+                    [queryParams]="{ enquiry_name: item.name, enquiry_phone: item.phone, enquiry_class: item.class_name }"
+                    title="Direct Enroll Student"
+                    class="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 text-xs">
+                    🎓
+                  </a>
+                  <button 
+                    (click)="openEditEnquiry(item)"
+                    title="Edit Enquiry"
+                    class="p-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-300 text-xs">
+                    ✏️
+                  </button>
+                  <button 
+                    (click)="confirmDelete('enquiry', item.enquiry_id!, item.name)"
+                    title="Delete Enquiry"
+                    class="p-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950 dark:text-rose-300 text-xs">
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="enquiries().length === 0">
+              <td colspan="8" class="p-8 text-center text-slate-400">
+                No admission enquiries found. Click "+ Add Admission Enquiry" to create one.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== TAB 2: VISITOR BOOK ======================== -->
+  <div *ngIf="!isLoading() && activeTab === 'visitor'" class="space-y-4">
+    
+    <!-- Filter Row -->
+    <div class="flex items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs">
+      <div class="relative flex-1 sm:w-72">
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          (keyup.enter)="loadVisitors()"
+          placeholder="Search by Visitor Name, Phone, Purpose, ID..." 
+          class="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#705ec8]" />
+        <span class="absolute left-2.5 top-2 text-slate-400 text-xs">🔍</span>
+      </div>
+
+      <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        Total Visitors: <span class="font-bold text-slate-800 dark:text-white">{{ visitors().length }}</span>
+      </div>
+    </div>
+
+    <!-- Visitors Table -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-50/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-200 dark:border-slate-800">
+              <th class="p-3.5">Visitor Name</th>
+              <th class="p-3.5">Purpose</th>
+              <th class="p-3.5">Phone & ID Card</th>
+              <th class="p-3.5">Date</th>
+              <th class="p-3.5">In Time</th>
+              <th class="p-3.5">Out Time</th>
+              <th class="p-3.5">Status</th>
+              <th class="p-3.5 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300 font-medium">
+            <tr *ngFor="let item of visitors()" class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+              <td class="p-3.5">
+                <div class="font-bold text-slate-900 dark:text-white">{{ item.name }}</div>
+                <div class="text-[10px] text-slate-400">{{ item.no_of_person || 1 }} Persons • {{ item.note || 'No notes' }}</div>
+              </td>
+              <td class="p-3.5">
+                <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                  {{ item.purpose }}
+                </span>
+              </td>
+              <td class="p-3.5">
+                <div class="font-semibold text-slate-800 dark:text-slate-200">{{ item.phone }}</div>
+                <div class="text-[10px] text-slate-400">ID: {{ item.id_card || 'None' }}</div>
+              </td>
+              <td class="p-3.5 whitespace-nowrap">{{ item.date ? (item.date | date:'mediumDate') : '-' }}</td>
+              <td class="p-3.5 whitespace-nowrap font-semibold text-emerald-600 dark:text-emerald-400">{{ item.in_time || '-' }}</td>
+              <td class="p-3.5 whitespace-nowrap">
+                <span *ngIf="item.out_time" class="font-semibold text-slate-600 dark:text-slate-400">{{ item.out_time }}</span>
+                <button 
+                  *ngIf="!item.out_time" 
+                  (click)="checkoutVisitor(item)"
+                  class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold text-[10px] border border-emerald-200">
+                  Check Out Now
+                </button>
+              </td>
+              <td class="p-3.5 whitespace-nowrap">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                  [ngClass]="item.status === 'Checked Out' ? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 animate-pulse'">
+                  {{ item.status || 'In School' }}
+                </span>
+              </td>
+              <td class="p-3.5 text-right whitespace-nowrap">
+                <div class="flex items-center justify-end space-x-1.5">
+                  <button 
+                    (click)="printVisitorPass(item)"
+                    title="Print Visitor Pass"
+                    class="p-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 text-xs">
+                    🪪 Pass
+                  </button>
+                  <button 
+                    (click)="openEditVisitor(item)"
+                    title="Edit Visitor Entry"
+                    class="p-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-300 text-xs">
+                    ✏️
+                  </button>
+                  <button 
+                    (click)="confirmDelete('visitor', item.visitor_id!, item.name)"
+                    title="Delete Record"
+                    class="p-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950 dark:text-rose-300 text-xs">
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="visitors().length === 0">
+              <td colspan="8" class="p-8 text-center text-slate-400">
+                No visitor records logged today. Click "+ Add Visitor Entry" to register a visitor.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== TAB 3: PHONE CALL LOG ======================== -->
+  <div *ngIf="!isLoading() && activeTab === 'call_log'" class="space-y-4">
+    
+    <!-- Filter Row -->
+    <div class="flex items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs">
+      <div class="flex items-center space-x-3 w-full sm:w-auto">
+        <div class="relative flex-1 sm:w-72">
+          <input 
+            type="text" 
+            [(ngModel)]="searchTerm" 
+            (keyup.enter)="loadCallLogs()"
+            placeholder="Search by Caller Name, Phone, Description..." 
+            class="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#705ec8]" />
+          <span class="absolute left-2.5 top-2 text-slate-400 text-xs">🔍</span>
+        </div>
+
+        <select 
+          [(ngModel)]="filterStatus" 
+          (change)="loadCallLogs()"
+          class="px-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:outline-none">
+          <option value="all">All Call Types</option>
+          <option value="Incoming">Incoming Calls</option>
+          <option value="Outgoing">Outgoing Calls</option>
+        </select>
+      </div>
+
+      <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        Total Logs: <span class="font-bold text-slate-800 dark:text-white">{{ callLogs().length }}</span>
+      </div>
+    </div>
+
+    <!-- Call Logs Table -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-50/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-200 dark:border-slate-800">
+              <th class="p-3.5">Name & Phone</th>
+              <th class="p-3.5">Type</th>
+              <th class="p-3.5">Date</th>
+              <th class="p-3.5">Duration</th>
+              <th class="p-3.5">Description & Remarks</th>
+              <th class="p-3.5">Next Follow Up</th>
+              <th class="p-3.5 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300 font-medium">
+            <tr *ngFor="let item of callLogs()" class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+              <td class="p-3.5">
+                <div class="font-bold text-slate-900 dark:text-white">{{ item.name }}</div>
+                <div class="text-[11px] text-slate-500 font-semibold">{{ item.phone }}</div>
+              </td>
+              <td class="p-3.5 whitespace-nowrap">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold"
+                  [ngClass]="item.call_type === 'Incoming' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'">
+                  {{ item.call_type === 'Incoming' ? '📞 Incoming' : '📤 Outgoing' }}
+                </span>
+              </td>
+              <td class="p-3.5 whitespace-nowrap">{{ item.date ? (item.date | date:'mediumDate') : '-' }}</td>
+              <td class="p-3.5 whitespace-nowrap text-slate-600 dark:text-slate-400">{{ item.call_duration || '-' }}</td>
+              <td class="p-3.5">
+                <div class="text-slate-800 dark:text-slate-200">{{ item.description || 'No description' }}</div>
+                <div *ngIf="item.note" class="text-[10px] text-slate-400 italic">Note: {{ item.note }}</div>
+              </td>
+              <td class="p-3.5 whitespace-nowrap">
+                <span *ngIf="item.next_follow_up_date" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700">
+                  {{ item.next_follow_up_date | date:'mediumDate' }}
+                </span>
+                <span *ngIf="!item.next_follow_up_date" class="text-slate-400">-</span>
+              </td>
+              <td class="p-3.5 text-right whitespace-nowrap">
+                <div class="flex items-center justify-end space-x-1.5">
+                  <button 
+                    (click)="openEditCallLog(item)"
+                    title="Edit Call Log"
+                    class="p-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-300 text-xs">
+                    ✏️
+                  </button>
+                  <button 
+                    (click)="confirmDelete('call_log', item.call_id!, item.name)"
+                    title="Delete Call Log"
+                    class="p-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950 dark:text-rose-300 text-xs">
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="callLogs().length === 0">
+              <td colspan="7" class="p-8 text-center text-slate-400">
+                No phone calls logged. Click "+ Log Phone Call" to add a new record.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== TAB 4: POSTAL DISPATCH ======================== -->
+  <div *ngIf="!isLoading() && activeTab === 'postal_dispatch'" class="space-y-4">
+    <div class="flex items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs">
+      <div class="relative flex-1 sm:w-72">
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          (keyup.enter)="loadDispatches()"
+          placeholder="Search by To Title, Ref No, Address..." 
+          class="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#705ec8]" />
+        <span class="absolute left-2.5 top-2 text-slate-400 text-xs">🔍</span>
+      </div>
+      <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        Total Dispatches: <span class="font-bold text-slate-800 dark:text-white">{{ dispatches().length }}</span>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-50/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-200 dark:border-slate-800">
+              <th class="p-3.5">To Title / Recipient</th>
+              <th class="p-3.5">Reference No</th>
+              <th class="p-3.5">From Title</th>
+              <th class="p-3.5">Date</th>
+              <th class="p-3.5">Address & Note</th>
+              <th class="p-3.5 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300 font-medium">
+            <tr *ngFor="let item of dispatches()" class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+              <td class="p-3.5 font-bold text-slate-900 dark:text-white">{{ item.to_title }}</td>
+              <td class="p-3.5 font-mono text-purple-700 dark:text-purple-300 font-semibold">{{ item.reference_no || '-' }}</td>
+              <td class="p-3.5 font-medium">{{ item.from_title || '-' }}</td>
+              <td class="p-3.5 whitespace-nowrap">{{ item.date ? (item.date | date:'mediumDate') : '-' }}</td>
+              <td class="p-3.5">
+                <div class="text-slate-800 dark:text-slate-200">{{ item.address || '-' }}</div>
+                <div *ngIf="item.note" class="text-[10px] text-slate-400 italic">Note: {{ item.note }}</div>
+              </td>
+              <td class="p-3.5 text-right whitespace-nowrap">
+                <div class="flex items-center justify-end space-x-1.5">
+                  <button 
+                    (click)="openEditDispatch(item)"
+                    title="Edit Dispatch"
+                    class="p-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-300 text-xs">
+                    ✏️
+                  </button>
+                  <button 
+                    (click)="confirmDelete('postal_dispatch', item.dispatch_id!, item.to_title || 'Dispatch')"
+                    title="Delete Dispatch"
+                    class="p-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950 dark:text-rose-300 text-xs">
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="dispatches().length === 0">
+              <td colspan="6" class="p-8 text-center text-slate-400">
+                No postal dispatch entries registered.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== TAB 5: POSTAL RECEIVE ======================== -->
+  <div *ngIf="!isLoading() && activeTab === 'postal_receive'" class="space-y-4">
+    <div class="flex items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs">
+      <div class="relative flex-1 sm:w-72">
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          (keyup.enter)="loadReceives()"
+          placeholder="Search by From Title, Ref No, Address..." 
+          class="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#705ec8]" />
+        <span class="absolute left-2.5 top-2 text-slate-400 text-xs">🔍</span>
+      </div>
+      <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        Total Receives: <span class="font-bold text-slate-800 dark:text-white">{{ receives().length }}</span>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-50/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-200 dark:border-slate-800">
+              <th class="p-3.5">From Title / Sender</th>
+              <th class="p-3.5">Reference No</th>
+              <th class="p-3.5">To Title</th>
+              <th class="p-3.5">Date</th>
+              <th class="p-3.5">Address & Note</th>
+              <th class="p-3.5 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300 font-medium">
+            <tr *ngFor="let item of receives()" class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+              <td class="p-3.5 font-bold text-slate-900 dark:text-white">{{ item.from_title }}</td>
+              <td class="p-3.5 font-mono text-cyan-700 dark:text-cyan-300 font-semibold">{{ item.reference_no || '-' }}</td>
+              <td class="p-3.5 font-medium">{{ item.to_title || '-' }}</td>
+              <td class="p-3.5 whitespace-nowrap">{{ item.date ? (item.date | date:'mediumDate') : '-' }}</td>
+              <td class="p-3.5">
+                <div class="text-slate-800 dark:text-slate-200">{{ item.address || '-' }}</div>
+                <div *ngIf="item.note" class="text-[10px] text-slate-400 italic">Note: {{ item.note }}</div>
+              </td>
+              <td class="p-3.5 text-right whitespace-nowrap">
+                <div class="flex items-center justify-end space-x-1.5">
+                  <button 
+                    (click)="openEditReceive(item)"
+                    title="Edit Receive"
+                    class="p-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-300 text-xs">
+                    ✏️
+                  </button>
+                  <button 
+                    (click)="confirmDelete('postal_receive', item.receive_id!, item.from_title || 'Receive')"
+                    title="Delete Receive"
+                    class="p-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950 dark:text-rose-300 text-xs">
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="receives().length === 0">
+              <td colspan="6" class="p-8 text-center text-slate-400">
+                No postal receive entries registered.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== TAB 6: COMPLAIN / GRIEVANCE ======================== -->
+  <div *ngIf="!isLoading() && activeTab === 'complain'" class="space-y-4">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs">
+      <div class="flex items-center space-x-3 w-full sm:w-auto">
+        <div class="relative flex-1 sm:w-72">
+          <input 
+            type="text" 
+            [(ngModel)]="searchTerm" 
+            (keyup.enter)="loadComplaints()"
+            placeholder="Search by Complainant, Type, Phone..." 
+            class="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#705ec8]" />
+          <span class="absolute left-2.5 top-2 text-slate-400 text-xs">🔍</span>
+        </div>
+
+        <select 
+          [(ngModel)]="filterStatus" 
+          (change)="loadComplaints()"
+          class="px-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:outline-none">
+          <option value="all">All Complaints</option>
+          <option value="Pending">Pending</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Resolved">Resolved</option>
+        </select>
+      </div>
+
+      <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        Total Complaints: <span class="font-bold text-slate-800 dark:text-white">{{ complaints().length }}</span>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-50/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-200 dark:border-slate-800">
+              <th class="p-3.5">Complain By</th>
+              <th class="p-3.5">Complain Type</th>
+              <th class="p-3.5">Source & Assigned</th>
+              <th class="p-3.5">Date</th>
+              <th class="p-3.5">Description & Action Taken</th>
+              <th class="p-3.5">Status</th>
+              <th class="p-3.5 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300 font-medium">
+            <tr *ngFor="let item of complaints()" class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+              <td class="p-3.5">
+                <div class="font-bold text-slate-900 dark:text-white">{{ item.complain_by }}</div>
+                <div class="text-[11px] text-slate-400">{{ item.phone || 'No phone' }}</div>
+              </td>
+              <td class="p-3.5">
+                <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300">
+                  {{ item.complain_type }}
+                </span>
+              </td>
+              <td class="p-3.5">
+                <div class="text-slate-800 dark:text-slate-200 font-medium">{{ item.assigned || 'Principal' }}</div>
+                <div class="text-[10px] text-slate-400">Src: {{ item.source || 'Front Desk' }}</div>
+              </td>
+              <td class="p-3.5 whitespace-nowrap">{{ item.date ? (item.date | date:'mediumDate') : '-' }}</td>
+              <td class="p-3.5">
+                <div class="text-slate-800 dark:text-slate-200 font-medium">{{ item.description }}</div>
+                <div *ngIf="item.action_taken" class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-0.5">
+                  Action: {{ item.action_taken }}
+                </div>
+              </td>
+              <td class="p-3.5 whitespace-nowrap">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                  [ngClass]="{
+                    'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300': item.status === 'Resolved',
+                    'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300': item.status === 'In Progress',
+                    'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300': item.status === 'Pending'
+                  }">
+                  {{ item.status || 'Pending' }}
+                </span>
+              </td>
+              <td class="p-3.5 text-right whitespace-nowrap">
+                <div class="flex items-center justify-end space-x-1.5">
+                  <button 
+                    (click)="openEditComplaint(item)"
+                    title="Edit / Resolve Complain"
+                    class="p-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-300 text-xs">
+                    ✏️
+                  </button>
+                  <button 
+                    (click)="confirmDelete('complain', item.complain_id!, item.complain_by)"
+                    title="Delete Complain"
+                    class="p-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950 dark:text-rose-300 text-xs">
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="complaints().length === 0">
+              <td colspan="7" class="p-8 text-center text-slate-400">
+                No complaints recorded.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== TAB 7: SETUP FRONT OFFICE ======================== -->
+  <div *ngIf="!isLoading() && activeTab === 'setup'" class="space-y-4">
+    <!-- Sub-tabs for Setup -->
+    <div class="flex items-center space-x-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+      <button 
+        (click)="setSetupSubTab('purpose')" 
+        [ngClass]="activeSetupSubTab === 'purpose' ? 'bg-purple-100 text-[#705ec8] dark:bg-purple-950 dark:text-purple-300 font-bold' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
+        class="px-3.5 py-1.5 rounded-lg text-xs transition-colors">
+        Purpose Master
+      </button>
+      <button 
+        (click)="setSetupSubTab('complain_type')" 
+        [ngClass]="activeSetupSubTab === 'complain_type' ? 'bg-purple-100 text-[#705ec8] dark:bg-purple-950 dark:text-purple-300 font-bold' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
+        class="px-3.5 py-1.5 rounded-lg text-xs transition-colors">
+        Complain Type Master
+      </button>
+      <button 
+        (click)="setSetupSubTab('source')" 
+        [ngClass]="activeSetupSubTab === 'source' ? 'bg-purple-100 text-[#705ec8] dark:bg-purple-950 dark:text-purple-300 font-bold' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
+        class="px-3.5 py-1.5 rounded-lg text-xs transition-colors">
+        Source Master
+      </button>
+      <button 
+        (click)="setSetupSubTab('reference')" 
+        [ngClass]="activeSetupSubTab === 'reference' ? 'bg-purple-100 text-[#705ec8] dark:bg-purple-950 dark:text-purple-300 font-bold' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
+        class="px-3.5 py-1.5 rounded-lg text-xs transition-colors">
+        Reference Master
+      </button>
+    </div>
+
+    <!-- Setup Table -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-50/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-200 dark:border-slate-800">
+              <th class="p-3.5">Name / Title</th>
+              <th class="p-3.5">Description</th>
+              <th class="p-3.5 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300 font-medium">
+            <tr *ngFor="let item of setups()" class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+              <td class="p-3.5 font-bold text-slate-900 dark:text-white">{{ item.name }}</td>
+              <td class="p-3.5 text-slate-500 dark:text-slate-400">{{ item.description || '-' }}</td>
+              <td class="p-3.5 text-right whitespace-nowrap">
+                <div class="flex items-center justify-end space-x-1.5">
+                  <button 
+                    (click)="openEditSetup(item)"
+                    title="Edit Setup Item"
+                    class="p-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-300 text-xs">
+                    ✏️
+                  </button>
+                  <button 
+                    (click)="confirmDelete('setup', item.setup_id!, item.name)"
+                    title="Delete Setup Item"
+                    class="p-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950 dark:text-rose-300 text-xs">
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="setups().length === 0">
+              <td colspan="3" class="p-8 text-center text-slate-400">
+                No items configured in this setup master yet.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== MODALS ======================== -->
+
+  <!-- 1. Admission Enquiry Modal -->
+  <app-modal 
+    [isOpen]="isModalOpen() && activeTab === 'enquiry'" 
+    [title]="editingId ? 'Edit Admission Enquiry' : 'Add Admission Enquiry'"
+    (closeModal)="isModalOpen.set(false)">
+    <form [formGroup]="enquiryForm" (ngSubmit)="saveEnquiry()" class="space-y-4 text-xs">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Parent / Student Name *</label>
+          <input type="text" formControlName="name" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-[#705ec8]" placeholder="Full Name" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Phone Number *</label>
+          <input type="text" formControlName="phone" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-[#705ec8]" placeholder="Mobile Number" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
+          <input type="email" formControlName="email" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-[#705ec8]" placeholder="email@domain.com" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Class</label>
+          <input type="text" formControlName="class_name" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-[#705ec8]" placeholder="e.g. Grade 1" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Enquiry Date *</label>
+          <input type="date" formControlName="date" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-[#705ec8]" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Next Follow Up Date</label>
+          <input type="date" formControlName="next_follow_up_date" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-[#705ec8]" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Source</label>
+          <select formControlName="source" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none">
+            <option *ngFor="let s of sourceOptions()" [value]="s.name">{{ s.name }}</option>
+            <option *ngIf="sourceOptions().length === 0" value="Walk-in Desk">Walk-in Desk</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Status</label>
+          <select formControlName="status" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none">
+            <option value="Active">Active</option>
+            <option value="Passive">Passive</option>
+            <option value="Won">Won (Enrolled)</option>
+            <option value="Dead">Dead / Lost</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Address</label>
+        <textarea formControlName="address" rows="2" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-[#705ec8]" placeholder="Residential address"></textarea>
+      </div>
+      <div>
+        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Description / Notes</label>
+        <textarea formControlName="description" rows="2" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-[#705ec8]" placeholder="Specific questions or parent remarks"></textarea>
+      </div>
+
+      <div class="flex justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isModalOpen.set(false)" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">Cancel</button>
+        <button type="submit" [disabled]="enquiryForm.invalid" class="px-4 py-2 rounded-xl bg-[#705ec8] text-white font-semibold shadow-md disabled:opacity-50">Save Enquiry</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- 2. Follow-Up Modal -->
+  <app-modal 
+    [isOpen]="isFollowUpModalOpen()" 
+    [title]="'Log Follow Up: ' + (selectedEnquiryForFollowUp?.name || '')"
+    (closeModal)="isFollowUpModalOpen.set(false)">
+    <form [formGroup]="followUpForm" (ngSubmit)="saveFollowUp()" class="space-y-4 text-xs">
+      <div>
+        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Follow-up Response / Discussion Remarks *</label>
+        <textarea formControlName="response" rows="3" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-[#705ec8]" placeholder="Record discussion details with parent..."></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Next Follow Up Date *</label>
+          <input type="date" formControlName="next_follow_up_date" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Updated Status</label>
+          <select formControlName="status" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none">
+            <option value="Active">Active</option>
+            <option value="Won">Won (Enrolled)</option>
+            <option value="Passive">Passive</option>
+            <option value="Dead">Dead / Lost</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isFollowUpModalOpen.set(false)" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 font-semibold">Cancel</button>
+        <button type="submit" [disabled]="followUpForm.invalid" class="px-4 py-2 rounded-xl bg-[#705ec8] text-white font-semibold">Save Follow-up</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- 3. Visitor Modal -->
+  <app-modal 
+    [isOpen]="isModalOpen() && activeTab === 'visitor'" 
+    [title]="editingId ? 'Edit Visitor Record' : 'Add Visitor Entry'"
+    (closeModal)="isModalOpen.set(false)">
+    <form [formGroup]="visitorForm" (ngSubmit)="saveVisitor()" class="space-y-4 text-xs">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Purpose *</label>
+          <select formControlName="purpose" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none">
+            <option *ngFor="let p of purposeOptions()" [value]="p.name">{{ p.name }}</option>
+            <option *ngIf="purposeOptions().length === 0" value="Academic Admission">Academic Admission</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Visitor Name *</label>
+          <input type="text" formControlName="name" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Full Name" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Phone Number *</label>
+          <input type="text" formControlName="phone" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Mobile Number" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">ID Card No</label>
+          <input type="text" formControlName="id_card" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="National ID / Driver License" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Number Of Persons</label>
+          <input type="number" formControlName="no_of_person" min="1" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Date *</label>
+          <input type="date" formControlName="date" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">In Time *</label>
+          <input type="text" formControlName="in_time" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="e.g. 09:30 AM" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Out Time</label>
+          <input type="text" formControlName="out_time" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="e.g. 10:45 AM" />
+        </div>
+      </div>
+      <div>
+        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Note / Reason</label>
+        <textarea formControlName="note" rows="2" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Meeting notes or details"></textarea>
+      </div>
+      <div class="flex justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isModalOpen.set(false)" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 font-semibold">Cancel</button>
+        <button type="submit" [disabled]="visitorForm.invalid" class="px-4 py-2 rounded-xl bg-emerald-600 text-white font-semibold">Save Visitor</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- 4. Phone Call Log Modal -->
+  <app-modal 
+    [isOpen]="isModalOpen() && activeTab === 'call_log'" 
+    [title]="editingId ? 'Edit Phone Call Record' : 'Add Phone Call Log'"
+    (closeModal)="isModalOpen.set(false)">
+    <form [formGroup]="callLogForm" (ngSubmit)="saveCallLog()" class="space-y-4 text-xs">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Caller / Receiver Name *</label>
+          <input type="text" formControlName="name" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Contact Person" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Phone Number *</label>
+          <input type="text" formControlName="phone" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Phone Number" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Call Type *</label>
+          <select formControlName="call_type" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none">
+            <option value="Incoming">Incoming Call</option>
+            <option value="Outgoing">Outgoing Call</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Date *</label>
+          <input type="date" formControlName="date" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Call Duration</label>
+          <input type="text" formControlName="call_duration" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="e.g. 3 mins" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Next Follow Up Date</label>
+          <input type="date" formControlName="next_follow_up_date" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" />
+        </div>
+      </div>
+      <div>
+        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Call Description / Purpose</label>
+        <textarea formControlName="description" rows="2" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Reason for call..."></textarea>
+      </div>
+      <div>
+        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Notes / Action Taken</label>
+        <textarea formControlName="note" rows="2" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Outcome or follow up notes..."></textarea>
+      </div>
+      <div class="flex justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isModalOpen.set(false)" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 font-semibold">Cancel</button>
+        <button type="submit" [disabled]="callLogForm.invalid" class="px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold">Save Call Record</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- 5. Postal Dispatch / Receive Modal -->
+  <app-modal 
+    [isOpen]="isModalOpen() && (activeTab === 'postal_dispatch' || activeTab === 'postal_receive')" 
+    [title]="activeTab === 'postal_dispatch' ? 'Postal Dispatch Record' : 'Postal Receive Record'"
+    (closeModal)="isModalOpen.set(false)">
+    <form [formGroup]="postalForm" (ngSubmit)="activeTab === 'postal_dispatch' ? saveDispatch() : saveReceive()" class="space-y-4 text-xs">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div *ngIf="activeTab === 'postal_dispatch'">
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">To Title / Recipient *</label>
+          <input type="text" formControlName="to_title" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Recipient Name / Office" />
+        </div>
+        <div *ngIf="activeTab === 'postal_receive'">
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">From Title / Sender *</label>
+          <input type="text" formControlName="from_title" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Sender Name / Authority" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Reference No</label>
+          <input type="text" formControlName="reference_no" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="DSP-2026-XXXX" />
+        </div>
+        <div *ngIf="activeTab === 'postal_dispatch'">
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">From Title (School Department)</label>
+          <input type="text" formControlName="from_title" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Principal Office / Accounts" />
+        </div>
+        <div *ngIf="activeTab === 'postal_receive'">
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">To Title (School Recipient)</label>
+          <input type="text" formControlName="to_title" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="School Principal / Exam Head" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Date *</label>
+          <input type="date" formControlName="date" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" />
+        </div>
+      </div>
+      <div>
+        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Address</label>
+        <textarea formControlName="address" rows="2" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Mailing Address"></textarea>
+      </div>
+      <div>
+        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Note / Contents Description</label>
+        <textarea formControlName="note" rows="2" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Description of package / documents"></textarea>
+      </div>
+      <div class="flex justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isModalOpen.set(false)" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 font-semibold">Cancel</button>
+        <button type="submit" [disabled]="postalForm.invalid" class="px-4 py-2 rounded-xl bg-[#705ec8] text-white font-semibold">Save Record</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- 6. Complaint Modal -->
+  <app-modal 
+    [isOpen]="isModalOpen() && activeTab === 'complain'" 
+    [title]="editingId ? 'Edit Complaint / Grievance' : 'Register New Complaint'"
+    (closeModal)="isModalOpen.set(false)">
+    <form [formGroup]="complainForm" (ngSubmit)="saveComplaint()" class="space-y-4 text-xs">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Complaint Type *</label>
+          <select formControlName="complain_type" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none">
+            <option *ngFor="let c of complainTypeOptions()" [value]="c.name">{{ c.name }}</option>
+            <option *ngIf="complainTypeOptions().length === 0" value="Transport & Bus Route">Transport & Bus Route</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Complain By (Name) *</label>
+          <input type="text" formControlName="complain_by" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Complainant Name" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Phone Number</label>
+          <input type="text" formControlName="phone" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Mobile Number" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Date *</label>
+          <input type="date" formControlName="date" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Assigned Staff / Officer</label>
+          <input type="text" formControlName="assigned" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="e.g. Principal / Transport Head" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Status</label>
+          <select formControlName="status" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none">
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Complaint Description *</label>
+        <textarea formControlName="description" rows="3" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Detailed description of the issue..."></textarea>
+      </div>
+      <div>
+        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Action Taken (Resolution)</label>
+        <textarea formControlName="action_taken" rows="2" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Action steps taken to resolve..."></textarea>
+      </div>
+      <div class="flex justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isModalOpen.set(false)" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 font-semibold">Cancel</button>
+        <button type="submit" [disabled]="complainForm.invalid" class="px-4 py-2 rounded-xl bg-rose-600 text-white font-semibold">Save Complaint</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- 7. Setup Modal -->
+  <app-modal 
+    [isOpen]="isModalOpen() && activeTab === 'setup'" 
+    [title]="editingId ? 'Edit ' + (activeSetupSubTab.replace('_', ' ') | titlecase) : 'Add ' + (activeSetupSubTab.replace('_', ' ') | titlecase)"
+    (closeModal)="isModalOpen.set(false)">
+    <form [formGroup]="setupForm" (ngSubmit)="saveSetup()" class="space-y-4 text-xs">
+      <div>
+        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Name / Title *</label>
+        <input type="text" formControlName="name" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Item Name" />
+      </div>
+      <div>
+        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Description</label>
+        <textarea formControlName="description" rows="3" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none" placeholder="Optional description"></textarea>
+      </div>
+      <div class="flex justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isModalOpen.set(false)" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 font-semibold">Cancel</button>
+        <button type="submit" [disabled]="setupForm.invalid" class="px-4 py-2 rounded-xl bg-[#705ec8] text-white font-semibold">Save Master Item</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- 8. Visitor Pass Badge Modal (Printable) -->
+  <app-modal 
+    [isOpen]="isVisitorPassModalOpen()" 
+    title="Official Visitor Pass"
+    (closeModal)="isVisitorPassModalOpen.set(false)">
+    <div *ngIf="selectedVisitorForPass" class="p-4 bg-slate-50 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 space-y-4 text-xs select-none">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
+        <div class="flex items-center space-x-2">
+          <span class="text-xl">🏫</span>
+          <div>
+            <div class="font-extrabold text-sm text-slate-900 dark:text-white">MOUNT CARMEL SCHOOL</div>
+            <div class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">VISITOR ACCESS GATE PASS</div>
+          </div>
+        </div>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">AUTHORIZED</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <div><span class="text-slate-400">Visitor:</span> <span class="font-bold text-slate-900 dark:text-white">{{ selectedVisitorForPass.name }}</span></div>
+        <div><span class="text-slate-400">Phone:</span> <span class="font-semibold text-slate-800 dark:text-slate-200">{{ selectedVisitorForPass.phone }}</span></div>
+        <div><span class="text-slate-400">Purpose:</span> <span class="font-semibold text-[#705ec8] dark:text-purple-400">{{ selectedVisitorForPass.purpose }}</span></div>
+        <div><span class="text-slate-400">ID No:</span> <span class="font-mono text-slate-800 dark:text-slate-200">{{ selectedVisitorForPass.id_card || 'Verified' }}</span></div>
+        <div><span class="text-slate-400">In Time:</span> <span class="font-semibold text-emerald-600">{{ selectedVisitorForPass.in_time }}</span></div>
+        <div><span class="text-slate-400">Date:</span> <span class="font-semibold text-slate-700 dark:text-slate-300">{{ selectedVisitorForPass.date | date:'mediumDate' }}</span></div>
+      </div>
+
+      <div class="pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center text-[10px] text-slate-400">
+        <span>Signature of Guard / Desk</span>
+        <button (click)="isVisitorPassModalOpen.set(false)" class="px-3 py-1 rounded bg-[#705ec8] text-white font-bold text-xs">Print Pass</button>
+      </div>
+    </div>
+  </app-modal>
+
+  <!-- Delete Confirm Dialog -->
+  <app-confirm-dialog
+    [isOpen]="isDeleteModalOpen()"
+    title="Delete Record"
+    [message]="'Are you sure you want to permanently delete ' + (itemToDelete?.name || 'this item') + '?'"
+    (confirm)="executeDelete()"
+    (cancel)="isDeleteModalOpen.set(false)">
+  </app-confirm-dialog>
+
+</div>

@@ -1,0 +1,52 @@
+<div class="min-h-screen bg-slate-50 font-sans pb-20">
+      
+      <div class="bg-white border-b border-slate-200 sticky top-10 z-30 shadow-xs">
+        <div class="max-w-6xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
+          <a routerLink="/site" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition uppercase">
+            <span>←</span> Back to Homepage
+          </a>
+          <span class="text-xs font-bold text-slate-800">Campus Gallery</span>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 text-white py-14 px-4 sm:px-8 text-center space-y-2">
+        <h1 class="text-3xl sm:text-4xl font-black">Campus Life in Pictures</h1>
+        <p class="text-xs sm:text-sm text-slate-300">Explore classrooms, laboratories, sporting triumphs, and creative arts</p>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="max-w-6xl mx-auto px-4 sm:px-8 mt-8 flex flex-wrap gap-2 justify-center">
+        <button 
+          (click)="filterCategory(null)"
+          [ngClass]="selectedCategory() === null ? 'bg-[#705ec8] text-white shadow-md' : 'bg-white text-slate-700 hover:bg-slate-100'"
+          class="px-4 py-2 rounded-full text-xs font-bold transition">
+          All Albums ({{ allItems().length }})
+        </button>
+        <button 
+          *ngFor="let cat of categories()"
+          (click)="filterCategory(cat.category_id)"
+          [ngClass]="selectedCategory() === cat.category_id ? 'bg-[#705ec8] text-white shadow-md' : 'bg-white text-slate-700 hover:bg-slate-100'"
+          class="px-4 py-2 rounded-full text-xs font-bold transition">
+          {{ cat.name }}
+        </button>
+      </div>
+
+      <!-- Image Grid -->
+      <div class="max-w-6xl mx-auto px-4 sm:px-8 mt-10">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div *ngFor="let item of filteredItems()" class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden group hover:shadow-xl transition">
+            <div class="h-60 overflow-hidden relative">
+              <img [src]="item.image_url" [alt]="item.title" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <span *ngIf="item.category_name" class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold bg-black/60 text-white backdrop-blur-xs uppercase">
+                {{ item.category_name }}
+              </span>
+            </div>
+            <div class="p-5 space-y-1">
+              <h3 class="font-bold text-sm text-slate-800">{{ item.title }}</h3>
+              <p *ngIf="item.description" class="text-xs text-slate-500">{{ item.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>

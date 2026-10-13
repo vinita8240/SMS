@@ -1,0 +1,352 @@
+<div class="space-y-6 animate-fade-in">
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Fee Billing & Invoices</h1>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Generate tuition invoices, manage fee masters, groups and types, and issue printable receipts.</p>
+        </div>
+
+        <button *ngIf="activeTab() === 'billing'" (click)="openAddModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 shadow-sm transition-all flex items-center space-x-1.5">
+      <span>+</span>
+      <span>Generate Invoice</span>
+    </button>
+    </div>
+
+    <div class="flex flex-wrap gap-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-2">
+        <button *ngFor="let tab of tabs" type="button" (click)="setActiveTab(tab.key)" class="px-3 py-2 rounded-xl text-xs font-bold transition-colors" [ngClass]="activeTab() === tab.key ? 'bg-brand-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'">
+      {{ tab.label }}
+    </button>
+    </div>
+
+    <div *ngIf="activeTab() === 'billing'" class="space-y-4">
+        <app-data-table [columns]="columns" [data]="invoices()" [pagination]="pagination()" (search)="onSearch($event)" (pageChange)="onPageChange($event)">
+
+            <ng-template #actions let-row>
+                <div class="flex items-center justify-end space-x-1.5">
+                    <button *ngIf="row.due > 0" (click)="openPaymentModal(row)" title="Collect Fee" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 hover:bg-emerald-200">
+            💵 Collect
+          </button>
+                    <button (click)="openEditModal(row)" title="Edit Invoice" class="p-1.5 text-slate-600 hover:text-brand-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+            ✏️
+          </button>
+                    <button (click)="viewInvoice(row)" title="Print Receipt" class="p-1.5 text-brand-600 hover:bg-brand-50 rounded-lg">
+            📄
+          </button>
+                </div>
+            </ng-template>
+        </app-data-table>
+    </div>
+
+    <div *ngIf="activeTab() === 'fees_master'" class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+            <div class="text-sm font-bold text-slate-900 dark:text-white mb-3">Add Fee Master</div>
+            <form [formGroup]="feeMasterForm" (ngSubmit)="submitFeeMaster()" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Fee Name</label>
+                    <input type="text" formControlName="name" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Code</label>
+                    <input type="text" formControlName="code" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Amount</label>
+                    <input type="number" formControlName="amount" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Description</label>
+                    <textarea rows="2" formControlName="description" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"></textarea>
+                </div>
+                <button type="submit" class="px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white">Save Fee Master</button>
+            </form>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+            <div class="text-sm font-bold text-slate-900 dark:text-white mb-3">Fee Master List</div>
+            <div class="space-y-3">
+                <div *ngFor="let item of feeMasters()" class="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-700 p-3">
+                    <div>
+                        <div class="font-bold text-slate-900 dark:text-white text-sm">{{ item.name }}</div>
+                        <div class="text-[11px] text-slate-500">{{ item.code }} • {{ item.description }}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-black text-brand-600">${{ item.amount | number:'1.2-2' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="activeTab() === 'fees_group'" class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+            <div class="text-sm font-bold text-slate-900 dark:text-white mb-3">Add Fee Group</div>
+            <form [formGroup]="feeGroupForm" (ngSubmit)="submitFeeGroup()" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Group Name</label>
+                    <input type="text" formControlName="name" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Amount</label>
+                    <input type="number" formControlName="amount" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Description</label>
+                    <textarea rows="2" formControlName="description" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"></textarea>
+                </div>
+                <button type="submit" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white">Save Fee Group</button>
+            </form>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+            <div class="text-sm font-bold text-slate-900 dark:text-white mb-3">Fee Group List</div>
+            <div class="space-y-3">
+                <div *ngFor="let item of feeGroups()" class="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-700 p-3">
+                    <div>
+                        <div class="font-bold text-slate-900 dark:text-white text-sm">{{ item.name }}</div>
+                        <div class="text-[11px] text-slate-500">{{ item.description }}</div>
+                    </div>
+                    <div class="font-black text-emerald-600">${{ item.amount | number:'1.2-2' }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="activeTab() === 'fees_type'" class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+            <div class="text-sm font-bold text-slate-900 dark:text-white mb-3">Add Fee Type</div>
+            <form [formGroup]="feeTypeForm" (ngSubmit)="submitFeeType()" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Fee Type Name</label>
+                    <input type="text" formControlName="name" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Code</label>
+                    <input type="text" formControlName="code" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+                </div>
+                <label class="flex items-center space-x-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <input type="checkbox" formControlName="is_optional" class="rounded" />
+          <span>Optional fee</span>
+        </label>
+                <button type="submit" class="px-4 py-2 rounded-xl text-xs font-bold bg-purple-600 text-white">Save Fee Type</button>
+            </form>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+            <div class="text-sm font-bold text-slate-900 dark:text-white mb-3">Fee Type List</div>
+            <div class="space-y-3">
+                <div *ngFor="let item of feeTypes()" class="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-700 p-3">
+                    <div>
+                        <div class="font-bold text-slate-900 dark:text-white text-sm">{{ item.name }}</div>
+                        <div class="text-[11px] text-slate-500">{{ item.code }}</div>
+                    </div>
+                    <span class="px-2 py-1 rounded-full text-[10px] font-bold" [ngClass]="item.is_optional ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'">
+            {{ item.is_optional ? 'Optional' : 'Required' }}
+          </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="activeTab() === 'my_invoices'" class="space-y-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+            <div class="text-sm font-bold text-slate-900 dark:text-white mb-3">My Invoices & Receipts</div>
+            <div class="space-y-3">
+                <div *ngFor="let invoice of getMyInvoices()" class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-700 p-3">
+                    <div>
+                        <div class="font-bold text-slate-900 dark:text-white text-sm">{{ invoice.title }}</div>
+                        <div class="text-[11px] text-slate-500">{{ invoice.invoice_number }} • {{ invoice.student_name }}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="font-black text-brand-600">${{ invoice.amount | number:'1.2-2' }}</div>
+                        <button (click)="viewInvoice(invoice)" class="px-3 py-1.5 rounded-lg bg-brand-600 text-white text-[11px] font-bold">View Receipt</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="activeTab() === 'search_payment' || activeTab() === 'due_fees' || activeTab() === 'offline_payment'" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 text-sm text-slate-600 dark:text-slate-300">
+        This finance section is available from the invoice billing tab. Use the billing screen to search, collect payments, and print official receipts.
+    </div>
+
+    <app-modal [isOpen]="isInvoiceModalOpen()" [title]="editingInvoice() ? 'Edit Student Fee Invoice' : 'Create Student Fee Invoice'" (close)="isInvoiceModalOpen.set(false)">
+        <form [formGroup]="invoiceForm" (ngSubmit)="saveInvoice()" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Class *</label>
+                    <select formControlName="class_id" (change)="onClassChange()" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none">
+            <option value="">Select Class</option>
+            <option *ngFor="let c of classes()" [value]="c.class_id">{{ c.name }}</option>
+          </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Student *</label>
+                    <select formControlName="student_id" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none">
+            <option value="">Select Student</option>
+            <option *ngFor="let s of students()" [value]="s.student_id">{{ s.name }} ({{ s.admission_no }})</option>
+          </select>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Fee Title *</label>
+                    <input type="text" formControlName="title" placeholder="e.g. Term 1 Tuition & Lab Fees" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none"
+                    />
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Description / Notes</label>
+                    <textarea formControlName="description" rows="2" placeholder="Fee breakdown or remarks..." class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Total Fee Amount ($) *</label>
+                    <input type="number" formControlName="amount" placeholder="2500" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Scholarship Discount ($)</label>
+                    <input type="number" formControlName="discount" placeholder="0" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Initial Paid Amount ($)</label>
+                    <input type="number" formControlName="amount_paid" placeholder="0" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Payment Method</label>
+                    <select formControlName="payment_method" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none">
+            <option value="Cash">Cash</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="Credit Card">Credit Card</option>
+            <option value="Cheque">Cheque</option>
+            <option value="Online">Online Gateway</option>
+          </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Due Date</label>
+                    <input type="date" formControlName="due_date" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Academic Year</label>
+                    <input type="text" formControlName="year" placeholder="2025-2026" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <button type="button" (click)="isInvoiceModalOpen.set(false)" class="px-4 py-2 rounded-xl text-xs bg-slate-100 dark:bg-slate-800">Cancel</button>
+                <button type="submit" [disabled]="invoiceForm.invalid" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-700">
+          {{ editingInvoice() ? 'Update Invoice' : 'Generate Invoice' }}
+        </button>
+            </div>
+        </form>
+    </app-modal>
+
+    <app-modal [isOpen]="isPaymentModalOpen()" title="Record Fee Payment" (close)="isPaymentModalOpen.set(false)">
+        <form *ngIf="selectedInvoice()" [formGroup]="paymentForm" (ngSubmit)="submitPayment()" class="space-y-4">
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 space-y-1 text-xs">
+                <div class="font-bold text-slate-900 dark:text-white text-sm">{{ selectedInvoice()?.invoice_number }} - {{ selectedInvoice()?.title }}</div>
+                <div class="text-slate-500">Student: <strong>{{ selectedInvoice()?.student_name }}</strong></div>
+                <div class="text-slate-500">Outstanding Balance: <strong class="text-rose-600">${{ selectedInvoice()?.due | number:'1.2-2' }}</strong></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Payment Amount ($) *</label>
+                    <input type="number" formControlName="amount" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Payment Method</label>
+                    <select formControlName="payment_method" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none">
+            <option value="Cash">Cash</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="Credit Card">Credit Card</option>
+            <option value="Cheque">Cheque</option>
+            <option value="Online">Online Gateway</option>
+          </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Transaction Reference</label>
+                <input type="text" formControlName="transaction_reference" placeholder="e.g. TXN-CHASE-1122" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none"
+                />
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <button type="button" (click)="isPaymentModalOpen.set(false)" class="px-4 py-2 rounded-xl text-xs bg-slate-100 dark:bg-slate-800">Cancel</button>
+                <button type="submit" [disabled]="paymentForm.invalid" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700">Confirm Payment</button>
+            </div>
+        </form>
+    </app-modal>
+
+    <app-modal [isOpen]="isReceiptModalOpen()" title="Official Fee Receipt" (close)="isReceiptModalOpen.set(false)">
+        <div *ngIf="selectedInvoice()" class="space-y-6" id="printable-receipt">
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                <div>
+                    <div class="text-xl font-black text-brand-600 dark:text-brand-400">🎓 St. Lawrence School</div>
+                    <div class="text-xs text-slate-400">124 Academic Way, Tech City, NY</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm font-bold text-slate-800 dark:text-white">{{ selectedInvoice()?.invoice_number }}</div>
+                    <div class="text-xs text-slate-400">Date: {{ selectedInvoice()?.created_at | date:'mediumDate' }}</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 text-xs">
+                <div>
+                    <span class="text-slate-400 block">Billed To:</span>
+                    <strong class="text-slate-900 dark:text-white text-sm">{{ selectedInvoice()?.student_name }}</strong>
+                    <div class="text-slate-500">Adm No: {{ selectedInvoice()?.admission_no }}</div>
+                    <div class="text-slate-500">Class: {{ selectedInvoice()?.class_name }}</div>
+                </div>
+                <div class="text-right">
+                    <span class="text-slate-400 block">Payment Status:</span>
+                    <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase mt-1" [ngClass]="selectedInvoice()?.status === 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'">
+            {{ selectedInvoice()?.status }}
+          </span>
+                </div>
+            </div>
+
+            <div class="border rounded-xl border-slate-200 dark:border-slate-800 overflow-hidden">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-100 dark:bg-slate-800 font-bold">
+                        <tr>
+                            <th class="p-3">Fee Description</th>
+                            <th class="p-3 text-right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="p-3 font-semibold">{{ selectedInvoice()?.title }}</td>
+                            <td class="p-3 text-right">${{ selectedInvoice()?.amount | number:'1.2-2' }}</td>
+                        </tr>
+                        <tr *ngIf="selectedInvoice()?.discount > 0" class="text-emerald-600">
+                            <td class="p-3 font-semibold">Scholarship Discount Applied</td>
+                            <td class="p-3 text-right">-${{ selectedInvoice()?.discount | number:'1.2-2' }}</td>
+                        </tr>
+                        <tr class="border-t font-bold bg-slate-50 dark:bg-slate-800/40">
+                            <td class="p-3">Amount Paid</td>
+                            <td class="p-3 text-right text-emerald-600">${{ selectedInvoice()?.amount_paid | number:'1.2-2' }}</td>
+                        </tr>
+                        <tr class="border-t font-bold text-sm bg-slate-100 dark:bg-slate-800">
+                            <td class="p-3">Balance Due</td>
+                            <td class="p-3 text-right text-rose-600">${{ selectedInvoice()?.due | number:'1.2-2' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-end space-x-2">
+                <button onclick="window.print()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200">
+          🖨️ Print Receipt
+        </button>
+            </div>
+        </div>
+    </app-modal>
+
+</div>

@@ -1,0 +1,25 @@
+<div class="relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 shadow-card hover:shadow-elevated transition-all duration-300">
+  <!-- Gradient accent glow -->
+  <div 
+    class="absolute -top-10 -right-10 w-28 h-28 rounded-full blur-2xl opacity-20 transition-all group-hover:scale-125"
+    [ngClass]="colorClass">
+  </div>
+
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{{ title }}</p>
+      <h3 class="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mt-2">
+        {{ isCurrency ? '$' : '' }}{{ value | number }}{{ isPercent ? '%' : '' }}
+      </h3>
+      @if (subtitle) {
+        <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1 flex items-center">
+          {{ subtitle }}
+        </p>
+      }
+    </div>
+
+    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-inner" [ngClass]="badgeClass">
+      {{ icon }}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,254 @@
+<div class="space-y-6">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Transport Management</h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400">Manage bus routes, vehicle fleet, driver assignments, and student transport fare</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button *ngIf="canManage() && activeTab === 'routes'" (click)="openAddRouteModal()" class="btn-primary">
+        <span>+</span>
+        <span class="ml-1.5">Add Route</span>
+      </button>
+      <button *ngIf="canManage() && activeTab === 'vehicles'" (click)="openAddVehicleModal()" class="btn-primary">
+        <span>+</span>
+        <span class="ml-1.5">Add Vehicle</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="border-b border-slate-200 dark:border-slate-800">
+    <nav class="flex space-x-6">
+      <button 
+        (click)="activeTab = 'routes'"
+        [class]="activeTab === 'routes' 
+          ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-semibold border-b-2 py-3 px-1 text-sm' 
+          : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 border-b-2 py-3 px-1 text-sm font-medium'"
+      >
+        <div class="flex items-center gap-2">
+          <span>📍</span>
+          Transport Routes ({{ routes().length }})
+        </div>
+      </button>
+      <button 
+        (click)="activeTab = 'vehicles'"
+        [class]="activeTab === 'vehicles' 
+          ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-semibold border-b-2 py-3 px-1 text-sm' 
+          : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 border-b-2 py-3 px-1 text-sm font-medium'"
+      >
+        <div class="flex items-center gap-2">
+          <span>🚌</span>
+          Vehicles & Fleet ({{ vehicles().length }})
+        </div>
+      </button>
+    </nav>
+  </div>
+
+  <!-- TAB 1: ROUTES -->
+  <div *ngIf="activeTab === 'routes'" class="space-y-4">
+    <app-skeleton-loader *ngIf="loadingRoutes()" [rows]="4" [columns]="5"></app-skeleton-loader>
+
+    <app-empty-state 
+      *ngIf="!loadingRoutes() && routes().length === 0"
+      title="No Transport Routes"
+      description="There are currently no transport routes defined."
+      icon="map-pin"
+      [actionLabel]="canManage() ? 'Add First Route' : ''"
+      (action)="openAddRouteModal()"
+    ></app-empty-state>
+
+    <div *ngIf="!loadingRoutes() && routes().length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let r of routes()" class="card p-6 border-l-4 border-l-indigo-600 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+              Fare: ${{ (r.route_fare || r.fare || 0).toLocaleString() }}
+            </span>
+            <div *ngIf="canManage()" class="flex items-center gap-1">
+              <button (click)="openEditRouteModal(r)" class="p-1 rounded text-slate-400 hover:text-indigo-600">
+                ✏️
+              </button>
+              <button (click)="confirmDeleteRoute(r)" class="p-1 rounded text-slate-400 hover:text-rose-600">
+                🗑️
+              </button>
+            </div>
+          </div>
+          <h3 class="text-xl font-bold text-slate-800 dark:text-white mt-3">{{ r.route_name || r.name || r.title }}</h3>
+          
+          <div class="mt-2 text-xs space-y-1 text-slate-500 dark:text-slate-400">
+            <div *ngIf="r.start_point || r.end_point" class="font-medium text-slate-700 dark:text-slate-300">
+              🚩 {{ r.start_point || 'Start' }} ➔ 🏁 {{ r.end_point || 'End' }}
+            </div>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">{{ r.description || 'Regular daily school transit' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: VEHICLES -->
+  <div *ngIf="activeTab === 'vehicles'" class="space-y-4">
+    <app-skeleton-loader *ngIf="loadingVehicles()" [rows]="4" [columns]="5"></app-skeleton-loader>
+
+    <app-empty-state 
+      *ngIf="!loadingVehicles() && vehicles().length === 0"
+      title="No Vehicles Registered"
+      description="There are no buses or vans registered in the transport fleet."
+      icon="bus"
+      [actionLabel]="canManage() ? 'Register Vehicle' : ''"
+      (action)="openAddVehicleModal()"
+    ></app-empty-state>
+
+    <div *ngIf="!loadingVehicles() && vehicles().length > 0" class="card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
+              <th class="py-3.5 px-4">Vehicle Number</th>
+              <th class="py-3.5 px-4">Model / Make</th>
+              <th class="py-3.5 px-4">Driver Name</th>
+              <th class="py-3.5 px-4">Driver Contact & License</th>
+              <th class="py-3.5 px-4">Capacity</th>
+              <th *ngIf="canManage()" class="py-3.5 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 text-sm">
+            <tr *ngFor="let v of vehicles()" class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+              <td class="py-3.5 px-4 font-mono font-bold text-slate-800 dark:text-slate-200">
+                {{ v.vehicle_number || v.vehicle_no }}
+              </td>
+              <td class="py-3.5 px-4 text-slate-600 dark:text-slate-300">
+                {{ v.vehicle_model || 'School Bus' }}
+              </td>
+              <td class="py-3.5 px-4 font-medium text-slate-800 dark:text-slate-200">
+                {{ v.driver_name || 'Assigned Driver' }}
+              </td>
+              <td class="py-3.5 px-4 text-slate-600 dark:text-slate-400 text-xs">
+                <div>📞 {{ v.driver_phone || 'N/A' }}</div>
+                <div class="text-slate-400" *ngIf="v.driver_licence || v.driver_license">Lic: {{ v.driver_licence || v.driver_license }}</div>
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">
+                  {{ v.seating_capacity || v.capacity || 30 }} Seats
+                </span>
+              </td>
+              <td *ngIf="canManage()" class="py-3.5 px-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <button (click)="openEditVehicleModal(v)" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-indigo-600">
+                    ✏️
+                  </button>
+                  <button (click)="confirmDeleteVehicle(v)" class="p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-500 hover:text-rose-600">
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Route Modal -->
+  <app-modal 
+    [isOpen]="isRouteModalOpen" 
+    [title]="editingRoute ? 'Edit Route' : 'Add Transport Route'"
+    (closeModal)="isRouteModalOpen = false"
+  >
+    <form [formGroup]="routeForm" (ngSubmit)="saveRoute()" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Route Name *</label>
+        <input type="text" formControlName="route_name" placeholder="e.g. North Suburb - Route #4" class="input-field w-full">
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Start Point / Origin</label>
+          <input type="text" formControlName="start_point" placeholder="e.g. Central Station" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">End Point / Destination</label>
+          <input type="text" formControlName="end_point" placeholder="e.g. Main Campus Gate" class="input-field w-full">
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Monthly Route Fare ($) *</label>
+        <input type="number" formControlName="route_fare" placeholder="0.00" class="input-field w-full">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Route Description / Key Stops</label>
+        <textarea formControlName="description" rows="2" placeholder="List key transit stops..." class="input-field w-full"></textarea>
+      </div>
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isRouteModalOpen = false" class="btn-secondary">Cancel</button>
+        <button type="submit" [disabled]="routeForm.invalid || isSubmitting" class="btn-primary">
+          {{ editingRoute ? 'Update Route' : 'Save Route' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Vehicle Modal -->
+  <app-modal 
+    [isOpen]="isVehicleModalOpen" 
+    [title]="editingVehicle ? 'Edit Vehicle' : 'Add Fleet Vehicle'"
+    (closeModal)="isVehicleModalOpen = false"
+  >
+    <form [formGroup]="vehicleForm" (ngSubmit)="saveVehicle()" class="space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Vehicle No / Plate *</label>
+          <input type="text" formControlName="vehicle_number" placeholder="e.g. NY-BUS-882" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Model / Make</label>
+          <input type="text" formControlName="vehicle_model" placeholder="e.g. Ford Transit 2024" class="input-field w-full">
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Driver Name *</label>
+          <input type="text" formControlName="driver_name" placeholder="Driver full name" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Driver Phone</label>
+          <input type="text" formControlName="driver_phone" placeholder="Contact number" class="input-field w-full">
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Driver License No</label>
+          <input type="text" formControlName="driver_licence" placeholder="e.g. DL-8849201" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Seating Capacity *</label>
+          <input type="number" formControlName="seating_capacity" class="input-field w-full">
+        </div>
+      </div>
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isVehicleModalOpen = false" class="btn-secondary">Cancel</button>
+        <button type="submit" [disabled]="vehicleForm.invalid || isSubmitting" class="btn-primary">
+          {{ editingVehicle ? 'Update Vehicle' : 'Save Vehicle' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Delete Dialogs -->
+  <app-confirm-dialog
+    [isOpen]="isDeleteRouteOpen"
+    title="Delete Route"
+    [message]="'Are you sure you want to delete route: ' + selectedRoute?.route_name + '?'"
+    confirmText="Delete"
+    (confirmed)="deleteRoute()"
+    (cancelled)="isDeleteRouteOpen = false"
+  ></app-confirm-dialog>
+
+  <app-confirm-dialog
+    [isOpen]="isDeleteVehicleOpen"
+    title="Delete Vehicle"
+    [message]="'Are you sure you want to delete vehicle: ' + selectedVehicle?.vehicle_number + '?'"
+    confirmText="Delete"
+    (confirmed)="deleteVehicle()"
+    (cancelled)="isDeleteVehicleOpen = false"
+  ></app-confirm-dialog>
+</div>

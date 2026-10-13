@@ -1,0 +1,24 @@
+<div class="space-y-4">
+  @if (type === 'table') {
+    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4 shadow-sm">
+      <div class="h-8 w-1/4 rounded-lg skeleton-shimmer"></div>
+      <div class="space-y-3">
+        @for (i of [1,2,3,4,5]; track i) {
+          <div class="grid grid-cols-6 gap-4">
+            <div class="h-6 rounded skeleton-shimmer col-span-1"></div>
+            <div class="h-6 rounded skeleton-shimmer col-span-2"></div>
+            <div class="h-6 rounded skeleton-shimmer col-span-1"></div>
+            <div class="h-6 rounded skeleton-shimmer col-span-1"></div>
+            <div class="h-6 rounded skeleton-shimmer col-span-1"></div>
+          </div>
+        }
+      </div>
+    </div>
+  } @else if (type === 'cards') {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="h-32 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 skeleton-shimmer"></div>
+      }
+    </div>
+  }
+</div>

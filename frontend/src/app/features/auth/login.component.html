@@ -1,0 +1,281 @@
+<div class="min-h-screen w-full flex flex-col lg:flex-row font-sans bg-[#121417]">
+  
+  <!-- Left Panel: Clean White Login Form -->
+  <div class="w-full lg:w-[480px] xl:w-[520px] bg-white min-h-screen flex flex-col justify-between p-6 sm:p-10 lg:p-12 z-10 shadow-2xl shrink-0">
+    
+    <!-- Top Section / Brand Logo & Header -->
+    <div>
+      <!-- Samarth Technology Brand Logo -->
+      <div class="flex items-center space-x-3 mb-8">
+        <img src="/logo.png" alt="Samarth Technology Logo" class="h-12 w-auto object-contain" onerror="this.src='/favicon.ico'" />
+        <div class="flex flex-col select-none">
+          <span class="text-base font-extrabold text-[#222222] tracking-tight leading-tight">
+            SAMARTH TECHNOLOGY
+          </span>
+          <span class="text-[10px] text-[#666666] font-semibold tracking-wider uppercase">
+            School Management System
+          </span>
+        </div>
+      </div>
+
+      <!-- Section Title -->
+      <div class="mb-6 flex items-center justify-between">
+        <h2 class="text-[20px] font-bold text-[#333333]">
+          {{ isUserLogin() ? 'User Login' : 'Admin Login' }}
+        </h2>
+
+        <!-- Quick badge indicator -->
+        <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full"
+              [ngClass]="isUserLogin() ? 'bg-amber-100 text-amber-800' : 'bg-purple-100 text-[#705ec8]'">
+          {{ isUserLogin() ? 'Student / Parent Portal' : 'Staff / Admin Portal' }}
+        </span>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        
+        <!-- Username Input with Envelope Icon -->
+        <div class="relative">
+          <input 
+            type="text" 
+            formControlName="username" 
+            [placeholder]="isUserLogin() ? 'Username or Admission No / Email' : 'Username or Email'" 
+            class="w-full h-[42px] px-3.5 pr-10 text-[13px] bg-white border border-[#d2d6de] rounded focus:border-[#43a047] focus:ring-1 focus:ring-[#43a047] outline-none text-[#333333] placeholder-[#999999] transition-all" />
+          <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#999999]">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Password Input with Lock Icon -->
+        <div class="relative">
+          <input 
+            type="password" 
+            formControlName="password" 
+            placeholder="Password" 
+            class="w-full h-[42px] px-3.5 pr-10 text-[13px] bg-white border border-[#d2d6de] rounded focus:border-[#43a047] focus:ring-1 focus:ring-[#43a047] outline-none text-[#333333] placeholder-[#999999] transition-all" />
+          <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#999999]">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Big Green Sign In Button -->
+        <button 
+          type="submit" 
+          [disabled]="loginForm.invalid || isLoading()"
+          class="w-full h-[42px] mt-1 bg-[#28a745] hover:bg-[#218838] active:bg-[#1e7e34] text-white font-medium text-[14px] rounded shadow-sm transition-colors flex items-center justify-center space-x-2 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer">
+          @if (isLoading()) {
+            <span class="inline-block animate-spin mr-2">⏳</span>
+            <span>Signing In...</span>
+          } @else {
+            <span>Sign In</span>
+          }
+        </button>
+      </form>
+
+      <!-- Quick Fill Role Buttons -->
+      @if (!isUserLogin()) {
+        <!-- Admin / Staff Quick Login Buttons (6 buttons) -->
+        <div class="mt-5 space-y-2">
+          <div class="grid grid-cols-3 gap-2">
+            <button 
+              type="button" 
+              (click)="fillRole('admin@school.com', 'admin123')"
+              class="h-[34px] px-2 bg-[#007bff] hover:bg-[#0069d9] text-white text-[12px] font-medium rounded flex items-center justify-center space-x-1 shadow-sm transition-colors cursor-pointer">
+              <span>👤</span>
+              <span class="truncate">Super Admin</span>
+            </button>
+
+            <button 
+              type="button" 
+              (click)="fillRole('principal@school.com', 'admin123')"
+              class="h-[34px] px-2 bg-[#17a2b8] hover:bg-[#138496] text-white text-[12px] font-medium rounded flex items-center justify-center space-x-1 shadow-sm transition-colors cursor-pointer">
+              <span>👤</span>
+              <span class="truncate">Admin</span>
+            </button>
+
+            <button 
+              type="button" 
+              (click)="fillRole('teacher@school.com', 'teacher123')"
+              class="h-[34px] px-2 bg-[#6c757d] hover:bg-[#5a6268] text-white text-[12px] font-medium rounded flex items-center justify-center space-x-1 shadow-sm transition-colors cursor-pointer">
+              <span>👤</span>
+              <span class="truncate">Teacher</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2">
+            <button 
+              type="button" 
+              (click)="fillRole('accountant@school.com', 'admin123')"
+              class="h-[34px] px-2 bg-[#6c757d] hover:bg-[#5a6268] text-white text-[12px] font-medium rounded flex items-center justify-center space-x-1 shadow-sm transition-colors cursor-pointer">
+              <span>👤</span>
+              <span class="truncate">Accountant</span>
+            </button>
+
+            <button 
+              type="button" 
+              (click)="fillRole('receptionist@school.com', 'admin123')"
+              class="h-[34px] px-2 bg-[#e83e8c] hover:bg-[#d63384] text-white text-[12px] font-medium rounded flex items-center justify-center space-x-1 shadow-sm transition-colors cursor-pointer">
+              <span>👤</span>
+              <span class="truncate">Receptionist</span>
+            </button>
+
+            <button 
+              type="button" 
+              (click)="fillRole('librarian@school.com', 'admin123')"
+              class="h-[34px] px-2 bg-[#28a745] hover:bg-[#218838] text-white text-[12px] font-medium rounded flex items-center justify-center space-x-1 shadow-sm transition-colors cursor-pointer">
+              <span>👤</span>
+              <span class="truncate">Librarian</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Admin Demo Note -->
+        <p class="text-[11px] text-[#777777] mt-3 italic">
+          *Note: Select Class 1 and Section A for demo testing.
+        </p>
+      } @else {
+        <!-- User / Student / Parent Quick Login Buttons -->
+        <div class="mt-5 space-y-2">
+          <div class="grid grid-cols-2 gap-3">
+            <button 
+              type="button" 
+              (click)="fillRole('student@school.com', 'student123')"
+              class="h-[38px] px-3 bg-[#007bff] hover:bg-[#0069d9] text-white text-[13px] font-medium rounded flex items-center justify-center space-x-2 shadow-sm transition-colors cursor-pointer">
+              <span class="text-base">🎓</span>
+              <span class="font-semibold">Student Login</span>
+            </button>
+
+            <button 
+              type="button" 
+              (click)="fillRole('parent@school.com', 'parent123')"
+              class="h-[38px] px-3 bg-[#6c757d] hover:bg-[#5a6268] text-white text-[13px] font-medium rounded flex items-center justify-center space-x-2 shadow-sm transition-colors cursor-pointer">
+              <span class="text-base">👨‍👩‍👧</span>
+              <span class="font-semibold">Parent Login</span>
+            </button>
+          </div>
+
+          <!-- User Demo Note -->
+          <p class="text-[11px] text-[#777777] mt-3 italic">
+            *Note: Student and Parent portal access credentials for demo testing.
+          </p>
+        </div>
+      }
+
+    </div>
+
+    <!-- Footer Links Row -->
+    <div class="pt-6 border-t border-[#f0f0f0] mt-8 flex items-center justify-between text-[12px] text-[#666666]">
+      <!-- Left: Forgot Password -->
+      <button 
+        type="button" 
+        (click)="onForgotPassword()"
+        class="hover:text-[#28a745] flex items-center space-x-1 transition-colors cursor-pointer">
+        <span>🔑</span>
+        <span>Forgot Password?</span>
+      </button>
+
+      <!-- Center: Front Site -->
+      <a 
+        routerLink="/" 
+        class="hover:text-[#28a745] flex items-center space-x-1 transition-colors">
+        <span>🌐</span>
+        <span>Front Site</span>
+      </a>
+
+      <!-- Right: Toggle / Navigate between Admin Login & User Login -->
+      @if (!isUserLogin()) {
+        <a 
+          routerLink="/userlogin"
+          class="hover:text-[#28a745] text-[#333333] font-semibold flex items-center space-x-1 transition-colors cursor-pointer"
+          title="Navigate to Student and Parent Login">
+          <span>👤</span>
+          <span>User Login</span>
+        </a>
+      } @else {
+        <a 
+          routerLink="/login"
+          class="hover:text-[#28a745] text-[#333333] font-semibold flex items-center space-x-1 transition-colors cursor-pointer"
+          title="Navigate to Staff and Admin Login">
+          <span>👤</span>
+          <span>Admin Login</span>
+        </a>
+      }
+    </div>
+
+  </div>
+
+  <!-- Right Panel: Chalkboard Hero & Notice Board -->
+  <div class="hidden lg:flex flex-1 relative bg-[#1f2421] bg-cover bg-center overflow-hidden items-center justify-end p-8 xl:p-14"
+    style="background: radial-gradient(circle at 60% 40%, #2b3a32 0%, #17211b 60%, #0d1310 100%);">
+    
+    <!-- Chalkboard Background Grid / Texture Effect -->
+    <div class="absolute inset-0 opacity-15 pointer-events-none"
+         style="background-image: radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px); background-size: 24px 24px;">
+    </div>
+
+    <!-- Faint Mathematical / Academic Chalk Sketch Ambient -->
+    <div class="absolute inset-0 opacity-10 pointer-events-none flex items-center justify-center select-none text-white font-mono text-xs whitespace-pre leading-relaxed overflow-hidden">
+      f(x) = ∫ e^(-t²) dt  |  E = mc²  |  H₂O + CO₂ → H₂CO₃  |  Δx · Δp ≥ ℏ/2  |  ∇ × B = μ₀J  |  a² + b² = c²
+    </div>
+
+    <!-- Notice Board Overlay Container -->
+    <div class="w-full max-w-[620px] relative z-10 space-y-4">
+      
+      <!-- Section Heading -->
+      <h1 class="text-2xl xl:text-3xl font-bold text-white tracking-wide drop-shadow-md">
+        What's New In Mount Carmel School
+      </h1>
+
+      <!-- Notice Board Card -->
+      <div class="relative bg-black/60 backdrop-blur-md rounded-lg p-6 border-l-4 border-l-[#28a745] border-t border-b border-r border-white/10 shadow-2xl space-y-6">
+        
+        <!-- Notice Item 1 -->
+        <div class="space-y-1.5 pb-4 border-b border-white/10 last:border-b-0 last:pb-0">
+          <h3 class="text-[14px] font-semibold text-white leading-snug hover:text-emerald-400 cursor-pointer transition-colors">
+            National Level Workshop for Science Teachers Teaching in Class X to XII (Online)
+          </h3>
+          <p class="text-[12px] text-slate-300 leading-relaxed">
+            A two-day capacity building programme was conducted for high school science educators focusing on interactive STEM pedagogies.
+          </p>
+          <a href="javascript:void(0)" class="inline-block text-[12px] font-bold text-[#28a745] hover:text-[#34d399] transition-colors">
+            Read More
+          </a>
+        </div>
+
+        <!-- Notice Item 2 -->
+        <div class="space-y-1.5 pb-4 border-b border-white/10 last:border-b-0 last:pb-0">
+          <h3 class="text-[14px] font-semibold text-white leading-snug hover:text-emerald-400 cursor-pointer transition-colors">
+            New Books Added to Library
+          </h3>
+          <p class="text-[12px] text-slate-300 leading-relaxed">
+            The school library has added new educational and reference literature across Science, Humanities, and Digital Computing.
+          </p>
+          <a href="javascript:void(0)" class="inline-block text-[12px] font-bold text-[#28a745] hover:text-[#34d399] transition-colors">
+            Read More
+          </a>
+        </div>
+
+        <!-- Notice Item 3 -->
+        <div class="space-y-1.5">
+          <h3 class="text-[14px] font-semibold text-white leading-snug hover:text-emerald-400 cursor-pointer transition-colors">
+            Unit Test Schedule Released
+          </h3>
+          <p class="text-[12px] text-slate-300 leading-relaxed">
+            The schedule for the upcoming unit test has been finalized and uploaded for classes VI through XII.
+          </p>
+          <a href="javascript:void(0)" class="inline-block text-[12px] font-bold text-[#28a745] hover:text-[#34d399] transition-colors">
+            Read More
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

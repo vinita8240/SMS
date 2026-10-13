@@ -1,0 +1,154 @@
+<div class="space-y-6 animate-fade-in">
+  
+  <!-- Module Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Examinations & Questions</h1>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Exam scheduling, terms management, and examination question repository.</p>
+    </div>
+
+    <div class="flex items-center space-x-3">
+      <button (click)="openAddQuestionModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all">
+        + Add Question
+      </button>
+      <button (click)="openAddExamModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 shadow-sm transition-all">
+        + Schedule Exam
+      </button>
+    </div>
+  </div>
+
+  <!-- Exams List -->
+  <div class="space-y-4">
+    <h3 class="text-base font-bold text-slate-900 dark:text-white">Scheduled Exam Terms</h3>
+    <app-data-table [columns]="examColumns" [data]="exams()" (search)="onSearchExams($event)">
+      <ng-template #actions let-row>
+        <div class="flex items-center justify-end space-x-1.5">
+          <button (click)="openEditExamModal(row)" class="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg">✏️</button>
+          <button (click)="confirmDeleteExam(row)" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg">🗑️</button>
+        </div>
+      </ng-template>
+    </app-data-table>
+  </div>
+
+  <!-- Questions List -->
+  <div class="space-y-4 pt-6 border-t border-slate-200 dark:border-slate-800">
+    <h3 class="text-base font-bold text-slate-900 dark:text-white">Exam Question Bank</h3>
+    <app-data-table [columns]="questionColumns" [data]="questions()">
+      <ng-template #actions let-row>
+        <div class="flex items-center justify-end space-x-1.5">
+          <button (click)="openEditQuestionModal(row)" class="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg">✏️</button>
+          <button (click)="deleteQuestion(row.question_id)" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg">🗑️</button>
+        </div>
+      </ng-template>
+    </app-data-table>
+  </div>
+
+  <!-- Add/Edit Exam Modal -->
+  <app-modal [isOpen]="isExamModalOpen()" [title]="editingExamId ? 'Edit Exam' : 'Schedule New Exam'" (close)="isExamModalOpen.set(false)">
+    <form [formGroup]="examForm" (ngSubmit)="saveExam()" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Exam Name *</label>
+        <input type="text" formControlName="name" placeholder="e.g. Term 1 Midterm Examination" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Start Date</label>
+          <input type="date" formControlName="start_date" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">End Date</label>
+          <input type="date" formControlName="end_date" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Academic Session</label>
+          <input type="text" formControlName="session" placeholder="2026-2027" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Status</label>
+          <select formControlName="status" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none">
+            <option value="scheduled">Scheduled</option>
+            <option value="ongoing">Ongoing</option>
+            <option value="completed">Completed</option>
+            <option value="published">Published</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Instructions / Comment</label>
+        <textarea formControlName="comment" rows="2" placeholder="Exam guidelines, hall rules, etc." class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none"></textarea>
+      </div>
+
+      <div class="flex justify-end space-x-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+        <button type="button" (click)="isExamModalOpen.set(false)" class="px-4 py-2 rounded-xl text-xs bg-slate-100 dark:bg-slate-800">Cancel</button>
+        <button type="submit" [disabled]="examForm.invalid" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-700">Save Exam</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Add/Edit Question Modal -->
+  <app-modal [isOpen]="isQuestionModalOpen()" [title]="editingQuestionId ? 'Edit Exam Question' : 'Add Exam Question'" (close)="isQuestionModalOpen.set(false)">
+    <form [formGroup]="questionForm" (ngSubmit)="saveQuestion()" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Exam *</label>
+        <select formControlName="exam_id" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none">
+          <option value="">Select Exam</option>
+          @for (e of exams(); track e.exam_id) {
+            <option [value]="e.exam_id">{{ e.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Class *</label>
+          <select formControlName="class_id" (change)="onClassChangeInQuestion()" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none">
+            <option value="">Select Class</option>
+            @for (c of classes(); track c.class_id) {
+              <option [value]="c.class_id">{{ c.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Subject *</label>
+          <select formControlName="subject_id" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none">
+            <option value="">Select Subject</option>
+            @for (sub of subjects(); track sub.subject_id) {
+              <option [value]="sub.subject_id">{{ sub.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Question Text *</label>
+        <textarea formControlName="question" rows="3" placeholder="Enter problem statement..." class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Marks Weightage</label>
+        <input type="number" formControlName="marks" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none" />
+      </div>
+
+      <div class="flex justify-end space-x-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+        <button type="button" (click)="isQuestionModalOpen.set(false)" class="px-4 py-2 rounded-xl text-xs bg-slate-100 dark:bg-slate-800">Cancel</button>
+        <button type="submit" [disabled]="questionForm.invalid" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-700">Save Question</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Delete Exam Dialog -->
+  <app-confirm-dialog 
+    [isOpen]="isDeleteDialogOpen()" 
+    title="Delete Exam"
+    [message]="'Are you sure you want to delete ' + (examToDelete?.name || '') + '?'"
+    (confirm)="executeDeleteExam()"
+    (cancel)="isDeleteDialogOpen.set(false)">
+  </app-confirm-dialog>
+
+</div>

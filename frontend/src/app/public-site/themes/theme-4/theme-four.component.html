@@ -1,0 +1,240 @@
+<!-- ========================================================================= -->
+<!-- THEME 4: INSTITUTIONAL / COLLEGIATE                                       -->
+<!-- Formal University Style, Burgundy & Slate, Structured Menus, Official     -->
+<!-- ========================================================================= -->
+<div class="min-h-screen bg-slate-100 text-slate-900 font-sans selection:bg-[#881337] selection:text-white">
+
+  <!-- Official Government / Accreditation Top Header -->
+  <div class="bg-[#1e293b] text-slate-300 text-xs py-1.5 px-4 sm:px-8 border-b border-slate-700">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px]">
+      <div class="flex items-center space-x-4">
+        <span class="font-bold text-amber-400">🏛️ NAAC Accredited 'A++' Grade</span>
+        <span class="hidden md:inline text-slate-500">|</span>
+        <span class="hidden md:inline">NIRF National Rank: Top 10</span>
+        <span class="hidden lg:inline text-slate-500">|</span>
+        <span class="hidden lg:inline">AISHE Code: C-48201</span>
+      </div>
+      <div class="flex items-center space-x-3">
+        <a routerLink="/login" class="hover:text-white font-bold transition">Admin Portal</a>
+        <span>|</span>
+        <a routerLink="/userlogin" class="hover:text-white font-bold transition">Faculty / Student ERP</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Institutional Header -->
+  <header class="bg-[#881337] text-white sticky top-0 z-40 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Seal & Institutional Title -->
+      <a routerLink="/site" class="flex items-center space-x-3.5 no-underline">
+        <img [src]="data?.settings?.school_logo || '/logo.png'" alt="Seal" class="h-12 w-auto object-contain bg-white p-1 rounded-sm shadow-sm" onerror="this.src='/logo.png'" />
+        <div class="flex flex-col">
+          <span class="text-base sm:text-lg font-bold tracking-tight uppercase leading-tight text-white">
+            {{ data?.settings?.school_name || 'Mount Carmel International Institution' }}
+          </span>
+          <span class="text-[10px] text-rose-200 tracking-wider font-mono">
+            Autonomous Academic Body • Estd. 1998
+          </span>
+        </div>
+      </a>
+
+      <!-- Desktop Structured Menu -->
+      <nav class="hidden lg:flex items-center space-x-1">
+        <ng-container *ngFor="let menu of data?.site?.menus">
+          <div *ngIf="menu.children && menu.children.length > 0" class="relative group">
+            <button class="px-3 py-2 text-rose-100 hover:text-white hover:bg-rose-900/60 rounded-xs text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition">
+              <span>{{ menu.title }}</span>
+              <span class="text-[9px]">▾</span>
+            </button>
+            <div class="absolute top-full left-0 w-60 bg-white text-slate-800 rounded-sm shadow-2xl border border-slate-300 p-1 hidden group-hover:block z-50">
+              <a 
+                *ngFor="let child of menu.children" 
+                [routerLink]="child.route" 
+                class="block px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-rose-50 hover:text-[#881337] transition border-b border-slate-100 last:border-b-0">
+                {{ child.title }}
+              </a>
+            </div>
+          </div>
+
+          <a 
+            *ngIf="!menu.children || menu.children.length === 0" 
+            [routerLink]="menu.route" 
+            class="px-3 py-2 text-rose-100 hover:text-white hover:bg-rose-900/60 rounded-xs text-xs font-bold uppercase tracking-wider transition">
+            {{ menu.title }}
+          </a>
+        </ng-container>
+
+        <a routerLink="/site/contact" class="ml-4 px-4 py-2 rounded-xs bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs uppercase tracking-wider transition">
+          Admissions Portal
+        </a>
+      </nav>
+
+      <!-- Mobile Button -->
+      <button (click)="isMobileMenuOpen = !isMobileMenuOpen" class="lg:hidden p-2 text-white text-xl font-bold">
+        ☰
+      </button>
+
+    </div>
+
+    <!-- Mobile Menu -->
+    <div *ngIf="isMobileMenuOpen" class="lg:hidden bg-rose-950 border-t border-rose-900 px-6 py-4 space-y-2">
+      <div *ngFor="let menu of data?.site?.menus" class="space-y-1">
+        <a [routerLink]="menu.route" (click)="isMobileMenuOpen = false" class="block py-1 text-white font-bold text-sm">
+          {{ menu.title }}
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- BREAKING NOTICES TICKER                                                   -->
+  <!-- ========================================================================= -->
+  <div class="bg-amber-400 text-slate-950 px-4 sm:px-8 py-2 text-xs font-bold flex items-center space-x-3 shadow-xs">
+    <span class="px-2 py-0.5 rounded bg-slate-950 text-amber-300 uppercase tracking-wider text-[10px]">Announcements</span>
+    <div class="truncate flex-1 font-medium">
+      <span>📢 Admissions Open for 2026-27 Session • Annual Science & Tech Summit Scheduled for Oct 15 • Board Examination Schedules Released</span>
+    </div>
+    <a routerLink="/site/news" class="underline text-slate-900 text-[11px] shrink-0 font-bold">View Archive →</a>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- INSTITUTIONAL HERO BANNER                                                 -->
+  <!-- ========================================================================= -->
+  <section class="bg-[#1e293b] text-white py-16 sm:py-20 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+      
+      <div class="lg:col-span-8 space-y-5">
+        <div class="inline-block px-3 py-1 rounded-sm bg-rose-900/80 text-rose-200 text-xs font-mono">
+          ACADEMIC EXCELLENCE & RESEARCH
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
+          Pioneering Scholastic Leadership, Research & Innovation
+        </h1>
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl">
+          An autonomous academic center offering comprehensive STEAM curricula, cutting-edge research facilities, and dedicated faculty mentors.
+        </p>
+
+        <div class="pt-2 flex flex-wrap gap-3">
+          <a routerLink="/site/contact" class="px-6 py-3 rounded-sm bg-[#881337] hover:bg-rose-900 text-white font-bold text-xs uppercase tracking-wider transition">
+            Admissions Process
+          </a>
+          <a routerLink="/site/p/academics" class="px-6 py-3 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs uppercase tracking-wider transition">
+            Curriculum & Courses
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Institutional Portals Box -->
+      <div class="lg:col-span-4 bg-white text-slate-900 rounded-sm p-6 shadow-xl border-t-4 border-[#881337] space-y-4">
+        <h3 class="font-bold text-sm text-[#881337] uppercase tracking-wider border-b border-slate-200 pb-2">Quick Access Portals</h3>
+        <div class="space-y-2 text-xs font-semibold">
+          <a routerLink="/site/p/admissions" class="block p-2.5 rounded bg-slate-50 hover:bg-rose-50 text-slate-800 hover:text-[#881337] transition">
+            📄 Online Prospectus & Syllabus
+          </a>
+          <a routerLink="/site/events" class="block p-2.5 rounded bg-slate-50 hover:bg-rose-50 text-slate-800 hover:text-[#881337] transition">
+            📅 Academic Calendar 2026-27
+          </a>
+          <a routerLink="/site/p/facilities" class="block p-2.5 rounded bg-slate-50 hover:bg-rose-50 text-slate-800 hover:text-[#881337] transition">
+            🔬 Laboratories & Infrastructure
+          </a>
+          <a routerLink="/login" class="block p-2.5 rounded bg-[#881337] text-white text-center font-bold">
+            🔒 ERP Staff & Student Login
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- OFFICIAL NOTICES & DEPARTMENTS GRID                                       -->
+  <!-- ========================================================================= -->
+  <section class="py-14 max-w-7xl mx-auto px-4 sm:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Official Notifications Bulletin (7 cols) -->
+      <div class="lg:col-span-7 bg-white p-6 rounded-sm shadow-sm border border-slate-300 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+          <h2 class="text-base font-bold text-[#881337] uppercase tracking-wide">
+            📋 Official Circulars & Examination Notices
+          </h2>
+          <span class="text-xs text-slate-400">Live Updates</span>
+        </div>
+
+        <div class="divide-y divide-slate-100 space-y-2">
+          <div *ngFor="let not of data?.notices" class="pt-2 flex items-start justify-between gap-4 text-xs">
+            <div>
+              <span class="font-bold text-slate-800 hover:text-[#881337] cursor-pointer block">{{ not.notice_title || not.title }}</span>
+              <span class="text-slate-400 text-[11px]">Published: {{ not.date || 'Active' }}</span>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-mono shrink-0">PDF 📥</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Institutional Highlights (5 cols) -->
+      <div class="lg:col-span-5 bg-white p-6 rounded-sm shadow-sm border border-slate-300 space-y-4">
+        <h2 class="text-base font-bold text-slate-800 uppercase tracking-wide border-b border-slate-200 pb-2">
+          🏛️ Key Institutional Metrics
+        </h2>
+        <div class="space-y-3 text-xs">
+          <div class="flex justify-between border-b border-slate-100 pb-1.5">
+            <span class="text-slate-600">Total Enrolled Students:</span>
+            <strong class="text-[#881337]">{{ data?.stats?.totalStudents }}</strong>
+          </div>
+          <div class="flex justify-between border-b border-slate-100 pb-1.5">
+            <span class="text-slate-600">Faculty Members:</span>
+            <strong class="text-[#881337]">{{ data?.stats?.totalTeachers }}</strong>
+          </div>
+          <div class="flex justify-between border-b border-slate-100 pb-1.5">
+            <span class="text-slate-600">Academic Pass Rate:</span>
+            <strong class="text-emerald-700">{{ data?.stats?.academicPassRate }}</strong>
+          </div>
+          <div class="flex justify-between border-b border-slate-100 pb-1.5">
+            <span class="text-slate-600">Accreditation:</span>
+            <strong class="text-slate-800">NAAC A++ (3.82 CGPA)</strong>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- FORMAL INSTITUTIONAL FOOTER                                               -->
+  <!-- ========================================================================= -->
+  <footer class="bg-[#1e293b] text-slate-300 text-xs pt-12 pb-8 border-t-4 border-[#881337]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div class="space-y-3">
+        <div class="font-bold text-white uppercase">{{ data?.settings?.school_name }}</div>
+        <p class="text-slate-400 text-xs leading-relaxed">{{ data?.settings?.address }}</p>
+      </div>
+      <div class="space-y-2">
+        <div class="font-bold text-white uppercase">Governance</div>
+        <ul class="space-y-1 text-slate-400">
+          <li><a routerLink="/site/p/about-us" class="hover:text-white">Administration</a></li>
+          <li><a routerLink="/site/p/vision-mission" class="hover:text-white">Statutory Disclosures</a></li>
+          <li><a routerLink="/site/p/facilities" class="hover:text-white">NIRF Reports</a></li>
+        </ul>
+      </div>
+      <div class="space-y-2">
+        <div class="font-bold text-white uppercase">Academics</div>
+        <ul class="space-y-1 text-slate-400">
+          <li><a routerLink="/site/p/academics" class="hover:text-white">Departments</a></li>
+          <li><a routerLink="/site/p/admissions" class="hover:text-white">Admission Guidelines</a></li>
+          <li><a routerLink="/site/news" class="hover:text-white">Press Releases</a></li>
+        </ul>
+      </div>
+      <div class="space-y-2">
+        <div class="font-bold text-white uppercase">Emergency Helpdesk</div>
+        <p class="text-slate-400">📞 {{ data?.settings?.phone }}</p>
+        <p class="text-slate-400">✉️ {{ data?.settings?.email }}</p>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 mt-8 pt-4 border-t border-slate-700 text-center text-slate-500 text-[11px]">
+      {{ data?.settings?.copyright_text }}
+    </div>
+  </footer>
+
+</div>

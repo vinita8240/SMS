@@ -1,0 +1,246 @@
+<div class="space-y-6">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Hostel & Accommodation</h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400">Manage dormitories, room types, room availability, and student allocations</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button *ngIf="canManage() && activeTab === 'hostels'" (click)="openAddHostelModal()" class="btn-primary">
+        <span>+</span>
+        <span class="ml-1.5">Add Hostel</span>
+      </button>
+      <button *ngIf="canManage() && activeTab === 'rooms'" (click)="openAddRoomModal()" class="btn-primary">
+        <span>+</span>
+        <span class="ml-1.5">Add Room</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="border-b border-slate-200 dark:border-slate-800">
+    <nav class="flex space-x-6">
+      <button 
+        (click)="activeTab = 'hostels'"
+        [class]="activeTab === 'hostels' 
+          ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-semibold border-b-2 py-3 px-1 text-sm' 
+          : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 border-b-2 py-3 px-1 text-sm font-medium'"
+      >
+        <div class="flex items-center gap-2">
+          <span>🏢</span>
+          Hostel Buildings ({{ hostels().length }})
+        </div>
+      </button>
+      <button 
+        (click)="activeTab = 'rooms'"
+        [class]="activeTab === 'rooms' 
+          ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-semibold border-b-2 py-3 px-1 text-sm' 
+          : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 border-b-2 py-3 px-1 text-sm font-medium'"
+      >
+        <div class="flex items-center gap-2">
+          <span>🛏️</span>
+          Rooms & Capacity ({{ rooms().length }})
+        </div>
+      </button>
+    </nav>
+  </div>
+
+  <!-- TAB 1: HOSTELS -->
+  <div *ngIf="activeTab === 'hostels'" class="space-y-4">
+    <app-skeleton-loader *ngIf="loading()" [rows]="3" [columns]="4"></app-skeleton-loader>
+
+    <app-empty-state 
+      *ngIf="!loading() && hostels().length === 0"
+      title="No Hostel Buildings"
+      description="There are no hostel facilities configured."
+      icon="home"
+      [actionLabel]="canManage() ? 'Add First Hostel' : ''"
+      (action)="openAddHostelModal()"
+    ></app-empty-state>
+
+    <div *ngIf="!loading() && hostels().length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let h of hostels()" class="card p-6 border-t-4 border-t-indigo-600 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              {{ h.type || 'Boys' }}
+            </span>
+            <div *ngIf="canManage()" class="flex items-center gap-1">
+              <button (click)="openEditHostelModal(h)" class="p-1 rounded text-slate-400 hover:text-indigo-600">
+                ✏️
+              </button>
+              <button (click)="confirmDeleteHostel(h)" class="p-1 rounded text-slate-400 hover:text-rose-600">
+                🗑️
+              </button>
+            </div>
+          </div>
+          <h3 class="text-xl font-bold text-slate-800 dark:text-white mt-3">{{ h.name }}</h3>
+          <p class="text-xs text-slate-500 mt-1">Hostel Category</p>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-3">{{ h.description || 'Campus student residential building.' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: ROOMS -->
+  <div *ngIf="activeTab === 'rooms'" class="space-y-4">
+    <app-skeleton-loader *ngIf="loadingRooms()" [rows]="5" [columns]="5"></app-skeleton-loader>
+
+    <app-empty-state 
+      *ngIf="!loadingRooms() && rooms().length === 0"
+      title="No Rooms Configured"
+      description="There are no rooms listed for hostels."
+      icon="bed"
+      [actionLabel]="canManage() ? 'Add Room' : ''"
+      (action)="openAddRoomModal()"
+    ></app-empty-state>
+
+    <div *ngIf="!loadingRooms() && rooms().length > 0" class="card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
+              <th class="py-3.5 px-4">Room No / Name</th>
+              <th class="py-3.5 px-4">Hostel Building</th>
+              <th class="py-3.5 px-4">Room Type</th>
+              <th class="py-3.5 px-4">Bed Capacity</th>
+              <th class="py-3.5 px-4">Cost Per Bed</th>
+              <th *ngIf="canManage()" class="py-3.5 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 text-sm">
+            <tr *ngFor="let r of rooms()" class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+              <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-slate-200">
+                Room #{{ r.room_number }}
+              </td>
+              <td class="py-3.5 px-4 text-slate-600 dark:text-slate-300">
+                {{ r.hostel_name || 'Main Hostel' }}
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">
+                  {{ r.room_type || 'Standard' }}
+                </span>
+              </td>
+              <td class="py-3.5 px-4 text-slate-700 dark:text-slate-300 font-medium">
+                {{ r.num_beds || 2 }} Beds
+              </td>
+              <td class="py-3.5 px-4 font-semibold text-emerald-600 dark:text-emerald-400">
+                ${{ (r.cost_per_bed || 0).toLocaleString() }}
+              </td>
+              <td *ngIf="canManage()" class="py-3.5 px-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <button (click)="openEditRoomModal(r)" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-indigo-600">
+                    ✏️
+                  </button>
+                  <button (click)="confirmDeleteRoom(r)" class="p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-500 hover:text-rose-600">
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hostel Modal -->
+  <app-modal 
+    [isOpen]="isHostelModalOpen" 
+    [title]="editingHostel ? 'Edit Hostel Facility' : 'Add Hostel Facility'"
+    (closeModal)="isHostelModalOpen = false"
+  >
+    <form [formGroup]="hostelForm" (ngSubmit)="saveHostel()" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Hostel Name *</label>
+        <input type="text" formControlName="name" placeholder="e.g. Boys Dormitory Hall A" class="input-field w-full">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Type *</label>
+        <select formControlName="type" class="input-field w-full">
+          <option value="Boys">Boys</option>
+          <option value="Girls">Girls</option>
+          <option value="Mixed">Mixed / Co-Ed</option>
+          <option value="Staff">Staff Residence</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Description / Rules</label>
+        <textarea formControlName="description" rows="2" class="input-field w-full"></textarea>
+      </div>
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isHostelModalOpen = false" class="btn-secondary">Cancel</button>
+        <button type="submit" [disabled]="hostelForm.invalid || isSubmitting" class="btn-primary">
+          {{ editingHostel ? 'Update Hostel' : 'Save Hostel' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Room Modal -->
+  <app-modal 
+    [isOpen]="isRoomModalOpen" 
+    [title]="editingRoom ? 'Edit Room' : 'Add New Room'"
+    (closeModal)="isRoomModalOpen = false"
+  >
+    <form [formGroup]="roomForm" (ngSubmit)="saveRoom()" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Hostel Building *</label>
+        <select formControlName="hostel_category_id" class="input-field w-full">
+          <option value="">Select Hostel</option>
+          <option *ngFor="let h of hostels()" [value]="h.hostel_category_id || h.id">{{ h.name }} ({{ h.type }})</option>
+        </select>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Room Number / Identifier *</label>
+          <input type="text" formControlName="room_number" placeholder="e.g. 101-A" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Room Type</label>
+          <select formControlName="room_type" class="input-field w-full">
+            <option value="Standard">Standard</option>
+            <option value="AC Deluxe">AC Deluxe</option>
+            <option value="Single Non-AC">Single Non-AC</option>
+            <option value="Single AC">Single AC</option>
+            <option value="Shared 4-Bed">Shared 4-Bed</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Number of Beds *</label>
+          <input type="number" formControlName="num_beds" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Cost Per Bed ($)</label>
+          <input type="number" formControlName="cost_per_bed" placeholder="0.00" class="input-field w-full">
+        </div>
+      </div>
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isRoomModalOpen = false" class="btn-secondary">Cancel</button>
+        <button type="submit" [disabled]="roomForm.invalid || isSubmitting" class="btn-primary">
+          {{ editingRoom ? 'Update Room' : 'Save Room' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Delete Dialogs -->
+  <app-confirm-dialog
+    [isOpen]="isDeleteHostelOpen"
+    title="Delete Hostel"
+    [message]="'Are you sure you want to delete ' + selectedHostel?.name + '?'"
+    confirmText="Delete"
+    (confirmed)="deleteHostel()"
+    (cancelled)="isDeleteHostelOpen = false"
+  ></app-confirm-dialog>
+
+  <app-confirm-dialog
+    [isOpen]="isDeleteRoomOpen"
+    title="Delete Room"
+    [message]="'Are you sure you want to delete Room ' + selectedRoom?.room_number + '?'"
+    confirmText="Delete"
+    (confirmed)="deleteRoom()"
+    (cancelled)="isDeleteRoomOpen = false"
+  ></app-confirm-dialog>
+</div>

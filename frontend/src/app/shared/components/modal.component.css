@@ -1,0 +1,4 @@
+/* Modal Component Styles */
+:host {
+  display: block;
+}

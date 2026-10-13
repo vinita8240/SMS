@@ -1,0 +1,262 @@
+<div class="space-y-6">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Circulars & Admission Enquiries</h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400">Manage institutional circulars and track prospective student admission leads</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button *ngIf="canManage() && activeTab === 'circulars'" (click)="openAddCircularModal()" class="btn-primary">
+        <span>+</span>
+        <span class="ml-1.5">Issue Circular</span>
+      </button>
+      <button *ngIf="canManage() && activeTab === 'enquiries'" (click)="openAddEnquiryModal()" class="btn-primary">
+        <span>+</span>
+        <span class="ml-1.5">New Enquiry</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="border-b border-slate-200 dark:border-slate-800">
+    <nav class="flex space-x-6">
+      <button 
+        (click)="activeTab = 'circulars'"
+        [class]="activeTab === 'circulars' 
+          ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-semibold border-b-2 py-3 px-1 text-sm' 
+          : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 border-b-2 py-3 px-1 text-sm font-medium'"
+      >
+        <div class="flex items-center gap-2">
+          <span>📄</span>
+          Official Circulars ({{ circulars().length }})
+        </div>
+      </button>
+      <button 
+        *ngIf="canManage()"
+        (click)="activeTab = 'enquiries'"
+        [class]="activeTab === 'enquiries' 
+          ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-semibold border-b-2 py-3 px-1 text-sm' 
+          : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 border-b-2 py-3 px-1 text-sm font-medium'"
+      >
+        <div class="flex items-center gap-2">
+          <span>👥</span>
+          Admission Enquiries ({{ enquiries().length }})
+        </div>
+      </button>
+    </nav>
+  </div>
+
+  <!-- TAB 1: CIRCULARS -->
+  <div *ngIf="activeTab === 'circulars'" class="space-y-4">
+    <app-skeleton-loader *ngIf="loadingCirculars()" [rows]="3" [columns]="4"></app-skeleton-loader>
+
+    <app-empty-state 
+      *ngIf="!loadingCirculars() && circulars().length === 0"
+      title="No Circulars Issued"
+      description="There are currently no official administrative circulars."
+      icon="file-text"
+      [actionLabel]="canManage() ? 'Issue Circular' : ''"
+      (action)="openAddCircularModal()"
+    ></app-empty-state>
+
+    <div *ngIf="!loadingCirculars() && circulars().length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let c of circulars()" class="card p-6 border-l-4 border-l-emerald-600 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              Ref: {{ c.reference_no || ('CIRC-' + c.circular_id) }}
+            </span>
+            <div *ngIf="canManage()" class="flex items-center gap-1">
+              <button (click)="openEditCircularModal(c)" class="p-1 rounded text-slate-400 hover:text-indigo-600">
+                ✏️
+              </button>
+              <button (click)="confirmDeleteCircular(c)" class="p-1 rounded text-slate-400 hover:text-rose-600">
+                🗑️
+              </button>
+            </div>
+          </div>
+          <h3 class="text-xl font-bold text-slate-800 dark:text-white mt-3">{{ c.title }}</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-300 mt-3 leading-relaxed whitespace-pre-line">{{ c.content }}</p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+          <span>Date: {{ c.date | date:'mediumDate' }}</span>
+          <span class="font-medium text-slate-600 dark:text-slate-300">Auth: Administration</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: ADMISSION ENQUIRIES -->
+  <div *ngIf="activeTab === 'enquiries'" class="space-y-4">
+    <app-skeleton-loader *ngIf="loadingEnquiries()" [rows]="4" [columns]="6"></app-skeleton-loader>
+
+    <app-empty-state 
+      *ngIf="!loadingEnquiries() && enquiries().length === 0"
+      title="No Admission Enquiries"
+      description="There are no admission leads currently logged."
+      icon="user-plus"
+      actionLabel="Log New Enquiry"
+      (action)="openAddEnquiryModal()"
+    ></app-empty-state>
+
+    <div *ngIf="!loadingEnquiries() && enquiries().length > 0" class="card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
+              <th class="py-3.5 px-4">Candidate Name</th>
+              <th class="py-3.5 px-4">Contact Info</th>
+              <th class="py-3.5 px-4">Class / Purpose</th>
+              <th class="py-3.5 px-4">Date</th>
+              <th class="py-3.5 px-4">Status</th>
+              <th class="py-3.5 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 text-sm">
+            <tr *ngFor="let enq of enquiries()" class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+              <td class="py-3.5 px-4">
+                <div class="font-medium text-slate-800 dark:text-slate-200">{{ enq.name }}</div>
+                <div class="text-xs text-slate-400">{{ enq.message || 'Prospective student' }}</div>
+              </td>
+              <td class="py-3.5 px-4 text-xs text-slate-600 dark:text-slate-300">
+                <div>📞 {{ enq.phone || 'N/A' }}</div>
+                <div *ngIf="enq.email">✉️ {{ enq.email }}</div>
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">
+                  {{ enq.purpose || 'Admission' }}
+                </span>
+              </td>
+              <td class="py-3.5 px-4 text-slate-600 dark:text-slate-400 text-xs">
+                {{ enq.date | date:'mediumDate' }}
+              </td>
+              <td class="py-3.5 px-4">
+                <span 
+                  class="px-2.5 py-1 rounded-full text-xs font-bold capitalize"
+                  [ngClass]="{
+                    'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300': enq.status === 'admitted',
+                    'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300': enq.status === 'contacted',
+                    'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300': enq.status === 'pending' || !enq.status
+                  }"
+                >
+                  {{ enq.status || 'Pending' }}
+                </span>
+              </td>
+              <td class="py-3.5 px-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <button (click)="openEditEnquiryModal(enq)" class="p-1.5 text-slate-400 hover:text-indigo-600">
+                    ✏️
+                  </button>
+                  <button (click)="confirmDeleteEnquiry(enq)" class="p-1.5 text-slate-400 hover:text-rose-600">
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Circular Modal -->
+  <app-modal 
+    [isOpen]="isCircularModalOpen" 
+    [title]="editingCircular ? 'Edit Circular' : 'Issue Official Circular'"
+    (closeModal)="isCircularModalOpen = false"
+  >
+    <form [formGroup]="circularForm" (ngSubmit)="saveCircular()" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Circular Title *</label>
+        <input type="text" formControlName="title" placeholder="e.g. Revised Academic Calendar Term 2" class="input-field w-full">
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Reference Number</label>
+          <input type="text" formControlName="reference_no" placeholder="e.g. CIR-2026-04" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Date *</label>
+          <input type="date" formControlName="date" class="input-field w-full">
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Circular Body *</label>
+        <textarea formControlName="content" rows="5" class="input-field w-full"></textarea>
+      </div>
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isCircularModalOpen = false" class="btn-secondary">Cancel</button>
+        <button type="submit" [disabled]="circularForm.invalid || isSubmitting" class="btn-primary">
+          {{ editingCircular ? 'Update Circular' : 'Save Circular' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Enquiry Modal -->
+  <app-modal 
+    [isOpen]="isEnquiryModalOpen" 
+    [title]="editingEnquiry ? 'Update Enquiry' : 'Log Admission Enquiry'"
+    (closeModal)="isEnquiryModalOpen = false"
+  >
+    <form [formGroup]="enquiryForm" (ngSubmit)="saveEnquiry()" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Candidate / Student Name *</label>
+        <input type="text" formControlName="name" placeholder="Candidate full name" class="input-field w-full">
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Contact Phone *</label>
+          <input type="text" formControlName="phone" placeholder="Phone number" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Email</label>
+          <input type="email" formControlName="email" placeholder="parent@example.com" class="input-field w-full">
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Interested Class / Purpose</label>
+          <input type="text" formControlName="purpose" placeholder="e.g. Grade 5 Admission" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Status</label>
+          <select formControlName="status" class="input-field w-full">
+            <option value="pending">Pending</option>
+            <option value="contacted">Contacted</option>
+            <option value="admitted">Admitted</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Notes / Message</label>
+        <textarea formControlName="message" rows="3" class="input-field w-full"></textarea>
+      </div>
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isEnquiryModalOpen = false" class="btn-secondary">Cancel</button>
+        <button type="submit" [disabled]="enquiryForm.invalid || isSubmitting" class="btn-primary">
+          {{ editingEnquiry ? 'Update Enquiry' : 'Save Enquiry' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Delete Dialogs -->
+  <app-confirm-dialog
+    [isOpen]="isDeleteCircularOpen"
+    title="Delete Circular"
+    [message]="'Are you sure you want to delete circular: ' + selectedCircular?.title + '?'"
+    confirmText="Delete"
+    (confirmed)="deleteCircular()"
+    (cancelled)="isDeleteCircularOpen = false"
+  ></app-confirm-dialog>
+
+  <app-confirm-dialog
+    [isOpen]="isDeleteEnquiryOpen"
+    title="Delete Admission Enquiry"
+    [message]="'Are you sure you want to delete enquiry for: ' + selectedEnquiry?.name + '?'"
+    confirmText="Delete"
+    (confirmed)="deleteEnquiry()"
+    (cancelled)="isDeleteEnquiryOpen = false"
+  ></app-confirm-dialog>
+</div>

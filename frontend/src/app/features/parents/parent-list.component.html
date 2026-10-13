@@ -1,0 +1,157 @@
+<div class="space-y-6 animate-fade-in">
+  
+  <!-- Module Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Parent Directory</h1>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Guardian profiles, contact info, and linked enrolled children.</p>
+    </div>
+
+    <button 
+      (click)="openAddModal()"
+      class="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 shadow-md transition-all flex items-center space-x-1.5">
+      <span>+</span>
+      <span>Add Parent</span>
+    </button>
+  </div>
+
+  <!-- Table -->
+  @if (isLoading()) {
+    <app-skeleton-loader type="table"></app-skeleton-loader>
+  } @else {
+    <app-data-table 
+      [columns]="columns" 
+      [data]="parents()" 
+      [pagination]="pagination()"
+      (search)="onSearch($event)"
+      (pageChange)="onPageChange($event)">
+      
+      <ng-template #actions let-row>
+        <div class="flex items-center justify-end space-x-1.5">
+          <button 
+            (click)="viewParent(row)" 
+            title="View Children"
+            class="p-1.5 rounded-lg text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950/50 transition-colors">
+            👨‍👩‍👧
+          </button>
+          <button 
+            (click)="openEditModal(row)" 
+            title="Edit Parent"
+            class="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition-colors">
+            ✏️
+          </button>
+          <button 
+            (click)="confirmDelete(row)" 
+            title="Delete Parent"
+            class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors">
+            🗑️
+          </button>
+        </div>
+      </ng-template>
+
+    </app-data-table>
+  }
+
+  <!-- Add/Edit Parent Modal -->
+  <app-modal 
+    [isOpen]="isFormModalOpen()" 
+    [title]="editingParentId ? 'Edit Parent Profile' : 'Add New Parent'" 
+    (close)="isFormModalOpen.set(false)">
+    
+    <form [formGroup]="parentForm" (ngSubmit)="saveParent()" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Parent / Guardian Name *</label>
+          <input type="text" formControlName="name" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500" placeholder="e.g. Jonathan & Clara Reed" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address *</label>
+          <input type="email" formControlName="email" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500" placeholder="parent@school.com" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Phone Number *</label>
+          <input type="text" formControlName="phone" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500" placeholder="+1 (555) 000-0000" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Profession</label>
+          <input type="text" formControlName="profession" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500" placeholder="e.g. Surgeon / Software Architect" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Annual Household Income ($)</label>
+          <input type="number" formControlName="annual_income" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500" placeholder="e.g. 75000" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Account Status</label>
+          <select formControlName="status" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Address</label>
+          <input type="text" formControlName="address" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500" placeholder="Street Address, City, State" />
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+        <button type="button" (click)="isFormModalOpen.set(false)" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800">Cancel</button>
+        <button type="submit" [disabled]="parentForm.invalid" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-700">Save Parent</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- View Parent & Children Modal -->
+  <app-modal [isOpen]="isViewModalOpen()" title="Parent Profile & Linked Children" (close)="isViewModalOpen.set(false)">
+    @if (selectedParent()) {
+      <div class="space-y-4">
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between">
+          <div>
+            <h4 class="text-base font-bold text-slate-900 dark:text-white">{{ selectedParent()?.name }}</h4>
+            <div class="text-xs text-slate-500">{{ selectedParent()?.email }} • {{ selectedParent()?.phone }}</div>
+            <div class="text-xs text-slate-400 mt-0.5">{{ selectedParent()?.profession || 'Profession Not Specified' }} • Annual Income: ${{ selectedParent()?.annual_income || 0 }}</div>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold bg-brand-100 dark:bg-brand-950/60 text-brand-700 dark:text-brand-300">
+            {{ selectedParent()?.children?.length || 0 }} Children
+          </span>
+        </div>
+
+        <h5 class="text-xs font-bold uppercase tracking-wider text-slate-400">Enrolled Children</h5>
+        <div class="space-y-2">
+          @for (child of selectedParent()?.children; track child.student_id) {
+            <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center text-xs">
+                  🎓
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-slate-800 dark:text-slate-200">{{ child.name }}</div>
+                  <div class="text-[11px] text-slate-500">Class: {{ child.class_name }} - {{ child.section_name }} • Adm: {{ child.admission_no }}</div>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-emerald-100 text-emerald-700">Active</span>
+            </div>
+          }
+          @if (!selectedParent()?.children || selectedParent()?.children?.length === 0) {
+            <div class="text-xs text-slate-400 text-center py-4">No enrolled children currently linked.</div>
+          }
+        </div>
+      </div>
+    }
+  </app-modal>
+
+  <!-- Delete Confirmation -->
+  <app-confirm-dialog 
+    [isOpen]="isDeleteDialogOpen()" 
+    title="Delete Parent Account"
+    [message]="'Are you sure you want to delete ' + (parentToDelete?.name || '') + '?'"
+    (confirm)="executeDelete()"
+    (cancel)="isDeleteDialogOpen.set(false)">
+  </app-confirm-dialog>
+
+</div>

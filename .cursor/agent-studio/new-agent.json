@@ -1,0 +1,29 @@
+{
+  "slug": "new-agent",
+  "scope": "workspace",
+  "icon": "✦",
+  "displayName": "New Agent",
+  "description": "Use when a task requires this specialty: ",
+  "role": "You are a specialist for the task below.",
+  "instructions": "fix the error\n",
+  "responsibilities": [
+    "Do the requested work inside this specialty"
+  ],
+  "constraints": [
+    "Stay inside the requested specialty"
+  ],
+  "context": [],
+  "readonly": false,
+  "isBackground": false,
+  "model": "inherit",
+  "outputFormat": "",
+  "behavior": "Prefer the smallest change that solves the task.",
+  "projectRules": "",
+  "skills": "",
+  "mcpNote": "",
+  "hooksNote": "",
+  "environmentNote": "",
+  "createdAt": "2026-09-28T06:26:34.621Z",
+  "updatedAt": "2026-09-28T06:27:00.619Z",
+  "imported": false
+}

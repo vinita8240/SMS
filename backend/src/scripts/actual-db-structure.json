@@ -1,0 +1,4431 @@
+{
+  "academic_syllabus": {
+    "columns": [
+      {
+        "field": "academic_syllabus_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "academic_syllabus_code",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "title",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "class_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "subject_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "session",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": "2026-2027",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "file_name",
+        "type": "varchar(255)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "uploader_type",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": "admin",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "uploader_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": "1",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "year",
+        "type": "varchar(20)",
+        "null": "YES",
+        "key": "",
+        "default": "2026",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `academic_syllabus` (\n  `academic_syllabus_id` int(11) NOT NULL AUTO_INCREMENT,\n  `academic_syllabus_code` varchar(50) DEFAULT NULL,\n  `title` varchar(191) NOT NULL,\n  `description` text DEFAULT NULL,\n  `class_id` int(11) NOT NULL,\n  `subject_id` int(11) DEFAULT NULL,\n  `session` varchar(50) DEFAULT '2026-2027',\n  `file_name` varchar(255) NOT NULL,\n  `uploader_type` varchar(50) DEFAULT 'admin',\n  `uploader_id` int(11) DEFAULT 1,\n  `year` varchar(20) DEFAULT '2026',\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`academic_syllabus_id`),\n  KEY `idx_syl_class` (`class_id`),\n  KEY `fk_syl_subj` (`subject_id`),\n  CONSTRAINT `fk_syl_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_syl_subj` FOREIGN KEY (`subject_id`) REFERENCES `subject` (`subject_id`) ON DELETE SET NULL\n) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "activity": {
+    "columns": [
+      {
+        "field": "activity_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "title",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "club_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "house_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "date",
+        "type": "date",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `activity` (\n  `activity_id` int(11) NOT NULL AUTO_INCREMENT,\n  `title` varchar(191) NOT NULL,\n  `club_id` int(11) DEFAULT NULL,\n  `house_id` int(11) DEFAULT NULL,\n  `date` date DEFAULT NULL,\n  `description` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`activity_id`),\n  KEY `fk_act_club` (`club_id`),\n  KEY `fk_act_house` (`house_id`),\n  CONSTRAINT `fk_act_club` FOREIGN KEY (`club_id`) REFERENCES `club` (`club_id`) ON DELETE SET NULL,\n  CONSTRAINT `fk_act_house` FOREIGN KEY (`house_id`) REFERENCES `house` (`house_id`) ON DELETE SET NULL\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "admin": {
+    "columns": [
+      {
+        "field": "admin_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "email",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "UNI",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "password",
+        "type": "varchar(255)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "phone",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "address",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "admin_role_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "status",
+        "type": "enum('active','inactive','suspended')",
+        "null": "YES",
+        "key": "",
+        "default": "active",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "avatar",
+        "type": "varchar(255)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "last_login",
+        "type": "datetime",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `admin` (\n  `admin_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `email` varchar(191) NOT NULL,\n  `password` varchar(255) NOT NULL,\n  `phone` varchar(50) DEFAULT NULL,\n  `address` text DEFAULT NULL,\n  `admin_role_id` int(11) NOT NULL,\n  `status` enum('active','inactive','suspended') DEFAULT 'active',\n  `avatar` varchar(255) DEFAULT NULL,\n  `last_login` datetime DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`admin_id`),\n  UNIQUE KEY `idx_admin_email` (`email`),\n  KEY `idx_admin_role` (`admin_role_id`),\n  CONSTRAINT `fk_admin_role` FOREIGN KEY (`admin_role_id`) REFERENCES `admin_role` (`admin_role_id`) ON UPDATE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "admin_role": {
+    "columns": [
+      {
+        "field": "admin_role_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "slug",
+        "type": "varchar(100)",
+        "null": "NO",
+        "key": "UNI",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "permissions",
+        "type": "longtext",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `admin_role` (\n  `admin_role_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `slug` varchar(100) NOT NULL,\n  `description` text DEFAULT NULL,\n  `permissions` longtext DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`admin_role_id`),\n  UNIQUE KEY `idx_role_slug` (`slug`)\n) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "assignment": {
+    "columns": [
+      {
+        "field": "assignment_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "assignment_code",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "title",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "class_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "subject_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "teacher_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "due_date",
+        "type": "date",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "file_name",
+        "type": "varchar(255)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `assignment` (\n  `assignment_id` int(11) NOT NULL AUTO_INCREMENT,\n  `assignment_code` varchar(50) DEFAULT NULL,\n  `title` varchar(191) NOT NULL,\n  `description` text DEFAULT NULL,\n  `class_id` int(11) NOT NULL,\n  `subject_id` int(11) NOT NULL,\n  `teacher_id` int(11) DEFAULT NULL,\n  `due_date` date NOT NULL,\n  `file_name` varchar(255) DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`assignment_id`),\n  KEY `idx_asgn_class_subj` (`class_id`,`subject_id`),\n  KEY `fk_asgn_subj` (`subject_id`),\n  KEY `fk_asgn_teacher` (`teacher_id`),\n  CONSTRAINT `fk_asgn_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_asgn_subj` FOREIGN KEY (`subject_id`) REFERENCES `subject` (`subject_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_asgn_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teacher` (`teacher_id`) ON DELETE SET NULL\n) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "attendance": {
+    "columns": [
+      {
+        "field": "attendance_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "timestamp",
+        "type": "bigint(20)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "date",
+        "type": "date",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "student_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "class_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "section_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "status",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": "1=Present, 2=Absent, 3=Late, 4=Half Day, 5=Holiday"
+      },
+      {
+        "field": "remarks",
+        "type": "varchar(255)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `attendance` (\n  `attendance_id` int(11) NOT NULL AUTO_INCREMENT,\n  `timestamp` bigint(20) DEFAULT NULL,\n  `date` date NOT NULL,\n  `student_id` int(11) NOT NULL,\n  `class_id` int(11) NOT NULL,\n  `section_id` int(11) NOT NULL,\n  `status` int(11) NOT NULL COMMENT '1=Present, 2=Absent, 3=Late, 4=Half Day, 5=Holiday',\n  `remarks` varchar(255) DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`attendance_id`),\n  UNIQUE KEY `idx_stud_date` (`student_id`,`date`),\n  KEY `idx_att_class_date` (`class_id`,`section_id`,`date`),\n  KEY `fk_att_section` (`section_id`),\n  CONSTRAINT `fk_att_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_att_section` FOREIGN KEY (`section_id`) REFERENCES `section` (`section_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_att_student` FOREIGN KEY (`student_id`) REFERENCES `student` (`student_id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "audit_logs": {
+    "columns": [
+      {
+        "field": "log_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "user_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "user_type",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": "admin",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "user_name",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "action",
+        "type": "varchar(100)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "module",
+        "type": "varchar(100)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "record_id",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "ip_address",
+        "type": "varchar(45)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "old_values",
+        "type": "longtext",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "new_values",
+        "type": "longtext",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `audit_logs` (\n  `log_id` int(11) NOT NULL AUTO_INCREMENT,\n  `user_id` int(11) DEFAULT NULL,\n  `user_type` varchar(50) DEFAULT 'admin',\n  `user_name` varchar(191) DEFAULT NULL,\n  `action` varchar(100) NOT NULL,\n  `module` varchar(100) NOT NULL,\n  `record_id` varchar(50) DEFAULT NULL,\n  `ip_address` varchar(45) DEFAULT NULL,\n  `old_values` longtext DEFAULT NULL,\n  `new_values` longtext DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  PRIMARY KEY (`log_id`),\n  KEY `idx_audit_module` (`module`),\n  KEY `idx_audit_user` (`user_id`,`user_type`)\n) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "bank": {
+    "columns": [
+      {
+        "field": "bank_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "bank_name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "account_name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "account_number",
+        "type": "varchar(100)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "branch",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "ifsc_code",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "swift_code",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `bank` (\n  `bank_id` int(11) NOT NULL AUTO_INCREMENT,\n  `bank_name` varchar(191) NOT NULL,\n  `account_name` varchar(191) NOT NULL,\n  `account_number` varchar(100) NOT NULL,\n  `branch` varchar(191) DEFAULT NULL,\n  `ifsc_code` varchar(50) DEFAULT NULL,\n  `swift_code` varchar(50) DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`bank_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "book": {
+    "columns": [
+      {
+        "field": "book_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "author",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "class_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "subject_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "book_category_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "isbn",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "edition",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "publisher",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "rack_number",
+        "type": "varchar(100)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "price",
+        "type": "decimal(10,2)",
+        "null": "YES",
+        "key": "",
+        "default": "0.00",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "quantity",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": "1",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "available_quantity",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": "1",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "status",
+        "type": "enum('available','unavailable')",
+        "null": "YES",
+        "key": "",
+        "default": "available",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `book` (\n  `book_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `description` text DEFAULT NULL,\n  `author` varchar(191) NOT NULL,\n  `class_id` int(11) DEFAULT NULL,\n  `subject_id` int(11) DEFAULT NULL,\n  `book_category_id` int(11) NOT NULL,\n  `isbn` varchar(50) DEFAULT NULL,\n  `edition` varchar(50) DEFAULT NULL,\n  `publisher` varchar(191) DEFAULT NULL,\n  `rack_number` varchar(100) DEFAULT NULL,\n  `price` decimal(10,2) DEFAULT 0.00,\n  `quantity` int(11) DEFAULT 1,\n  `available_quantity` int(11) DEFAULT 1,\n  `status` enum('available','unavailable') DEFAULT 'available',\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`book_id`),\n  KEY `idx_book_cat` (`book_category_id`),\n  KEY `fk_bk_class` (`class_id`),\n  KEY `fk_bk_subj` (`subject_id`),\n  CONSTRAINT `fk_bk_cat` FOREIGN KEY (`book_category_id`) REFERENCES `book_category` (`book_category_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_bk_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`) ON DELETE SET NULL,\n  CONSTRAINT `fk_bk_subj` FOREIGN KEY (`subject_id`) REFERENCES `subject` (`subject_id`) ON DELETE SET NULL\n) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "book_category": {
+    "columns": [
+      {
+        "field": "book_category_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `book_category` (\n  `book_category_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `description` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`book_category_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "ci_sessions": {
+    "columns": [
+      {
+        "field": "id",
+        "type": "varchar(128)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "ip_address",
+        "type": "varchar(45)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "timestamp",
+        "type": "int(10) unsigned",
+        "null": "NO",
+        "key": "MUL",
+        "default": "0",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "data",
+        "type": "blob",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `ci_sessions` (\n  `id` varchar(128) NOT NULL,\n  `ip_address` varchar(45) NOT NULL,\n  `timestamp` int(10) unsigned NOT NULL DEFAULT 0,\n  `data` blob NOT NULL,\n  PRIMARY KEY (`id`),\n  KEY `ci_sessions_timestamp` (`timestamp`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "circular": {
+    "columns": [
+      {
+        "field": "circular_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "title",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "reference_no",
+        "type": "varchar(100)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "content",
+        "type": "text",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "file_name",
+        "type": "varchar(255)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "date",
+        "type": "date",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `circular` (\n  `circular_id` int(11) NOT NULL AUTO_INCREMENT,\n  `title` varchar(191) NOT NULL,\n  `reference_no` varchar(100) DEFAULT NULL,\n  `content` text NOT NULL,\n  `file_name` varchar(255) DEFAULT NULL,\n  `date` date DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`circular_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "class": {
+    "columns": [
+      {
+        "field": "class_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "name_numeric",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "teacher_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `class` (\n  `class_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `name_numeric` int(11) DEFAULT NULL,\n  `teacher_id` int(11) DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`class_id`),\n  KEY `idx_class_teacher` (`teacher_id`),\n  CONSTRAINT `fk_class_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teacher` (`teacher_id`) ON DELETE SET NULL\n) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "club": {
+    "columns": [
+      {
+        "field": "club_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `club` (\n  `club_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `description` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`club_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "department": {
+    "columns": [
+      {
+        "field": "department_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "code",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `department` (\n  `department_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `code` varchar(50) DEFAULT NULL,\n  `description` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`department_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "designation": {
+    "columns": [
+      {
+        "field": "designation_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "department_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `designation` (\n  `designation_id` int(11) NOT NULL AUTO_INCREMENT,\n  `department_id` int(11) NOT NULL,\n  `name` varchar(191) NOT NULL,\n  `description` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`designation_id`),\n  KEY `idx_designation_dept` (`department_id`),\n  CONSTRAINT `fk_designation_dept` FOREIGN KEY (`department_id`) REFERENCES `department` (`department_id`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "dormitory": {
+    "columns": [
+      {
+        "field": "dormitory_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "hostel_room_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "incharge_name",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "capacity",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": "20",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `dormitory` (\n  `dormitory_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `hostel_room_id` int(11) NOT NULL,\n  `incharge_name` varchar(191) DEFAULT NULL,\n  `capacity` int(11) DEFAULT 20,\n  `description` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`dormitory_id`),\n  KEY `fk_dorm_room` (`hostel_room_id`),\n  CONSTRAINT `fk_dorm_room` FOREIGN KEY (`hostel_room_id`) REFERENCES `hostel_room` (`hostel_room_id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "enquiry": {
+    "columns": [
+      {
+        "field": "enquiry_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "enquiry_category_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "email",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "phone",
+        "type": "varchar(50)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "purpose",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "message",
+        "type": "text",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "status",
+        "type": "enum('pending','contacted','resolved','closed')",
+        "null": "YES",
+        "key": "",
+        "default": "pending",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "date",
+        "type": "date",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "response",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `enquiry` (\n  `enquiry_id` int(11) NOT NULL AUTO_INCREMENT,\n  `enquiry_category_id` int(11) DEFAULT NULL,\n  `name` varchar(191) NOT NULL,\n  `email` varchar(191) DEFAULT NULL,\n  `phone` varchar(50) NOT NULL,\n  `purpose` varchar(191) DEFAULT NULL,\n  `message` text NOT NULL,\n  `status` enum('pending','contacted','resolved','closed') DEFAULT 'pending',\n  `date` date DEFAULT NULL,\n  `response` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`enquiry_id`),\n  KEY `fk_enq_cat` (`enquiry_category_id`),\n  CONSTRAINT `fk_enq_cat` FOREIGN KEY (`enquiry_category_id`) REFERENCES `enquiry_category` (`enquiry_category_id`) ON DELETE SET NULL\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "enquiry_category": {
+    "columns": [
+      {
+        "field": "enquiry_category_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "category_name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "purpose",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `enquiry_category` (\n  `enquiry_category_id` int(11) NOT NULL AUTO_INCREMENT,\n  `category_name` varchar(191) NOT NULL,\n  `purpose` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`enquiry_category_id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "exam": {
+    "columns": [
+      {
+        "field": "exam_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "date",
+        "type": "date",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "start_date",
+        "type": "date",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "end_date",
+        "type": "date",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "session",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": "2026-2027",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "comment",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "status",
+        "type": "enum('scheduled','ongoing','completed','published')",
+        "null": "YES",
+        "key": "",
+        "default": "scheduled",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `exam` (\n  `exam_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `date` date DEFAULT NULL,\n  `start_date` date DEFAULT NULL,\n  `end_date` date DEFAULT NULL,\n  `session` varchar(50) DEFAULT '2026-2027',\n  `comment` text DEFAULT NULL,\n  `status` enum('scheduled','ongoing','completed','published') DEFAULT 'scheduled',\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`exam_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "exam_question": {
+    "columns": [
+      {
+        "field": "question_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "exam_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "class_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "subject_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "teacher_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "question",
+        "type": "text",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "marks",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": "1",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "file_name",
+        "type": "varchar(255)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `exam_question` (\n  `question_id` int(11) NOT NULL AUTO_INCREMENT,\n  `exam_id` int(11) NOT NULL,\n  `class_id` int(11) NOT NULL,\n  `subject_id` int(11) NOT NULL,\n  `teacher_id` int(11) DEFAULT NULL,\n  `question` text NOT NULL,\n  `marks` int(11) DEFAULT 1,\n  `file_name` varchar(255) DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`question_id`),\n  KEY `fk_eq_exam` (`exam_id`),\n  KEY `fk_eq_class` (`class_id`),\n  KEY `fk_eq_subj` (`subject_id`),\n  KEY `fk_eq_teacher` (`teacher_id`),\n  CONSTRAINT `fk_eq_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_eq_exam` FOREIGN KEY (`exam_id`) REFERENCES `exam` (`exam_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_eq_subj` FOREIGN KEY (`subject_id`) REFERENCES `subject` (`subject_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_eq_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teacher` (`teacher_id`) ON DELETE SET NULL\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "expense_category": {
+    "columns": [
+      {
+        "field": "expense_category_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `expense_category` (\n  `expense_category_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `description` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`expense_category_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "expenses": {
+    "columns": [
+      {
+        "field": "expense_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "expense_category_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "title",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "amount",
+        "type": "decimal(10,2)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "payment_method",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": "Cash",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "reference_no",
+        "type": "varchar(100)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "expense_date",
+        "type": "date",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "receipt_doc",
+        "type": "varchar(255)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_by",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": "1",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `expenses` (\n  `expense_id` int(11) NOT NULL AUTO_INCREMENT,\n  `expense_category_id` int(11) NOT NULL,\n  `title` varchar(191) NOT NULL,\n  `description` text DEFAULT NULL,\n  `amount` decimal(10,2) NOT NULL,\n  `payment_method` varchar(50) DEFAULT 'Cash',\n  `reference_no` varchar(100) DEFAULT NULL,\n  `expense_date` date NOT NULL,\n  `receipt_doc` varchar(255) DEFAULT NULL,\n  `created_by` int(11) DEFAULT 1,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`expense_id`),\n  KEY `idx_exp_cat` (`expense_category_id`),\n  CONSTRAINT `fk_exp_cat` FOREIGN KEY (`expense_category_id`) REFERENCES `expense_category` (`expense_category_id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "hostel_category": {
+    "columns": [
+      {
+        "field": "hostel_category_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "type",
+        "type": "enum('Boys','Girls','Mixed','Staff')",
+        "null": "YES",
+        "key": "",
+        "default": "Boys",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `hostel_category` (\n  `hostel_category_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `type` enum('Boys','Girls','Mixed','Staff') DEFAULT 'Boys',\n  `description` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`hostel_category_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "hostel_room": {
+    "columns": [
+      {
+        "field": "hostel_room_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "hostel_category_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "room_number",
+        "type": "varchar(50)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "room_type",
+        "type": "varchar(100)",
+        "null": "YES",
+        "key": "",
+        "default": "Standard",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "num_beds",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": "4",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "cost_per_bed",
+        "type": "decimal(10,2)",
+        "null": "YES",
+        "key": "",
+        "default": "0.00",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `hostel_room` (\n  `hostel_room_id` int(11) NOT NULL AUTO_INCREMENT,\n  `hostel_category_id` int(11) NOT NULL,\n  `room_number` varchar(50) NOT NULL,\n  `room_type` varchar(100) DEFAULT 'Standard',\n  `num_beds` int(11) DEFAULT 4,\n  `cost_per_bed` decimal(10,2) DEFAULT 0.00,\n  `description` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`hostel_room_id`),\n  KEY `idx_room_hostel` (`hostel_category_id`),\n  CONSTRAINT `fk_room_hostel` FOREIGN KEY (`hostel_category_id`) REFERENCES `hostel_category` (`hostel_category_id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "house": {
+    "columns": [
+      {
+        "field": "house_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "color_code",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": "#2563eb",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `house` (\n  `house_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `color_code` varchar(50) DEFAULT '#2563eb',\n  `description` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`house_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "invoice": {
+    "columns": [
+      {
+        "field": "invoice_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "invoice_number",
+        "type": "varchar(50)",
+        "null": "NO",
+        "key": "UNI",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "student_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "class_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "title",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "amount",
+        "type": "decimal(10,2)",
+        "null": "NO",
+        "key": "",
+        "default": "0.00",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "discount",
+        "type": "decimal(10,2)",
+        "null": "NO",
+        "key": "",
+        "default": "0.00",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "amount_paid",
+        "type": "decimal(10,2)",
+        "null": "NO",
+        "key": "",
+        "default": "0.00",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "due",
+        "type": "decimal(10,2)",
+        "null": "NO",
+        "key": "",
+        "default": "0.00",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "creation_timestamp",
+        "type": "bigint(20)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "due_date",
+        "type": "date",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "payment_method",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": "Cash",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "status",
+        "type": "enum('paid','unpaid','partially_paid','cancelled')",
+        "null": "YES",
+        "key": "MUL",
+        "default": "unpaid",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "year",
+        "type": "varchar(20)",
+        "null": "YES",
+        "key": "",
+        "default": "2026-2027",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `invoice` (\n  `invoice_id` int(11) NOT NULL AUTO_INCREMENT,\n  `invoice_number` varchar(50) NOT NULL,\n  `student_id` int(11) NOT NULL,\n  `class_id` int(11) NOT NULL,\n  `title` varchar(191) NOT NULL,\n  `description` text DEFAULT NULL,\n  `amount` decimal(10,2) NOT NULL DEFAULT 0.00,\n  `discount` decimal(10,2) NOT NULL DEFAULT 0.00,\n  `amount_paid` decimal(10,2) NOT NULL DEFAULT 0.00,\n  `due` decimal(10,2) NOT NULL DEFAULT 0.00,\n  `creation_timestamp` bigint(20) DEFAULT NULL,\n  `due_date` date DEFAULT NULL,\n  `payment_method` varchar(50) DEFAULT 'Cash',\n  `status` enum('paid','unpaid','partially_paid','cancelled') DEFAULT 'unpaid',\n  `year` varchar(20) DEFAULT '2026-2027',\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`invoice_id`),\n  UNIQUE KEY `idx_inv_num` (`invoice_number`),\n  KEY `idx_inv_student` (`student_id`),\n  KEY `idx_inv_class` (`class_id`),\n  KEY `idx_inv_status` (`status`),\n  CONSTRAINT `fk_inv_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_inv_student` FOREIGN KEY (`student_id`) REFERENCES `student` (`student_id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "language": {
+    "columns": [
+      {
+        "field": "phrase_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "phrase",
+        "type": "text",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "english",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "spanish",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "french",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "hindi",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "arabic",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `language` (\n  `phrase_id` int(11) NOT NULL AUTO_INCREMENT,\n  `phrase` text NOT NULL,\n  `english` text DEFAULT NULL,\n  `spanish` text DEFAULT NULL,\n  `french` text DEFAULT NULL,\n  `hindi` text DEFAULT NULL,\n  `arabic` text DEFAULT NULL,\n  PRIMARY KEY (`phrase_id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "language_list": {
+    "columns": [
+      {
+        "field": "language_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(100)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "code",
+        "type": "varchar(20)",
+        "null": "NO",
+        "key": "UNI",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "status",
+        "type": "enum('active','inactive')",
+        "null": "YES",
+        "key": "",
+        "default": "active",
+        "extra": "",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `language_list` (\n  `language_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(100) NOT NULL,\n  `code` varchar(20) NOT NULL,\n  `status` enum('active','inactive') DEFAULT 'active',\n  PRIMARY KEY (`language_id`),\n  UNIQUE KEY `idx_lang_code` (`code`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "leave": {
+    "columns": [
+      {
+        "field": "leave_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "teacher_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "leave_code",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "leave_type",
+        "type": "varchar(100)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "start_date",
+        "type": "date",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "end_date",
+        "type": "date",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "reason",
+        "type": "text",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "attachment",
+        "type": "varchar(255)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "status",
+        "type": "enum('pending','approved','rejected')",
+        "null": "YES",
+        "key": "",
+        "default": "pending",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "approved_by",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "approved_at",
+        "type": "datetime",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `leave` (\n  `leave_id` int(11) NOT NULL AUTO_INCREMENT,\n  `teacher_id` int(11) NOT NULL,\n  `leave_code` varchar(50) DEFAULT NULL,\n  `leave_type` varchar(100) NOT NULL,\n  `start_date` date NOT NULL,\n  `end_date` date NOT NULL,\n  `reason` text NOT NULL,\n  `attachment` varchar(255) DEFAULT NULL,\n  `status` enum('pending','approved','rejected') DEFAULT 'pending',\n  `approved_by` int(11) DEFAULT NULL,\n  `approved_at` datetime DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`leave_id`),\n  KEY `idx_leave_teacher` (`teacher_id`),\n  CONSTRAINT `fk_leave_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teacher` (`teacher_id`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "library_issues": {
+    "columns": [
+      {
+        "field": "issue_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "book_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "borrower_type",
+        "type": "enum('student','teacher')",
+        "null": "YES",
+        "key": "",
+        "default": "student",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "student_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "teacher_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "issue_date",
+        "type": "date",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "due_date",
+        "type": "date",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "return_date",
+        "type": "date",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "fine_amount",
+        "type": "decimal(10,2)",
+        "null": "YES",
+        "key": "",
+        "default": "0.00",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "status",
+        "type": "enum('issued','returned','overdue','lost')",
+        "null": "YES",
+        "key": "",
+        "default": "issued",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `library_issues` (\n  `issue_id` int(11) NOT NULL AUTO_INCREMENT,\n  `book_id` int(11) NOT NULL,\n  `borrower_type` enum('student','teacher') DEFAULT 'student',\n  `student_id` int(11) DEFAULT NULL,\n  `teacher_id` int(11) DEFAULT NULL,\n  `issue_date` date NOT NULL,\n  `due_date` date NOT NULL,\n  `return_date` date DEFAULT NULL,\n  `fine_amount` decimal(10,2) DEFAULT 0.00,\n  `status` enum('issued','returned','overdue','lost') DEFAULT 'issued',\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`issue_id`),\n  KEY `idx_issue_bk` (`book_id`),\n  KEY `idx_issue_stud` (`student_id`),\n  KEY `fk_iss_teacher` (`teacher_id`),\n  CONSTRAINT `fk_iss_bk` FOREIGN KEY (`book_id`) REFERENCES `book` (`book_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_iss_stud` FOREIGN KEY (`student_id`) REFERENCES `student` (`student_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_iss_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teacher` (`teacher_id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "mark": {
+    "columns": [
+      {
+        "field": "mark_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "student_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "subject_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "class_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "section_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "exam_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "mark_obtained",
+        "type": "decimal(5,2)",
+        "null": "YES",
+        "key": "",
+        "default": "0.00",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "mark_total",
+        "type": "decimal(5,2)",
+        "null": "YES",
+        "key": "",
+        "default": "100.00",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "grade_point",
+        "type": "decimal(3,2)",
+        "null": "YES",
+        "key": "",
+        "default": "0.00",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "grade",
+        "type": "varchar(10)",
+        "null": "YES",
+        "key": "",
+        "default": "F",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "comment",
+        "type": "varchar(255)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "year",
+        "type": "varchar(20)",
+        "null": "YES",
+        "key": "",
+        "default": "2026",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `mark` (\n  `mark_id` int(11) NOT NULL AUTO_INCREMENT,\n  `student_id` int(11) NOT NULL,\n  `subject_id` int(11) NOT NULL,\n  `class_id` int(11) NOT NULL,\n  `section_id` int(11) DEFAULT NULL,\n  `exam_id` int(11) NOT NULL,\n  `mark_obtained` decimal(5,2) DEFAULT 0.00,\n  `mark_total` decimal(5,2) DEFAULT 100.00,\n  `grade_point` decimal(3,2) DEFAULT 0.00,\n  `grade` varchar(10) DEFAULT 'F',\n  `comment` varchar(255) DEFAULT NULL,\n  `year` varchar(20) DEFAULT '2026',\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`mark_id`),\n  UNIQUE KEY `idx_stud_exam_subj` (`student_id`,`exam_id`,`subject_id`),\n  KEY `idx_mark_exam_class` (`exam_id`,`class_id`),\n  KEY `fk_mark_subj` (`subject_id`),\n  KEY `fk_mark_class` (`class_id`),\n  CONSTRAINT `fk_mark_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_mark_exam` FOREIGN KEY (`exam_id`) REFERENCES `exam` (`exam_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_mark_stud` FOREIGN KEY (`student_id`) REFERENCES `student` (`student_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_mark_subj` FOREIGN KEY (`subject_id`) REFERENCES `subject` (`subject_id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "material": {
+    "columns": [
+      {
+        "field": "document_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "title",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "file_name",
+        "type": "varchar(255)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "file_type",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "class_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "subject_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "teacher_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `material` (\n  `document_id` int(11) NOT NULL AUTO_INCREMENT,\n  `title` varchar(191) NOT NULL,\n  `description` text DEFAULT NULL,\n  `file_name` varchar(255) NOT NULL,\n  `file_type` varchar(50) DEFAULT NULL,\n  `class_id` int(11) NOT NULL,\n  `subject_id` int(11) DEFAULT NULL,\n  `teacher_id` int(11) DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`document_id`),\n  KEY `idx_mat_class` (`class_id`),\n  KEY `fk_mat_subj` (`subject_id`),\n  KEY `fk_mat_teacher` (`teacher_id`),\n  CONSTRAINT `fk_mat_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_mat_subj` FOREIGN KEY (`subject_id`) REFERENCES `subject` (`subject_id`) ON DELETE SET NULL,\n  CONSTRAINT `fk_mat_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teacher` (`teacher_id`) ON DELETE SET NULL\n) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "noticeboard": {
+    "columns": [
+      {
+        "field": "notice_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "notice_title",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "notice",
+        "type": "text",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "create_timestamp",
+        "type": "bigint(20)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "date",
+        "type": "date",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "audience",
+        "type": "enum('all','students','parents','teachers','staff')",
+        "null": "YES",
+        "key": "",
+        "default": "all",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "class_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "section_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "status",
+        "type": "enum('active','archived')",
+        "null": "YES",
+        "key": "",
+        "default": "active",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `noticeboard` (\n  `notice_id` int(11) NOT NULL AUTO_INCREMENT,\n  `notice_title` varchar(191) NOT NULL,\n  `notice` text NOT NULL,\n  `create_timestamp` bigint(20) DEFAULT NULL,\n  `date` date DEFAULT NULL,\n  `audience` enum('all','students','parents','teachers','staff') DEFAULT 'all',\n  `class_id` int(11) DEFAULT NULL,\n  `section_id` int(11) DEFAULT NULL,\n  `status` enum('active','archived') DEFAULT 'active',\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`notice_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "parent": {
+    "columns": [
+      {
+        "field": "parent_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "email",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "UNI",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "password",
+        "type": "varchar(255)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "phone",
+        "type": "varchar(50)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "address",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "profession",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "annual_income",
+        "type": "decimal(12,2)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "status",
+        "type": "enum('active','inactive')",
+        "null": "YES",
+        "key": "",
+        "default": "active",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `parent` (\n  `parent_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `email` varchar(191) NOT NULL,\n  `password` varchar(255) NOT NULL,\n  `phone` varchar(50) NOT NULL,\n  `address` text DEFAULT NULL,\n  `profession` varchar(191) DEFAULT NULL,\n  `annual_income` decimal(12,2) DEFAULT NULL,\n  `status` enum('active','inactive') DEFAULT 'active',\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`parent_id`),\n  UNIQUE KEY `idx_parent_email` (`email`)\n) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "payment": {
+    "columns": [
+      {
+        "field": "payment_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "payment_type",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": "income",
+        "extra": "",
+        "comment": "income or expense"
+      },
+      {
+        "field": "invoice_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "student_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "expense_category_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "title",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "payment_method",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": "Cash",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "amount",
+        "type": "decimal(10,2)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "timestamp",
+        "type": "bigint(20)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "payment_date",
+        "type": "date",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "year",
+        "type": "varchar(20)",
+        "null": "YES",
+        "key": "",
+        "default": "2026-2027",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "transaction_reference",
+        "type": "varchar(100)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `payment` (\n  `payment_id` int(11) NOT NULL AUTO_INCREMENT,\n  `payment_type` varchar(50) DEFAULT 'income' COMMENT 'income or expense',\n  `invoice_id` int(11) DEFAULT NULL,\n  `student_id` int(11) DEFAULT NULL,\n  `expense_category_id` int(11) DEFAULT NULL,\n  `title` varchar(191) NOT NULL,\n  `payment_method` varchar(50) DEFAULT 'Cash',\n  `description` text DEFAULT NULL,\n  `amount` decimal(10,2) NOT NULL,\n  `timestamp` bigint(20) DEFAULT NULL,\n  `payment_date` date DEFAULT NULL,\n  `year` varchar(20) DEFAULT '2026-2027',\n  `transaction_reference` varchar(100) DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`payment_id`),\n  KEY `idx_pay_inv` (`invoice_id`),\n  KEY `idx_pay_stud` (`student_id`),\n  KEY `fk_pay_exp_cat` (`expense_category_id`),\n  CONSTRAINT `fk_pay_exp_cat` FOREIGN KEY (`expense_category_id`) REFERENCES `expense_category` (`expense_category_id`) ON DELETE SET NULL,\n  CONSTRAINT `fk_pay_inv` FOREIGN KEY (`invoice_id`) REFERENCES `invoice` (`invoice_id`) ON DELETE SET NULL,\n  CONSTRAINT `fk_pay_stud` FOREIGN KEY (`student_id`) REFERENCES `student` (`student_id`) ON DELETE SET NULL\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "section": {
+    "columns": [
+      {
+        "field": "section_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "nick_name",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "class_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "teacher_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "capacity",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": "40",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `section` (\n  `section_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `nick_name` varchar(191) DEFAULT NULL,\n  `class_id` int(11) NOT NULL,\n  `teacher_id` int(11) DEFAULT NULL,\n  `capacity` int(11) DEFAULT 40,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`section_id`),\n  KEY `idx_section_class` (`class_id`),\n  KEY `idx_section_teacher` (`teacher_id`),\n  CONSTRAINT `fk_sec_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_sec_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teacher` (`teacher_id`) ON DELETE SET NULL\n) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "settings": {
+    "columns": [
+      {
+        "field": "settings_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "type",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "UNI",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `settings` (\n  `settings_id` int(11) NOT NULL AUTO_INCREMENT,\n  `type` varchar(191) NOT NULL,\n  `description` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`settings_id`),\n  UNIQUE KEY `idx_settings_type` (`type`)\n) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "sms_settings": {
+    "columns": [
+      {
+        "field": "sms_settings_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "clickatell_user",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "clickatell_password",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "clickatell_api_id",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "twilio_account_sid",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "twilio_auth_token",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "twilio_sender_phone_number",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "msg91_authentication_key",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "msg91_sender_id",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "msg91_route",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "msg91_country_code",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "active_sms_service",
+        "type": "varchar(100)",
+        "null": "YES",
+        "key": "",
+        "default": "disabled",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `sms_settings` (\n  `sms_settings_id` int(11) NOT NULL AUTO_INCREMENT,\n  `clickatell_user` varchar(191) DEFAULT NULL,\n  `clickatell_password` varchar(191) DEFAULT NULL,\n  `clickatell_api_id` varchar(191) DEFAULT NULL,\n  `twilio_account_sid` varchar(191) DEFAULT NULL,\n  `twilio_auth_token` varchar(191) DEFAULT NULL,\n  `twilio_sender_phone_number` varchar(191) DEFAULT NULL,\n  `msg91_authentication_key` varchar(191) DEFAULT NULL,\n  `msg91_sender_id` varchar(191) DEFAULT NULL,\n  `msg91_route` varchar(191) DEFAULT NULL,\n  `msg91_country_code` varchar(50) DEFAULT NULL,\n  `active_sms_service` varchar(100) DEFAULT 'disabled',\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`sms_settings_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "social_category": {
+    "columns": [
+      {
+        "field": "social_category_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `social_category` (\n  `social_category_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `description` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`social_category_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "student": {
+    "columns": [
+      {
+        "field": "student_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "admission_no",
+        "type": "varchar(50)",
+        "null": "NO",
+        "key": "UNI",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "roll_no",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "email",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "password",
+        "type": "varchar(255)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "phone",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "address",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "city",
+        "type": "varchar(100)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "gender",
+        "type": "enum('Male','Female','Other')",
+        "null": "YES",
+        "key": "",
+        "default": "Male",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "birthday",
+        "type": "date",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "blood_group",
+        "type": "varchar(10)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "nationality",
+        "type": "varchar(100)",
+        "null": "YES",
+        "key": "",
+        "default": "Indian",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "mother_tongue",
+        "type": "varchar(100)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "religion",
+        "type": "varchar(100)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "father_name",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "mother_name",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "parent_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "class_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "section_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "student_category_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "social_category_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "house_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "club_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "dormitory_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "transport_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "session",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "MUL",
+        "default": "2026-2027",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "admission_date",
+        "type": "date",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "previous_school",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "file_name",
+        "type": "varchar(255)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "status",
+        "type": "enum('active','inactive','transferred','graduated','left')",
+        "null": "YES",
+        "key": "",
+        "default": "active",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `student` (\n  `student_id` int(11) NOT NULL AUTO_INCREMENT,\n  `admission_no` varchar(50) NOT NULL,\n  `roll_no` varchar(50) DEFAULT NULL,\n  `name` varchar(191) NOT NULL,\n  `email` varchar(191) DEFAULT NULL,\n  `password` varchar(255) DEFAULT NULL,\n  `phone` varchar(50) DEFAULT NULL,\n  `address` text DEFAULT NULL,\n  `city` varchar(100) DEFAULT NULL,\n  `gender` enum('Male','Female','Other') DEFAULT 'Male',\n  `birthday` date DEFAULT NULL,\n  `blood_group` varchar(10) DEFAULT NULL,\n  `nationality` varchar(100) DEFAULT 'Indian',\n  `mother_tongue` varchar(100) DEFAULT NULL,\n  `religion` varchar(100) DEFAULT NULL,\n  `father_name` varchar(191) DEFAULT NULL,\n  `mother_name` varchar(191) DEFAULT NULL,\n  `parent_id` int(11) DEFAULT NULL,\n  `class_id` int(11) NOT NULL,\n  `section_id` int(11) NOT NULL,\n  `student_category_id` int(11) DEFAULT NULL,\n  `social_category_id` int(11) DEFAULT NULL,\n  `house_id` int(11) DEFAULT NULL,\n  `club_id` int(11) DEFAULT NULL,\n  `dormitory_id` int(11) DEFAULT NULL,\n  `transport_id` int(11) DEFAULT NULL,\n  `session` varchar(50) DEFAULT '2026-2027',\n  `admission_date` date DEFAULT NULL,\n  `previous_school` text DEFAULT NULL,\n  `file_name` varchar(255) DEFAULT NULL,\n  `status` enum('active','inactive','transferred','graduated','left') DEFAULT 'active',\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`student_id`),\n  UNIQUE KEY `idx_student_adm` (`admission_no`),\n  KEY `idx_stud_class` (`class_id`),\n  KEY `idx_stud_section` (`section_id`),\n  KEY `idx_stud_parent` (`parent_id`),\n  KEY `idx_stud_session` (`session`),\n  KEY `fk_stud_cat` (`student_category_id`),\n  KEY `fk_stud_soc_cat` (`social_category_id`),\n  KEY `fk_stud_house` (`house_id`),\n  KEY `fk_stud_club` (`club_id`),\n  KEY `fk_stud_dorm` (`dormitory_id`),\n  KEY `fk_stud_trans` (`transport_id`),\n  CONSTRAINT `fk_stud_cat` FOREIGN KEY (`student_category_id`) REFERENCES `student_category` (`student_category_id`) ON DELETE SET NULL,\n  CONSTRAINT `fk_stud_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_stud_club` FOREIGN KEY (`club_id`) REFERENCES `club` (`club_id`) ON DELETE SET NULL,\n  CONSTRAINT `fk_stud_dorm` FOREIGN KEY (`dormitory_id`) REFERENCES `dormitory` (`dormitory_id`) ON DELETE SET NULL,\n  CONSTRAINT `fk_stud_house` FOREIGN KEY (`house_id`) REFERENCES `house` (`house_id`) ON DELETE SET NULL,\n  CONSTRAINT `fk_stud_parent` FOREIGN KEY (`parent_id`) REFERENCES `parent` (`parent_id`) ON DELETE SET NULL,\n  CONSTRAINT `fk_stud_section` FOREIGN KEY (`section_id`) REFERENCES `section` (`section_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_stud_soc_cat` FOREIGN KEY (`social_category_id`) REFERENCES `social_category` (`social_category_id`) ON DELETE SET NULL,\n  CONSTRAINT `fk_stud_trans` FOREIGN KEY (`transport_id`) REFERENCES `transport` (`transport_id`) ON DELETE SET NULL\n) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "student_category": {
+    "columns": [
+      {
+        "field": "student_category_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `student_category` (\n  `student_category_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `description` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`student_category_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "subject": {
+    "columns": [
+      {
+        "field": "subject_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "code",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "class_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "teacher_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "type",
+        "type": "enum('theory','practical','optional','mandatory')",
+        "null": "YES",
+        "key": "",
+        "default": "theory",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "pass_mark",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": "40",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "final_mark",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": "100",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `subject` (\n  `subject_id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(191) NOT NULL,\n  `code` varchar(50) DEFAULT NULL,\n  `class_id` int(11) NOT NULL,\n  `teacher_id` int(11) DEFAULT NULL,\n  `type` enum('theory','practical','optional','mandatory') DEFAULT 'theory',\n  `pass_mark` int(11) DEFAULT 40,\n  `final_mark` int(11) DEFAULT 100,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`subject_id`),\n  KEY `idx_subj_class` (`class_id`),\n  KEY `idx_subj_teacher` (`teacher_id`),\n  CONSTRAINT `fk_subj_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_subj_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teacher` (`teacher_id`) ON DELETE SET NULL\n) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "teacher": {
+    "columns": [
+      {
+        "field": "teacher_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "teacher_number",
+        "type": "varchar(50)",
+        "null": "NO",
+        "key": "UNI",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "email",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "UNI",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "password",
+        "type": "varchar(255)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "phone",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "address",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "birthday",
+        "type": "date",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "gender",
+        "type": "enum('Male','Female','Other')",
+        "null": "YES",
+        "key": "",
+        "default": "Male",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "qualification",
+        "type": "varchar(255)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "marital_status",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "blood_group",
+        "type": "varchar(10)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "joining_date",
+        "type": "date",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "leaving_date",
+        "type": "date",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "department_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "designation_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "bank_id",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "basic_salary",
+        "type": "decimal(10,2)",
+        "null": "YES",
+        "key": "",
+        "default": "0.00",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "social_links",
+        "type": "longtext",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "status",
+        "type": "enum('active','inactive','resigned')",
+        "null": "YES",
+        "key": "",
+        "default": "active",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "file_name",
+        "type": "varchar(255)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `teacher` (\n  `teacher_id` int(11) NOT NULL AUTO_INCREMENT,\n  `teacher_number` varchar(50) NOT NULL,\n  `name` varchar(191) NOT NULL,\n  `email` varchar(191) NOT NULL,\n  `password` varchar(255) NOT NULL,\n  `phone` varchar(50) DEFAULT NULL,\n  `address` text DEFAULT NULL,\n  `birthday` date DEFAULT NULL,\n  `gender` enum('Male','Female','Other') DEFAULT 'Male',\n  `qualification` varchar(255) DEFAULT NULL,\n  `marital_status` varchar(50) DEFAULT NULL,\n  `blood_group` varchar(10) DEFAULT NULL,\n  `joining_date` date DEFAULT NULL,\n  `leaving_date` date DEFAULT NULL,\n  `department_id` int(11) DEFAULT NULL,\n  `designation_id` int(11) DEFAULT NULL,\n  `bank_id` int(11) DEFAULT NULL,\n  `basic_salary` decimal(10,2) DEFAULT 0.00,\n  `social_links` longtext DEFAULT NULL,\n  `status` enum('active','inactive','resigned') DEFAULT 'active',\n  `file_name` varchar(255) DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`teacher_id`),\n  UNIQUE KEY `idx_teacher_number` (`teacher_number`),\n  UNIQUE KEY `idx_teacher_email` (`email`),\n  KEY `idx_teacher_dept` (`department_id`),\n  KEY `idx_teacher_desig` (`designation_id`),\n  KEY `idx_teacher_bank` (`bank_id`),\n  CONSTRAINT `fk_teacher_bank` FOREIGN KEY (`bank_id`) REFERENCES `bank` (`bank_id`) ON DELETE SET NULL ON UPDATE CASCADE,\n  CONSTRAINT `fk_teacher_dept` FOREIGN KEY (`department_id`) REFERENCES `department` (`department_id`) ON DELETE SET NULL ON UPDATE CASCADE,\n  CONSTRAINT `fk_teacher_desig` FOREIGN KEY (`designation_id`) REFERENCES `designation` (`designation_id`) ON DELETE SET NULL ON UPDATE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "transport": {
+    "columns": [
+      {
+        "field": "transport_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "transport_route_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "vehicle_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "MUL",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "route_name",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "number_of_vehicle",
+        "type": "varchar(50)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "route_fare",
+        "type": "decimal(10,2)",
+        "null": "YES",
+        "key": "",
+        "default": "0.00",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `transport` (\n  `transport_id` int(11) NOT NULL AUTO_INCREMENT,\n  `transport_route_id` int(11) NOT NULL,\n  `vehicle_id` int(11) NOT NULL,\n  `route_name` varchar(191) DEFAULT NULL,\n  `number_of_vehicle` varchar(50) DEFAULT NULL,\n  `description` text DEFAULT NULL,\n  `route_fare` decimal(10,2) DEFAULT 0.00,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`transport_id`),\n  KEY `idx_trans_route` (`transport_route_id`),\n  KEY `idx_trans_veh` (`vehicle_id`),\n  CONSTRAINT `fk_trans_route` FOREIGN KEY (`transport_route_id`) REFERENCES `transport_route` (`transport_route_id`) ON DELETE CASCADE,\n  CONSTRAINT `fk_trans_veh` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicle` (`vehicle_id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "transport_route": {
+    "columns": [
+      {
+        "field": "transport_route_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "route_name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "start_point",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "end_point",
+        "type": "varchar(191)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "route_fare",
+        "type": "decimal(10,2)",
+        "null": "YES",
+        "key": "",
+        "default": "0.00",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "description",
+        "type": "text",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `transport_route` (\n  `transport_route_id` int(11) NOT NULL AUTO_INCREMENT,\n  `route_name` varchar(191) NOT NULL,\n  `start_point` varchar(191) DEFAULT NULL,\n  `end_point` varchar(191) DEFAULT NULL,\n  `route_fare` decimal(10,2) DEFAULT 0.00,\n  `description` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`transport_route_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  },
+  "vehicle": {
+    "columns": [
+      {
+        "field": "vehicle_id",
+        "type": "int(11)",
+        "null": "NO",
+        "key": "PRI",
+        "default": null,
+        "extra": "auto_increment",
+        "comment": ""
+      },
+      {
+        "field": "vehicle_number",
+        "type": "varchar(50)",
+        "null": "NO",
+        "key": "UNI",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "vehicle_model",
+        "type": "varchar(100)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "year_made",
+        "type": "varchar(20)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "driver_name",
+        "type": "varchar(191)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "driver_phone",
+        "type": "varchar(50)",
+        "null": "NO",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "driver_license",
+        "type": "varchar(100)",
+        "null": "YES",
+        "key": "",
+        "default": null,
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "vehicle_status",
+        "type": "enum('active','maintenance','retired')",
+        "null": "YES",
+        "key": "",
+        "default": "active",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "seating_capacity",
+        "type": "int(11)",
+        "null": "YES",
+        "key": "",
+        "default": "40",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "created_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "",
+        "comment": ""
+      },
+      {
+        "field": "updated_at",
+        "type": "timestamp",
+        "null": "NO",
+        "key": "",
+        "default": "current_timestamp()",
+        "extra": "on update current_timestamp()",
+        "comment": ""
+      }
+    ],
+    "createSql": "CREATE TABLE `vehicle` (\n  `vehicle_id` int(11) NOT NULL AUTO_INCREMENT,\n  `vehicle_number` varchar(50) NOT NULL,\n  `vehicle_model` varchar(100) DEFAULT NULL,\n  `year_made` varchar(20) DEFAULT NULL,\n  `driver_name` varchar(191) NOT NULL,\n  `driver_phone` varchar(50) NOT NULL,\n  `driver_license` varchar(100) DEFAULT NULL,\n  `vehicle_status` enum('active','maintenance','retired') DEFAULT 'active',\n  `seating_capacity` int(11) DEFAULT 40,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`vehicle_id`),\n  UNIQUE KEY `idx_veh_number` (`vehicle_number`)\n) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  }
+}

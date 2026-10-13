@@ -1,0 +1,43 @@
+<!-- Top Floating Admin Theme Preview Bar (Only visible when testing/previewing or on request) -->
+<div class="sticky top-0 z-50 bg-slate-950 text-white text-xs px-4 py-2 flex flex-wrap items-center justify-between gap-3 shadow-2xl border-b border-indigo-500/30">
+  <div class="flex items-center space-x-3">
+    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+    <span class="font-bold text-amber-300">CMS Theme Engine:</span>
+    <span class="font-semibold text-slate-200">
+      Active: <strong class="text-white font-extrabold">{{ publicService.currentTheme()?.theme_name || 'Loading...' }}</strong>
+    </span>
+    <span *ngIf="previewThemeParam()" class="px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-extrabold uppercase text-[10px]">
+      Preview Mode
+    </span>
+  </div>
+
+  <!-- Instant Theme Switcher Buttons -->
+  <div class="flex items-center space-x-1.5 overflow-x-auto">
+    <span class="text-[11px] text-slate-400 hidden sm:inline">Switch Theme:</span>
+    <button 
+      *ngFor="let t of allThemes"
+      (click)="switchPreview(t.id)"
+      [ngClass]="(previewThemeParam() || activeThemeId()) === t.id ? 'bg-[#705ec8] text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'"
+      class="px-2.5 py-1 rounded text-[11px] transition shrink-0 cursor-pointer">
+      {{ t.name }}
+    </button>
+
+    <!-- Activate Theme Button (When previewing) -->
+    <button 
+      *ngIf="previewThemeParam() && previewThemeParam() !== activeThemeId()"
+      (click)="activateCurrentPreview()"
+      [disabled]="isActivating()"
+      class="ml-2 px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] uppercase tracking-wider transition shadow-sm">
+      {{ isActivating() ? 'Activating...' : '✓ Set as Active' }}
+    </button>
+
+    <a routerLink="/cms/dashboard" class="ml-3 px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold transition">
+      ⚙️ CMS Panel
+    </a>
+  </div>
+</div>
+
+<!-- Main Router Outlet / Dynamic Theme View -->
+<main class="w-full">
+  <router-outlet></router-outlet>
+</main>

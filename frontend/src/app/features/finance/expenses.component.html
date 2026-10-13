@@ -1,0 +1,241 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Expense Management</h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400">Track and manage institutional expenditures and categories</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button (click)="exportCSV()" class="btn-secondary">
+        <i-lucide name="download" class="w-4 h-4 mr-2"></i-lucide> Export
+      </button>
+      <button *ngIf="canManage()" (click)="openAddModal()" class="btn-primary">
+        <i-lucide name="plus" class="w-4 h-4 mr-2"></i-lucide> Record Expense
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Summary Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div class="card p-5 border-l-4 border-l-rose-500 flex items-center justify-between">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Expenses</p>
+        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mt-1">${{ totalExpense().toLocaleString() }}</h3>
+      </div>
+      <div class="w-12 h-12 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+        <i-lucide name="dollar-sign" class="w-6 h-6"></i-lucide>
+      </div>
+    </div>
+
+    <div class="card p-5 border-l-4 border-l-indigo-500 flex items-center justify-between">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">This Month</p>
+        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mt-1">${{ thisMonthExpense().toLocaleString() }}</h3>
+      </div>
+      <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+        <i-lucide name="calendar" class="w-6 h-6"></i-lucide>
+      </div>
+    </div>
+
+    <div class="card p-5 border-l-4 border-l-emerald-500 flex items-center justify-between">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Vouchers</p>
+        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mt-1">{{ expenses().length }}</h3>
+      </div>
+      <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+        <i-lucide name="file-text" class="w-6 h-6"></i-lucide>
+      </div>
+    </div>
+
+    <div class="card p-5 border-l-4 border-l-amber-500 flex items-center justify-between">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Categories</p>
+        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mt-1">{{ categories().length }}</h3>
+      </div>
+      <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+        <i-lucide name="pie-chart" class="w-6 h-6"></i-lucide>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters & Table -->
+  <div class="card p-6">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+      <div class="relative w-full sm:w-72">
+        <i-lucide name="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i-lucide>
+        <input 
+          type="text" 
+          placeholder="Search expenses..." 
+          (input)="onSearch($event)"
+          class="input-field pl-9 w-full"
+        />
+      </div>
+
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <select (change)="onCategoryFilter($event)" class="input-field">
+          <option value="">All Categories</option>
+          <option *ngFor="let cat of categories()" [value]="cat.id">{{ cat.name }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Skeleton -->
+    <app-skeleton-loader *ngIf="loading()" [rows]="5" [columns]="6"></app-skeleton-loader>
+
+    <!-- Empty State -->
+    <app-empty-state 
+      *ngIf="!loading() && filteredExpenses().length === 0"
+      title="No Expenses Found"
+      description="There are no expense records matching your search or filters."
+      icon="dollar-sign"
+      [actionLabel]="canManage() ? 'Record New Expense' : ''"
+      (action)="openAddModal()"
+    ></app-empty-state>
+
+    <!-- Data Table -->
+    <div *ngIf="!loading() && filteredExpenses().length > 0" class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
+            <th class="py-3 px-4">Title / Details</th>
+            <th class="py-3 px-4">Category</th>
+            <th class="py-3 px-4">Amount</th>
+            <th class="py-3 px-4">Date</th>
+            <th class="py-3 px-4">Payment Method</th>
+            <th class="py-3 px-4">Reference</th>
+            <th *ngIf="canManage()" class="py-3 px-4 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 text-sm">
+          <tr *ngFor="let exp of paginatedExpenses()" class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+            <td class="py-3 px-4 font-medium text-slate-800 dark:text-slate-200">
+              <div>{{ exp.title || exp.name }}</div>
+              <div *ngIf="exp.description" class="text-xs text-slate-400 font-normal mt-0.5">{{ exp.description }}</div>
+            </td>
+            <td class="py-3 px-4">
+              <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                {{ exp.category_name || 'General' }}
+              </span>
+            </td>
+            <td class="py-3 px-4 font-bold text-rose-600 dark:text-rose-400">
+              ${{ (exp.amount || 0).toLocaleString() }}
+            </td>
+            <td class="py-3 px-4 text-slate-600 dark:text-slate-400">
+              {{ exp.date || exp.expense_date | date:'mediumDate' }}
+            </td>
+            <td class="py-3 px-4 text-slate-600 dark:text-slate-400">
+              <span class="capitalize">{{ exp.payment_method || 'Cash' }}</span>
+            </td>
+            <td class="py-3 px-4 text-xs font-mono text-slate-500">
+              {{ exp.reference_no || 'N/A' }}
+            </td>
+            <td *ngIf="canManage()" class="py-3 px-4 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <button (click)="openEditModal(exp)" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-indigo-600">
+                  <i-lucide name="edit-2" class="w-4 h-4"></i-lucide>
+                </button>
+                <button (click)="confirmDelete(exp)" class="p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-500 hover:text-rose-600">
+                  <i-lucide name="trash-2" class="w-4 h-4"></i-lucide>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="flex items-center justify-between border-t border-slate-200 dark:border-slate-800 px-4 py-3 mt-4">
+        <p class="text-xs text-slate-500 dark:text-slate-400">
+          Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ Math.min(currentPage * pageSize, filteredExpenses().length) }} of {{ filteredExpenses().length }}
+        </p>
+        <div class="flex items-center gap-2">
+          <button 
+            [disabled]="currentPage === 1" 
+            (click)="currentPage = currentPage - 1"
+            class="px-3 py-1 text-xs border rounded hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <button 
+            [disabled]="currentPage * pageSize >= filteredExpenses().length" 
+            (click)="currentPage = currentPage + 1"
+            class="px-3 py-1 text-xs border rounded hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <app-modal 
+    [isOpen]="isModalOpen" 
+    [title]="editingExpense ? 'Edit Expense Voucher' : 'Record New Expense'"
+    (closeModal)="isModalOpen = false"
+  >
+    <form [formGroup]="expenseForm" (ngSubmit)="saveExpense()" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Title *</label>
+        <input type="text" formControlName="title" placeholder="e.g. Science Lab Consumables" class="input-field w-full">
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Category *</label>
+          <select formControlName="category_id" class="input-field w-full">
+            <option value="">Select Category</option>
+            <option *ngFor="let cat of categories()" [value]="cat.id">{{ cat.name }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Amount ($) *</label>
+          <input type="number" formControlName="amount" placeholder="0.00" class="input-field w-full">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Date *</label>
+          <input type="date" formControlName="date" class="input-field w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Payment Method</label>
+          <select formControlName="payment_method" class="input-field w-full">
+            <option value="Cash">Cash</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="Cheque">Cheque</option>
+            <option value="Credit Card">Credit Card</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Reference No / Voucher #</label>
+        <input type="text" formControlName="reference_no" placeholder="e.g. VOUCH-2026-001" class="input-field w-full">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">Description / Notes</label>
+        <textarea formControlName="description" rows="2" placeholder="Provide extra context..." class="input-field w-full"></textarea>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" (click)="isModalOpen = false" class="btn-secondary">Cancel</button>
+        <button type="submit" [disabled]="expenseForm.invalid || isSubmitting" class="btn-primary">
+          {{ isSubmitting ? 'Saving...' : 'Save Expense' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Delete Confirmation -->
+  <app-confirm-dialog
+    [isOpen]="isDeleteOpen"
+    title="Delete Expense Record"
+    [message]="'Are you sure you want to delete the expense voucher: ' + selectedExpense?.title + '?'"
+    confirmText="Delete"
+    (confirmed)="deleteExpense()"
+    (cancelled)="isDeleteOpen = false"
+  ></app-confirm-dialog>
+</div>

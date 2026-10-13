@@ -1,0 +1,2 @@
+﻿first_name,last_name,gender,birthday,phone,email,father_name,mother_name,address,city,admission_no,roll_no,class_id
+Test1,Student1,Male,2016-01-15,9876543210,test1@example.com,John,Jane,Main Street,Test City,ADM-IMP-101,101,1
