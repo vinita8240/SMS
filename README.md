@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Apex SMS - Complete Enterprise School Management System
 
 A production-grade, full-stack **School Management System (SMS)** built with **Angular 18+**, **Node.js / Express.js**, and **MySQL**, preserving and utilizing a comprehensive 40+ table relational database schema (`school_data`).
@@ -289,3 +290,6 @@ The application opens at `http://localhost:4200`.
 
 ## 📄 License
 This project is proprietary and open for institutional educational use.
+=======
+# SMS
+>>>>>>> 513374a4d89b71a35a8eefe10d64066ff62a4116
